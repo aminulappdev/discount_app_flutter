@@ -33,6 +33,7 @@ export 'package:discount_me_app/view/splash/screens/splash_view_two.dart';
 export 'package:discount_me_app/view/vendors/vendor_earning_view/view/vendor_earning_home_screen.dart';
 export 'package:discount_me_app/view/vendors/vendor_profile_view/view/vendor_profile_edit_view.dart';
 export 'package:discount_me_app/view/vendors/vendor_profile_view/view/vendor_setting_view.dart';
+export 'package:discount_me_app/view/vendors/vendor_profile_view/view/scan_coupon_screen.dart';
 export 'package:discount_me_app/view/vendors/vendor_profile_view/widget/profile_item_widget.dart';
 export 'package:discount_me_app/res/common_widget/custom_alert_dialog.dart';
 export 'package:discount_me_app/res/common_widget/picker_dialog.dart';

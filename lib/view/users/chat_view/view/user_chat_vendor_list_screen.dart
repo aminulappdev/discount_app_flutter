@@ -4,87 +4,145 @@ import 'package:discount_me_app/res/app_const/import_list.dart';
 import 'package:discount_me_app/res/common_widget/RoundTextField.dart';
 import 'package:discount_me_app/res/common_widget/custom_app_bar.dart';
 import 'package:discount_me_app/utils/utils.dart';
+import 'package:discount_me_app/view/users/chat_view/controller/chat_controller.dart';
 import 'package:discount_me_app/view/users/chat_view/view/user_chat_screen.dart';
+import 'package:discount_me_app/view/users/model/chat_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class UserChatVendorListScreen extends StatefulWidget {
-  const UserChatVendorListScreen({super.key});
+  const UserChatVendorListScreen({super.key, this.vendorId});
 
+  final String? vendorId;
+ 
   @override
-  State<UserChatVendorListScreen> createState() => _UserChatVendorListScreenState();
+  State<UserChatVendorListScreen> createState() =>
+      _UserChatVendorListScreenState();
 }
 
 class _UserChatVendorListScreenState extends State<UserChatVendorListScreen> {
+  final ChatController chatController = Get.put(ChatController());
 
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(() async {
+      if ((widget.vendorId ?? '').isNotEmpty) {
+        final conversation =
+            await chatController.createConversation(widget.vendorId!);
+        if (conversation != null) {
+          await chatController.openConversation(conversation);
+          Get.to(() => UserChatScreen(conversation: conversation));
+        }
+      } else {
+        await chatController.fetchConversations();
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    // Get the screen width and height
-    double width = MediaQuery.of(context).size.width;
-    double height = MediaQuery.of(context).size.height;
-
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
         image: DecorationImage(
-            image: AssetImage(ImageUtils.homeBg),
-            alignment: Alignment.topRight,
-            opacity: 0.5),
+          image: AssetImage(ImageUtils.homeBg),
+          alignment: Alignment.topRight,
+          opacity: 0.5,
+        ),
       ),
       child: Scaffold(
         backgroundColor: Colors.transparent,
         body: SafeArea(
           child: Padding(
             padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  CustomAppBar(
-                    appBarName: "Message",
-                    leadingColor: Colors.black,
-                    titleColor: Colors.black,
-                    onTap: () => Get.back(),
-                  ),
-                  
-                  20.heightBox,
-                  RoundTextField(
-                      hint: "Search a Doctor",
-                    focusColor: Colors.transparent,
-                    prefixIcon: Icon(Icons.search_outlined),
-                    filled: true,
-                  ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                CustomAppBar(
+                  appBarName: "Message",
+                  leadingColor: Colors.black,
+                  titleColor: Colors.black,
+                  onTap: () => Get.back(),
+                ),
+                20.heightBox,
+                RoundTextField(
+                  hint: "Search vendor",
+                  focusColor: Colors.transparent,
+                  prefixIcon: Icon(Icons.search_outlined),
+                  filled: true,
+                  onChanged: (value) {
+                    chatController.searchTerm.value = value;
+                    chatController.fetchConversations(search: value);
+                  },
+                ),
+                20.heightBox,
+                Expanded(
+                  child: Obx(() {
+                    if (chatController.isConversationLoading.value &&
+                        chatController.conversations.isEmpty) {
+                      return Center(child: CircularProgressIndicator());
+                    }
 
-                  20.heightBox,
-                  ListView.builder(
-                    shrinkWrap: true,
-                    scrollDirection: Axis.vertical,
-                    itemCount: 20,
-                    physics: ScrollPhysics(),
-                    itemBuilder: (context, index) {
-                      return Container(
-                          margin: EdgeInsets.only(bottom: 10),
-                          child: _userWidget(
-                            userImage: ImageUtils.profileImage,
-                            userName: "Vendor",
-                            lastMsg: "Worem consectetur adipiscing elit.",
-                            time: "12.50",
-                            onTap: () {
-                              Get.to(()=>UserChatScreen());
-                            },
-                          )
+                    if (chatController.errorMessage.value.isNotEmpty &&
+                        chatController.conversations.isEmpty) {
+                      return Center(
+                        child: CustomText(
+                          title: chatController.errorMessage.value,
+                          fontSize: 16.sp(context),
+                          color: Colors.black,
+                        ),
                       );
-                    },
-                  ),
+                    }
 
+                    final visibleConversations = chatController.conversations
+                        .where(
+                          (conversation) =>
+                              (conversation.lastMessage?.toString().trim() ??
+                                      '')
+                                  .isNotEmpty,
+                        )
+                        .toList();
 
+                    if (visibleConversations.isEmpty) {
+                      return Center(
+                        child: CustomText(
+                          title: "No conversation found",
+                          fontSize: 16.sp(context),
+                          color: Colors.black,
+                        ),
+                      );
+                    }
 
-
-
-                ],
-              ),
+                    return RefreshIndicator(
+                      onRefresh: () => chatController.fetchConversations(),
+                      child: ListView.builder(
+                        itemCount: visibleConversations.length,
+                        itemBuilder: (context, index) {
+                          final conversation = visibleConversations[index];
+                          return Container(
+                            margin: EdgeInsets.only(bottom: 14),
+                            child: _userWidget(
+                              context: context,
+                              conversation: conversation,
+                              onTap: () async {
+                                await chatController
+                                    .openConversation(conversation);
+                                Get.to(
+                                  () => UserChatScreen(
+                                    conversation: conversation,
+                                  ),
+                                );
+                              },
+                            ),
+                          );
+                        },
+                      ),
+                    );
+                  }),
+                ),
+              ],
             ),
           ),
         ),
@@ -92,54 +150,105 @@ class _UserChatVendorListScreenState extends State<UserChatVendorListScreen> {
     );
   }
 
-  Widget _userWidget({required  String  userImage, required String userName, required String lastMsg, required String time, required VoidCallback onTap}){
+  Widget _userWidget({
+    required BuildContext context,
+    required ChatItemModel conversation,
+    required VoidCallback onTap,
+  }) {
+    final image = chatController.conversationImage(conversation);
+    final lastMessage = conversation.lastMessage?.toString() ?? '';
+    final time = conversation.lastMessageAt is String
+        ? chatController.formatTime(
+            DateTime.tryParse(conversation.lastMessageAt.toString()),
+          )
+        : '';
+
     return GestureDetector(
       onTap: onTap,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-
-          Row(
-            children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(50),
-                child: Image(image: AssetImage(userImage),
-                  width: 60, height: 60,
-                  fit: BoxFit.cover,
-                ),
-              ),
-
-              10.widthBox,
-
-              Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  CustomText(title: userName,
-                    fontSize: 18.sp(context), fontWeight: FontWeight.w700, color: Colors.black,
+          Expanded(
+            child: Row(
+              children: [
+                _avatar(image),
+                10.widthBox,
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      CustomText(
+                        title: chatController.conversationTitle(conversation),
+                        fontSize: 18.sp(context),
+                        fontWeight: FontWeight.w700,
+                        color: Colors.black,
+                      ),
+                      Text(
+                        lastMessage.isEmpty ? "Tap to start chat" : lastMessage,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: GoogleFonts.urbanist(
+                          fontWeight: FontWeight.w400,
+                          fontSize: 16.sp(context),
+                          color: ColorUtils.blackColor,
+                        ),
+                      ),
+                    ],
                   ),
-
-                  Text(lastMsg,
-                    maxLines: 1,
-                    style: GoogleFonts.urbanist(
-                        fontWeight: FontWeight.w400,
-                        fontSize: 16.sp(context), color: ColorUtils.blackColor
-                    ),
-                  )
-
-                ],
-              )
+                ),
+              ],
+            ),
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              CustomText(
+                title: time,
+                fontWeight: FontWeight.w400,
+                fontSize: 12,
+                color: Colors.black,
+              ),
+              if ((conversation.unreadCount ?? 0) > 0) ...[
+                6.heightBox,
+                CircleAvatar(
+                  radius: 10,
+                  backgroundColor: ColorUtils.secondaryColor,
+                  child: Text(
+                    conversation.unreadCount.toString(),
+                    style: TextStyle(color: Colors.white, fontSize: 11),
+                  ),
+                ),
+              ],
             ],
           ),
-
-          CustomText(
-            title: time,
-            fontWeight: FontWeight.w400,
-            fontSize: 12, color: Colors.black,
-          )
         ],
       ),
+    );
+  }
+
+  Widget _avatar(String image) {
+    final hasNetworkImage = image.startsWith('http');
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(50),
+      child: hasNetworkImage
+          ? Image.network(
+              image,
+              width: 60,
+              height: 60,
+              fit: BoxFit.cover,
+              errorBuilder: (_, __, ___) => _assetAvatar(),
+            )
+          : _assetAvatar(),
+    );
+  }
+
+  Widget _assetAvatar() {
+    return Image.asset(
+      ImageUtils.profileImage,
+      width: 60,
+      height: 60,
+      fit: BoxFit.cover,
     );
   }
 }

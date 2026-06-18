@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:discount_me_app/utils/utils.dart';
 import 'res/app_const/appNames.dart';
-
+ 
 
 class MyHttpOverrides extends HttpOverrides{
   @override

@@ -35,10 +35,11 @@ class OrderStatusController extends GetxController {
   }
 
 
-  Future<void> getAllOrderController({
+  Future<void> getAllOrderController({ 
     required BuildContext context,
-  }) async {
+  }) async { 
     await BaseApiUtils.get(
+      
       url: ApiUtils.getAllOrdersResponse,
       authorization: loginResponseModel.value.data?.accessToken,
       onSuccess: (e,data) async {

@@ -26,7 +26,7 @@ class RecentTransactionsWidget extends StatelessWidget {
           width: 160.w(context),
           alignment: Alignment.center,
           child:  CustomText(
-            title: "Recent Transactions",
+            title: "Recent Transactions", 
             color: ColorUtils.blackColor,
             fontSize: 16.sp(context),
             fontWeight: FontWeight.w500,

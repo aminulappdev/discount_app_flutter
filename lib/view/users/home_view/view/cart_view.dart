@@ -19,7 +19,7 @@ class CartView extends StatelessWidget {
         body: Container(
           decoration: BoxDecoration(
             color: Colors.white,
-            image: DecorationImage(
+            image: DecorationImage( 
               image: AssetImage(ImageUtils.homeBg),
               alignment: Alignment.topRight,
               opacity: 0.5,
@@ -600,7 +600,7 @@ class CartView extends StatelessWidget {
                                 ),
 
 
-                                SpaceHelperWidget.v(10.h(context)),
+                                SpaceHelperWidget.v(10.h(context)), 
 
 
                                 ButtonHelperWidget.customButtonWidget(
@@ -609,8 +609,11 @@ class CartView extends StatelessWidget {
                                     if(cartController.getAllProductCartResponse.value.data?.carts?.isEmpty == true) {
                                       MessageSnackBarWidget.errorSnackBarWidget(context: context, message: "Please Add At least 1 Product to Cart");
                                     } else {
-                                      Get.off(()=>OrderPickLocationView(pointsToRedeem: cartController.isDiscountApplied.value == true ?
-                                      cartController.getRewardTier(double.parse(cartController.userProfileResponseModel.value.data?.totalRewardPoints.toString() ?? "0")) : 0.0,),duration: const Duration(milliseconds: 100),preventDuplicates: false);
+                                      Get.off(()=>OrderSelectAddressView(
+                                        pickAddress: "",
+                                        pointsToRedeem: cartController.isDiscountApplied.value == true ?
+                                        cartController.getRewardTier(double.parse(cartController.userProfileResponseModel.value.data?.totalRewardPoints.toString() ?? "0")) : 0.0,
+                                      ),duration: const Duration(milliseconds: 100),preventDuplicates: false);
                                     }
                                   },
                                   text: "Place My Order",

@@ -1,5 +1,5 @@
 import 'package:discount_me_app/res/app_const/import_list.dart';
-import 'package:discount_me_app/res/common_widget/vendor_app_bar.dart';
+import 'package:discount_me_app/view/vendors/vendor_home_view/controller/vendor_order_details_controller.dart';
 import 'package:discount_me_app/view/vendors/vendor_home_view/view/vendor_view_rider_location.dart';
 import 'package:flutter/material.dart';
 import 'package:discount_me_app/utils/utils.dart';
@@ -7,10 +7,15 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class VendorOrderOngoingStatusScreen extends StatelessWidget {
-  const VendorOrderOngoingStatusScreen({super.key});
+  const VendorOrderOngoingStatusScreen({super.key, required this.orderId});
+
+  final String orderId;
 
   @override
   Widget build(BuildContext context) {
+    final VendorOrderDetailsController vendorOrderDetailsController = Get.put(
+      VendorOrderDetailsController(context: context, orderId: orderId),
+    );
     // Get the screen width and height
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
@@ -25,14 +30,43 @@ class VendorOrderOngoingStatusScreen extends StatelessWidget {
       ),
       child: Scaffold(
         backgroundColor: Colors.transparent,
-        body: SafeArea(
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-            child: SingleChildScrollView(
+        body: Obx(
+          () => SafeArea(
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+              child: vendorOrderDetailsController.isLoading.value
+                  ? const Center(child: CircularProgressIndicator())
+                  : SingleChildScrollView(
               child: Column(
                 children: [
                   10.heightBox,
-                  VendorAppBar(),
+                  Row(
+                    children: [
+                      SizedBox(
+                        height: 40.h(context),
+                        width: 40.w(context),
+                        child: IconButton(
+                          padding: EdgeInsets.zero,
+                          icon: Icon(
+                            Icons.arrow_back_ios,
+                            color: ColorUtils.blackColor,
+                            size: 20.r(context),
+                          ),
+                          onPressed: () => Get.back(),
+                        ),
+                      ),
+                      Expanded(
+                        child: Align(
+                          alignment: Alignment.center,
+                          child: Image.asset(
+                            ImageUtils.discountMeLogo,
+                            scale: 10,
+                          ),
+                        ),
+                      ),
+                      SizedBox(width: 40.w(context)),
+                    ],
+                  ),
 
                   // add order.......
                   20.heightBox,
@@ -45,37 +79,46 @@ class VendorOrderOngoingStatusScreen extends StatelessWidget {
                         fontSize: 20,
                         color: ColorUtils.blackColor,
                       ),
-                      GestureDetector(
-                          onTap: () {
-
-                          },
-                          child: GestureDetector(
-                            onTap: () {
-                              Get.to(RecipesScreen());
-                            },
-                            child: Container(
-                              padding:EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                              decoration: BoxDecoration(
-                                color: Color(0xfffff9e7),
-                                borderRadius: BorderRadius.circular(5.r(context)),
-                              ),
-                              child: CustomText(
-                                title: "Ongoing",
-                                color: Color(0xffFFC60B),
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          )
-                      )
+                      Container(
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                        decoration: BoxDecoration(
+                          color: vendorOrderDetailsController
+                              .getStatusBackgroundColor(
+                            vendorOrderDetailsController
+                                .orderDetails.value.data?.status,
+                          ),
+                          borderRadius: BorderRadius.circular(5.r(context)),
+                        ),
+                        child: CustomText(
+                          title: vendorOrderDetailsController.statusLabel(
+                            vendorOrderDetailsController
+                                .orderDetails.value.data?.status,
+                          ),
+                          color: vendorOrderDetailsController.getStatusTextColor(
+                            vendorOrderDetailsController
+                                .orderDetails.value.data?.status,
+                          ),
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
                     ],
                   ),
 
                   20.heightBox,
                   ListView.builder(
-                    itemCount: 3,
+                    itemCount: vendorOrderDetailsController
+                            .orderDetails.value.data?.items?.length ??
+                        0,
                     shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
                     itemBuilder: (context, index) {
+                      final item = vendorOrderDetailsController
+                          .orderDetails.value.data!.items![index];
+                      final image = item.product?.images?.isNotEmpty == true
+                          ? item.product!.images!.first
+                          : "";
                       return Container(
                         padding: EdgeInsets.all(8.w(context)),
                         margin: EdgeInsets.only(bottom: 10),
@@ -97,11 +140,18 @@ class VendorOrderOngoingStatusScreen extends StatelessWidget {
                             // Product Image
                             ClipRRect(
                               borderRadius: BorderRadius.circular(8.r(context)),
-                              child: Image.asset(
-                                ImageUtils.burgerCard, // Replace with your image path
-                                scale: 4,
-                                fit: BoxFit.cover,
-                              ),
+                              child: image.isEmpty
+                                  ? Image.asset(
+                                      ImageUtils.burgerCard,
+                                      scale: 4,
+                                      fit: BoxFit.cover,
+                                    )
+                                  : Image.network(
+                                      image,
+                                      height: 80.h(context),
+                                      width: 80.w(context),
+                                      fit: BoxFit.cover,
+                                    ),
                             ),
                             SizedBox(width: 12.w(context)),
 
@@ -111,7 +161,7 @@ class VendorOrderOngoingStatusScreen extends StatelessWidget {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    'Chicken Burger',
+                                    item.product?.name ?? "N/A",
                                     style: GoogleFonts.urbanist(
                                       fontSize: 17.sp(context),
                                       fontWeight: FontWeight.w600,
@@ -120,7 +170,10 @@ class VendorOrderOngoingStatusScreen extends StatelessWidget {
                                   ),
                                   SizedBox(height: 4.h(context)),
                                   Text(
-                                    'Burger Factory LTD',
+                                    item.product?.description ??
+                                        vendorOrderDetailsController.orderDetails
+                                            .value.data?.orderId ??
+                                        "",
                                     style: GoogleFonts.urbanist(
                                       fontSize: 14.sp(context),
                                       fontWeight: FontWeight.w400,
@@ -129,7 +182,7 @@ class VendorOrderOngoingStatusScreen extends StatelessWidget {
                                   ),
                                   SizedBox(height: 4.h(context)),
                                   Text(
-                                    'Rs 200',
+                                    '\$${item.product?.price ?? 0}',
                                     style: GoogleFonts.urbanist(
                                       fontSize: 21.sp(context),
                                       fontWeight: FontWeight.w700,
@@ -162,7 +215,7 @@ class VendorOrderOngoingStatusScreen extends StatelessWidget {
                                 SizedBox(width: 8.w(context)),
                                 // Quantity
                                 Text(
-                                  '1', // Quantity value (replace with dynamic value)
+                                  '${item.quantity ?? 0}',
                                   style: GoogleFonts.urbanist(
                                     fontSize: 16.sp(context),
                                     fontWeight: FontWeight.w600,
@@ -243,7 +296,7 @@ class VendorOrderOngoingStatusScreen extends StatelessWidget {
                                 ),
                               ),
                               Text(
-                                'Rs 950',
+                                '\$${vendorOrderDetailsController.subTotal.toStringAsFixed(2)}',
                                 style: GoogleFonts.manrope(
                                   fontSize: 16.sp(context),
                                   fontWeight: FontWeight.w500,
@@ -265,7 +318,7 @@ class VendorOrderOngoingStatusScreen extends StatelessWidget {
                                 ),
                               ),
                               Text(
-                                'Rs 50',
+                                '\$0.00',
                                 style: GoogleFonts.manrope(
                                   fontSize: 16.sp(context),
                                   fontWeight: FontWeight.w500,
@@ -287,7 +340,7 @@ class VendorOrderOngoingStatusScreen extends StatelessWidget {
                                 ),
                               ),
                               Text(
-                                'Rs 0',
+                                '\$${vendorOrderDetailsController.discount.value.toStringAsFixed(2)}',
                                 style: GoogleFonts.manrope(
                                   fontSize: 16.sp(context),
                                   fontWeight: FontWeight.w500,
@@ -309,7 +362,7 @@ class VendorOrderOngoingStatusScreen extends StatelessWidget {
                                 ),
                               ),
                               Text(
-                                'Rs 1,000',
+                                '\$${double.tryParse((vendorOrderDetailsController.orderDetails.value.data?.total ?? 0).toString())?.toStringAsFixed(2) ?? "0.00"}',
                                 style: GoogleFonts.manrope(
                                   fontSize: 18.sp(context),
                                   fontWeight: FontWeight.bold,
@@ -326,6 +379,7 @@ class VendorOrderOngoingStatusScreen extends StatelessWidget {
 
                 ],
               ),
+            ),
             ),
           ),
         ),

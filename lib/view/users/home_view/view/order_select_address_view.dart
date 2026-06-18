@@ -38,7 +38,7 @@ class OrderSelectAddressView extends StatelessWidget {
               slivers: [
 
 
-                SliverToBoxAdapter(
+                SliverToBoxAdapter( 
                   child: Padding(
                     padding: EdgeInsets.symmetric(horizontal: 16.hpm(context), vertical: 16.vpm(context)),
                     child: Column(
@@ -91,13 +91,16 @@ class OrderSelectAddressView extends StatelessWidget {
                           orderSelectAddressController: orderSelectAddressController,
                         ),
 
-                        CustomSpaceWidget.spacerWidget(spaceHeight: 50.h(context)),
+                        Obx(()=>orderSelectAddressController.isDelivery ? Column(
+                          children: [
+                            CustomSpaceWidget.spacerWidget(spaceHeight: 50.h(context)),
 
-
-                        OrderShippingAddressWidget().orderShippingAddressWidget(
-                          context: context,
-                          orderSelectAddressController: orderSelectAddressController,
-                        ),
+                            OrderShippingAddressWidget().orderShippingAddressWidget(
+                              context: context,
+                              orderSelectAddressController: orderSelectAddressController,
+                            ),
+                          ],
+                        ) : const SizedBox.shrink()),
 
 
                         CustomSpaceWidget.spacerWidget(spaceHeight: 20.h(context)),

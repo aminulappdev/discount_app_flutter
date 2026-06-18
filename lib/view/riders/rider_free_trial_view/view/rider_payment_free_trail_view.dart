@@ -13,6 +13,7 @@ class RiderPaymentFreeTrailView extends StatefulWidget {
 class _RiderPaymentFreeTrailViewState extends State<RiderPaymentFreeTrailView> {
   late final WebViewController _controller;
   final RiderPaymentFreeTrailController riderPaymentFreeTrailController = Get.put(RiderPaymentFreeTrailController());
+  bool _paymentHandled = false;
 
   @override
   void initState() {
@@ -36,13 +37,17 @@ class _RiderPaymentFreeTrailViewState extends State<RiderPaymentFreeTrailView> {
           },
           onNavigationRequest: (NavigationRequest request) async {
             print("hello ${request.url}");
-            //Handle redirects or specific URLs (e.g., success/failure callbacks)
-            await riderPaymentFreeTrailController.getPaymentController(context: context, paymentUrl: request.url);
-            if (request.url.contains('success') || request.url.contains('failure')) {
+            final lowerUrl = request.url.toLowerCase();
+            if (!_paymentHandled && (lowerUrl.contains('success') || lowerUrl.contains('failure') || lowerUrl.contains('cancel'))) {
+              _paymentHandled = true;
+              await riderPaymentFreeTrailController.getPaymentController(context: context, paymentUrl: request.url);
               //Handle payment result
               //_handlePaymentResult(request.url);
 
               return NavigationDecision.prevent; // Prevent navigation in WebView
+            }
+            if (_paymentHandled) {
+              return NavigationDecision.prevent;
             }
             return NavigationDecision.navigate;
           },

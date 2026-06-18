@@ -1,3 +1,12 @@
+dynamic _readJsonValue(Map<String, dynamic> json, List<String> keys) {
+  for (final key in keys) {
+    if (json.containsKey(key)) {
+      return json[key];
+    }
+  }
+  return null;
+}
+
 class LoginResponseModel {
   var success;
   var message;
@@ -41,7 +50,11 @@ class LoginResponse {
     subscription = json['subscription'] != null
         ? new LoginResponseSubscription.fromJson(json['subscription'])
         : null;
-    hasFreeTrial = json['hasFreeTrial'];
+    hasFreeTrial = _readJsonValue(json, [
+      'hasFreeTrial',
+      'has_free_trial',
+      'has_freeTrial',
+    ]);
   }
 
   Map<String, dynamic> toJson() {
@@ -79,12 +92,27 @@ class LoginResponseSubscription {
 
   LoginResponseSubscription.fromJson(Map<String, dynamic> json) {
     role = json['role'];
-    monthlyFee = json['monthly_fee'];
-    hasActiveSubscription = json['has_active_subscription'];
-    subscriptionStatus = json['subscription_status'];
-    currentPeriodStart = json['current_period_start'];
-    currentPeriodEnd = json['current_period_end'];
-    cancelAtPeriodEnd = json['cancel_at_period_end'];
+    monthlyFee = _readJsonValue(json, ['monthly_fee', 'monthlyFee']);
+    hasActiveSubscription = _readJsonValue(json, [
+      'has_active_subscription',
+      'hasActiveSubscription',
+    ]);
+    subscriptionStatus = _readJsonValue(json, [
+      'subscription_status',
+      'subscriptionStatus',
+    ]);
+    currentPeriodStart = _readJsonValue(json, [
+      'current_period_start',
+      'currentPeriodStart',
+    ]);
+    currentPeriodEnd = _readJsonValue(json, [
+      'current_period_end',
+      'currentPeriodEnd',
+    ]);
+    cancelAtPeriodEnd = _readJsonValue(json, [
+      'cancel_at_period_end',
+      'cancelAtPeriodEnd',
+    ]);
     subscription = json['subscription'] != null
         ? new LoginResponseUserSubscription.fromJson(json['subscription'])
         : null;

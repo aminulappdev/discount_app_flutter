@@ -179,9 +179,9 @@ class VendorProfileHomeView extends StatelessWidget {
                           Icons.navigate_next,
                           size: 24.r(context),
                           color: Colors.black54,
-                        ),
+                        ), 
                         onTap: () {
-                          Get.off(()=>VendorEaringHomeScreen(),preventDuplicates: false,duration: Duration(milliseconds: 100));
+                          Get.to(()=>VendorEaringHomeScreen(),preventDuplicates: false,duration: Duration(milliseconds: 100));
                         },
                       ),
 
@@ -200,6 +200,23 @@ class VendorProfileHomeView extends StatelessWidget {
                         ),
                         onTap: () {
                           Get.off(()=>VendorCreatedCouponScreen(),preventDuplicates: false,duration: Duration(milliseconds: 100));
+                        },
+                      ),
+
+                      ProfileItemWidget(
+                        title: "Scan Coupon",
+                        icon: Icon(
+                          Icons.qr_code_scanner,
+                          size: 24.r(context),
+                          color: ColorUtils.black29,
+                        ),
+                        navigateIcon: Icon(
+                          Icons.navigate_next,
+                          size: 24.r(context),
+                          color: Colors.black54,
+                        ),
+                        onTap: () {
+                          Get.off(()=>ScanCouponScreen(),preventDuplicates: false,duration: Duration(milliseconds: 100));
                         },
                       ),
 

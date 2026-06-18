@@ -1,14 +1,15 @@
 class ApiUtils {
 
   //static const baseUrl = "http://206.162.244.133:5020/api/v1";
-  static const baseUrl = "http://72.244.153.29:5001/api/v1";
-  static const socketUrl = "http://72.244.153.29:5001/";
+  static const baseUrl = "http://10.10.10.25:5001/api/v1";
+  static const socketUrl = "http://10.10.10.25:5001/";
   //static const baseUrl = "http://10.10.10.16:5020/api/v1";
 
-
+ 
   //user
   static const String loginResponse = "$baseUrl/auth/login";
   static const String createPaymentResponse = "$baseUrl/payments/create-payment-session"; //done
+  static const String pickupRequests = "$baseUrl/pickup-requests";
   static const String createCheckoutSession = "$baseUrl/subscriptions/create-checkout-session"; //done
   static const String createOrderResponse = "$baseUrl/orders";//done
   static const String riderProfile = "$baseUrl/riders/profile";//done
@@ -21,6 +22,15 @@ class ApiUtils {
   static const String sendOtp = "$baseUrl/auth/send-otp";//done
   static const String forgotEmailOtp = "$baseUrl/auth/send-otp";//done
   static const String resetForgottenPassword = "$baseUrl/auth/reset-forgotten-password";
+  static const String chats = "$baseUrl/chats/conversations";
+
+  static String chatMessages(String conversationId) {
+    return "$chats/$conversationId/messages";
+  }
+
+  static String chatRead(String conversationId) {
+    return "$chats/$conversationId/read";
+  }
 
 
   static String riderProfileUpdate(String riderId) {
@@ -92,6 +102,11 @@ class ApiUtils {
 
 
   static const String getAllOrdersResponse = "$baseUrl/orders/user";
+  static const String getVendorOrdersResponse = "$baseUrl/orders/vendor";
+  static const String myVouchers = "$baseUrl/vouchers/my-vouchers";
+  static String validateVoucher(String code) {
+    return "$baseUrl/vouchers/validate/$code";
+  }
   static const String riderChangePassword = "$baseUrl/auth/change-password";
   static const String changePassword = "$baseUrl/auth/change-password";
   static const String billingAddress = "$baseUrl/billing-address";

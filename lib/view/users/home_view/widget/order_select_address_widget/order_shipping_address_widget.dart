@@ -1,7 +1,9 @@
 import 'package:discount_me_app/utils/utils.dart';
 import 'package:discount_me_app/view/users/home_view/controller/order_select_address_controller.dart';
+import 'package:discount_me_app/view/users/home_view/view/order_pick_location_view.dart';
 import 'package:flutter/material.dart';
 import 'package:discount_me_app/utils/widget_utils/text_form_field_widget.dart';
+import 'package:get/get.dart';
 import '../../../../../res/res.dart';
 
 class OrderShippingAddressWidget {
@@ -56,6 +58,28 @@ class OrderShippingAddressWidget {
           plainTextStringFontWeight: FontWeight.w600,
           plainTextContainerAlignment: Alignment.centerLeft,
           plainTextStringColor: ColorUtils.black29,
+        ),
+
+        CustomSpaceWidget.spacerWidget(spaceHeight: 8.h(context)),
+
+        CustomButtonContainer.plainButtonContainer(
+          plainButtonHeight: 50.h(context),
+          plainButtonWidth: 428.w(context),
+          plainButtonRadius: 8.r(context),
+          plainButtonOnPress: () async {
+            final pickedAddress = await Get.to<String>(
+              ()=>OrderPickLocationView(pointsToRedeem: 0.0),
+              duration: const Duration(milliseconds: 100),
+              preventDuplicates: false,
+            );
+            if (pickedAddress != null && pickedAddress.isNotEmpty) {
+              orderSelectAddressController.setPickedShippingAddress(pickedAddress);
+            }
+          },
+          plainButtonHint: "Pick Location",
+          plainButtonHintFontSize: 18.sp(context),
+          plainButtonColor: ColorUtils.green176,
+          plainButtonHintFontColor: ColorUtils.white255,
         ),
 
         CustomSpaceWidget.spacerWidget(spaceHeight: 8.h(context)),

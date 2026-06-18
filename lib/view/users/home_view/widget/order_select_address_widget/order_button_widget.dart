@@ -50,13 +50,13 @@ class OrderButtonWidget {
           CustomSnackBar().errorCustomSnackBar(context: context, message: "Please enter billing email");
         } else if(orderSelectAddressController.billingPhoneController.value.text == "") {
           CustomSnackBar().errorCustomSnackBar(context: context, message: "Please enter billing phone");
-        } else if(orderSelectAddressController.shippingNameController.value.text == "") {
+        } else if(orderSelectAddressController.isDelivery && orderSelectAddressController.shippingNameController.value.text == "") {
           CustomSnackBar().errorCustomSnackBar(context: context, message: "Please enter shipping name");
-        } else if(orderSelectAddressController.shippingAddressController.value.text == "") {
+        } else if(orderSelectAddressController.isDelivery && orderSelectAddressController.shippingAddressController.value.text == "") {
           CustomSnackBar().errorCustomSnackBar(context: context, message: "Please enter address name");
-        } else if(orderSelectAddressController.shippingEmailController.value.text == "") {
+        } else if(orderSelectAddressController.isDelivery && orderSelectAddressController.shippingEmailController.value.text == "") {
           CustomSnackBar().errorCustomSnackBar(context: context, message: "Please enter shipping email");
-        } else if(orderSelectAddressController.shippingPhoneController.value.text == "") {
+        } else if(orderSelectAddressController.isDelivery && orderSelectAddressController.shippingPhoneController.value.text == "") {
           CustomSnackBar().errorCustomSnackBar(context: context, message: "Please enter shipping phone");
         } else {
           await orderSelectAddressController.createPaymentController(

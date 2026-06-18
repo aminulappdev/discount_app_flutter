@@ -1,4 +1,6 @@
 import 'package:discount_me_app/res/app_const/import_list.dart';
+import 'package:discount_me_app/view/vendors/vendor_home_view/controller/vendor_order_manage_controller.dart';
+import 'package:discount_me_app/view/vendors/vendor_home_view/model/vendor_orders_response_model.dart';
 import 'package:discount_me_app/view/vendors/vendor_home_view/view/vendor_order_ongoing_status_screen.dart';
 import 'package:discount_me_app/view/vendors/vendor_home_view/widget/order_order_going_widget.dart';
 import 'package:discount_me_app/view/vendors/vendor_home_view/widget/vendor_order_canceled_widget.dart';
@@ -12,31 +14,23 @@ class VendorOrderManageScreen extends StatefulWidget {
 
   @override
   State<VendorOrderManageScreen> createState() =>
-      _VendorOrderManageScreenState();
+      _VendorOrderManageScreenState(); 
 }
 
 class _VendorOrderManageScreenState extends State<VendorOrderManageScreen> {
+  late final VendorOrderManageController vendorOrderManageController;
   int selectedIndex = 0;
 
-  // Define colors for each tab
-  Color getTabColor(int index) {
-    switch (index) {
-      case 0:
-        return ColorUtils.secondaryColor; // Ongoing
-      case 1:
-        return Colors.green; // Delivered
-      case 2:
-        return Colors.red; // Canceled
-      default:
-        return ColorUtils.primaryColor; // Default color
-    }
+  @override
+  void initState() {
+    super.initState();
+    vendorOrderManageController = Get.put(
+      VendorOrderManageController(context: context),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    double width = MediaQuery.of(context).size.width;
-    double height = MediaQuery.of(context).size.height;
-
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -71,8 +65,10 @@ class _VendorOrderManageScreenState extends State<VendorOrderManageScreen> {
                             setState(() {
                               selectedIndex = index;
                             });
+                            vendorOrderManageController.changeTab(index);
                           },
-                          labelColor: getTabColor(selectedIndex),
+                          labelColor:
+                              vendorOrderManageController.getTabColor(selectedIndex),
                           unselectedLabelColor: Colors.black,
                           tabs: [
                             Tab(text: 'Ongoing'),
@@ -81,51 +77,53 @@ class _VendorOrderManageScreenState extends State<VendorOrderManageScreen> {
                           ],
                         ),
                       ),
-                      body: TabBarView(
-                        children: [
-                          // Ongoing Tab
-                          ListView.builder(
-                            itemCount: 10,
+                      body: Obx(() {
+                        if (vendorOrderManageController.isLoading.value) {
+                          return const Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        }
+
+                        final orders = vendorOrderManageController.filteredOrders;
+                        if (orders.isEmpty) {
+                          return Center(
+                            child: TextHelperClass.headingTextWithoutWidth(
+                              context: context,
+                              text: "No Order Available",
+                              fontSize: 22,
+                              fontWeight: FontWeight.w700,
+                              textColor: ColorUtils.black21,
+                              alignment: Alignment.center,
+                            ),
+                          );
+                        }
+
+                        return RefreshIndicator(
+                          onRefresh: () async {
+                            await vendorOrderManageController
+                                .getVendorOrdersController(context: context);
+                          },
+                          child: ListView.builder(
+                            itemCount: orders.length,
                             itemBuilder: (context, index) {
+                              final order = orders[index];
                               return GestureDetector(
                                 onTap: () {
-                                  Get.to(VendorOrderOngoingStatusScreen());
+                                  Get.to(
+                                    VendorOrderOngoingStatusScreen(
+                                      orderId: order.id,
+                                    ),
+                                  );
                                 },
                                 child: Container(
                                   margin: EdgeInsets.symmetric(vertical: 5),
-                                  child: VendorOrderOngoingWidget(),
+                                  child: _buildOrderCard(order),
                                 ),
                               );
                             },
                           ),
-
-                          // Delivered Tab
-                          ListView.builder(
-                            itemCount: 15,
-                            itemBuilder: (context, index) {
-                              return GestureDetector(
-                                onTap: () {
-                                },
-                                child: Container(
-                                  margin: EdgeInsets.symmetric(vertical: 5),
-                                  child: VendorOrderDeliveredWidget(),
-                                ),
-                              );
-                            },
-                          ),
-
-                          // Canceled Tab
-                          ListView.builder(
-                            itemCount: 4,
-                            itemBuilder: (context, index) {
-                              return Container(
-                                margin: EdgeInsets.symmetric(vertical: 5),
-                                child: VendorOrderCanceledWidget(),
-                              );
-                            },
-                          ),
-                        ],
-                      ),
+                        );
+                      }),
                     ),
                   ),
                 ),
@@ -134,6 +132,53 @@ class _VendorOrderManageScreenState extends State<VendorOrderManageScreen> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildOrderCard(VendorOrderListItem order) {
+    final status = vendorOrderManageController.statusLabel(order.status);
+    final statusBackgroundColor =
+        vendorOrderManageController.getStatusBackgroundColor(order.status);
+    final statusTextColor =
+        vendorOrderManageController.getStatusTextColor(order.status);
+    final subtitle =
+        "${order.orderId}  ${order.customerName.isEmpty ? "" : order.customerName}";
+
+    if (vendorOrderManageController.selectedTab.value == 1) {
+      return VendorOrderDeliveredWidget(
+        title: order.productName,
+        subtitle: subtitle,
+        image: order.image,
+        amount: order.amount,
+        date: order.date,
+        status: status,
+        statusBackgroundColor: statusBackgroundColor,
+        statusTextColor: statusTextColor,
+      );
+    }
+
+    if (vendorOrderManageController.selectedTab.value == 2) {
+      return VendorOrderCanceledWidget(
+        title: order.productName,
+        subtitle: subtitle,
+        image: order.image,
+        amount: order.amount,
+        date: order.date,
+        status: status,
+        statusBackgroundColor: statusBackgroundColor,
+        statusTextColor: statusTextColor,
+      );
+    }
+
+    return VendorOrderOngoingWidget(
+      title: order.productName,
+      subtitle: subtitle,
+      image: order.image,
+      amount: order.amount,
+      date: order.date,
+      status: status,
+      statusBackgroundColor: statusBackgroundColor,
+      statusTextColor: statusTextColor,
     );
   }
 }

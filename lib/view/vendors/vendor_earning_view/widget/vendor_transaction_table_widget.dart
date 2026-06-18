@@ -13,11 +13,11 @@ class VendorTransactionTableWidget extends StatelessWidget {
       'account': '(516) 831-1111',
       'date': '02-24-2024',
       'amount': '\$200',
-    },
+    }, 
   );
 
   @override
-  Widget build(BuildContext context) {
+   Widget build(BuildContext context) {
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: Padding(
@@ -44,15 +44,11 @@ class VendorTransactionTableWidget extends StatelessWidget {
             rows: transactions.asMap().entries.map(
                   (entry) {
                 return DataRow(
-
-                  onSelectChanged: (isSelected) {
-                    if(isSelected == true){
-                      Get.to(VendorTransactionDetailsScreen());
-                    }
-                  },
-
                   cells: [
-                    DataCell(Text((entry.key + 1).toString().padLeft(2, '0'))),
+                    DataCell(
+                      Text((entry.key + 1).toString().padLeft(2, '0')),
+                      onTap: () => Get.to(VendorTransactionDetailsScreen()),
+                    ),
 
                     DataCell(
                       Row(
@@ -71,11 +67,21 @@ class VendorTransactionTableWidget extends StatelessWidget {
                           ),
                         ],
                       ),
+                      onTap: () => Get.to(VendorTransactionDetailsScreen()),
                     ),
 
-                    DataCell(Text(entry.value['account']!)),
-                    DataCell(Text(entry.value['date']!)),
-                    DataCell(Text(entry.value['amount']!)),
+                    DataCell(
+                      Text(entry.value['account']!),
+                      onTap: () => Get.to(VendorTransactionDetailsScreen()),
+                    ),
+                    DataCell(
+                      Text(entry.value['date']!),
+                      onTap: () => Get.to(VendorTransactionDetailsScreen()),
+                    ),
+                    DataCell(
+                      Text(entry.value['amount']!),
+                      onTap: () => Get.to(VendorTransactionDetailsScreen()),
+                    ),
                   ],
                 );
               },

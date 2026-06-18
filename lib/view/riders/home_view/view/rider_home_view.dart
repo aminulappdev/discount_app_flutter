@@ -1,5 +1,6 @@
 import 'package:discount_me_app/res/app_const/import_list.dart';
 import 'package:discount_me_app/view/riders/home_view/controller/rider_home_controller.dart';
+import 'package:discount_me_app/view/riders/home_view/model/rider_pickup_requests_response_model.dart';
 import 'package:discount_me_app/view/riders/home_view/view/rider_home_order_request_details_screen.dart';
 import 'package:discount_me_app/view/view.dart';
 import 'package:flutter/material.dart';
@@ -25,19 +26,12 @@ class RiderHomeView extends StatelessWidget {
         child: Skeletonizer(
           effect: PulseEffect(),
           enabled: riderHomeController.isLoading.value,
-          child: RefreshIndicator(
-            onRefresh: () async {
-              Get.off(()=>RiderDashboardView(index: 0,),duration: const Duration(milliseconds: 100),preventDuplicates: false);
-            },
-            child: CustomScrollView(
-              slivers: [
-
-                SliverToBoxAdapter(
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16.hpm(context), vertical: 16.vpm(context)),
-                    child: SingleChildScrollView(
-                      child: Column(
-                        children: [
+          child: Column(
+            children: [
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16.hpm(context), vertical: 16.vpm(context)),
+                child: Column(
+                  children: [
 
                           // appBar
                           CustomSpaceWidget.spacerWidget(spaceHeight: 40.h(context)),
@@ -247,33 +241,61 @@ class RiderHomeView extends StatelessWidget {
                             ],
                           ),
 
-                        ],
-                      ),
-                    ),
-                  ),
+                  ],
                 ),
+              ),
 
+              Expanded(
+                child: RefreshIndicator(
+                  onRefresh: () async {
+                    await riderHomeController.getHomeData(context: context);
+                  },
+                  child: ListView.builder(
+                    padding: EdgeInsets.zero,
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    itemCount: riderHomeController.pickupRequests.isEmpty
+                        ? 1
+                        : riderHomeController.pickupRequests.length,
+                    itemBuilder: (context,int index) {
+                        if (riderHomeController.pickupRequests.isEmpty) {
+                          return Padding(
+                            padding: EdgeInsets.all(16.r(context)),
+                            child: CustomTextContainer.plainTextContainerWidgetWithoutHeightWidth(
+                              plainTextString: "No available requests",
+                              plainTextStringFontSize: 16.sp(context),
+                              plainTextStringFontWeight: FontWeight.w600,
+                              plainTextContainerAlignment: Alignment.center,
+                              plainTextStringColor: ColorUtils.black29,
+                            ),
+                          );
+                        }
 
-                SliverList(
-                  delegate: SliverChildBuilderDelegate(
-                      (context,int index) {
-                        return _requestWidget(context: context);
+                        return _requestWidget(
+                          context: context,
+                          request: riderHomeController.pickupRequests[index],
+                        );
                       },
-                    childCount: 10,
                   ),
                 ),
-
-
-
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       )),
     );
   }
 
-  Widget _requestWidget({required BuildContext context}){
+  Widget _requestWidget({
+    required BuildContext context,
+    required RiderPickupRequest request,
+  }){
+    final order = request.order;
+    final storeName = order?.store?.name ?? "N/A";
+    final customerName = order?.customer?.name ?? "N/A";
+    final deliveryLocation = _deliveryLocationText(request.deliveryLocation);
+    final orderId = order?.orderId ?? "";
+    final requestStatus = request.status ?? "N/A";
+
     return Padding(
       padding: EdgeInsets.all(16.r(context)),
       child: Container(
@@ -289,7 +311,7 @@ class RiderHomeView extends StatelessWidget {
           children: [
 
             CustomTextContainer.plainTextContainerWidgetWithoutHeightWidth(
-              plainTextString: "Food Kind Restaurant",
+              plainTextString: storeName,
               plainTextStringFontSize: 20.sp(context),
               plainTextStringFontWeight: FontWeight.w600,
               plainTextContainerAlignment: Alignment.centerLeft,
@@ -300,11 +322,21 @@ class RiderHomeView extends StatelessWidget {
 
 
             CustomTextContainer.plainTextContainerWidgetWithoutHeightWidth(
-              plainTextString: "Receipient: Paul Pogba",
+              plainTextString: "Recipient: $customerName${orderId.isEmpty ? "" : " ($orderId)"}",
               plainTextStringFontSize: 15.sp(context),
               plainTextStringFontWeight: FontWeight.w600,
               plainTextContainerAlignment: Alignment.centerLeft,
               plainTextStringColor: ColorUtils.blackColor,
+            ),
+
+            CustomSpaceWidget.spacerWidget(spaceHeight: 6.h(context)),
+
+            CustomTextContainer.plainTextContainerWidgetWithoutHeightWidth(
+              plainTextString: "Status: ${requestStatus.capitalizeFirst ?? requestStatus}",
+              plainTextStringFontSize: 14.sp(context),
+              plainTextStringFontWeight: FontWeight.w600,
+              plainTextContainerAlignment: Alignment.centerLeft,
+              plainTextStringColor: ColorUtils.secondaryColor,
             ),
 
 
@@ -348,7 +380,7 @@ class RiderHomeView extends StatelessWidget {
 
 
                       CustomTextContainer.plainTextContainerWidgetWithoutHeightWidth(
-                        plainTextString: "Maryland bustop, Anthony Ikeja",
+                        plainTextString: deliveryLocation,
                         plainTextStringFontSize: 15.sp(context),
                         plainTextStringFontWeight: FontWeight.w600,
                         plainTextContainerAlignment: Alignment.centerLeft,
@@ -421,6 +453,24 @@ class RiderHomeView extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  String _deliveryLocationText(String? value) {
+    if (value == null || value.trim().isEmpty) {
+      return "Delivery location not available";
+    }
+
+    final parts = value
+        .split(",")
+        .map((part) => part.trim())
+        .where((part) => part.isNotEmpty && part.toLowerCase() != "null")
+        .toList();
+
+    if (parts.isEmpty) {
+      return "Delivery location not available";
+    }
+
+    return parts.join(", ");
   }
 
 

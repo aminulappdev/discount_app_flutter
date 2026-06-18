@@ -21,6 +21,8 @@ class OrderSelectAddressController extends GetxController {
   RxDouble total = 0.0.obs;
   Rx<UserBillingAddressResponseModel> userBillingAddressResponseModel = UserBillingAddressResponseModel().obs;
   Rx<UserShippingAddressResponseModel> userShippingAddressResponseModel = UserShippingAddressResponseModel().obs;
+  RxString fulfillmentType = "delivery".obs;
+  final List<String> fulfillmentTypes = ["delivery", "pickup", "dine_in"];
 
   //Billing Address
   Rx<TextEditingController> billingNameController = TextEditingController().obs;
@@ -51,6 +53,32 @@ class OrderSelectAddressController extends GetxController {
   // Rx<RadioValueClass> selectPaymentType = RadioValueClass(name: '', value: '').obs;
 
   OrderSelectAddressController({required this.context,required this.pickAddress});
+
+  bool get isDelivery => fulfillmentType.value == "delivery";
+
+  void setFulfillmentType(String value) {
+    fulfillmentType.value = value;
+    if (value != "delivery") {
+      clearShippingAddress();
+    } else {
+      shippingNameController.value.text = userShippingAddressResponseModel.value.data?.name ?? "";
+      shippingEmailController.value.text = userShippingAddressResponseModel.value.data?.email ?? "";
+      shippingPhoneController.value.text = userShippingAddressResponseModel.value.data?.phone ?? "";
+      shippingAddressController.value.text = pickAddress;
+    }
+  }
+
+  void clearShippingAddress() {
+    shippingNameController.value.clear();
+    shippingEmailController.value.clear();
+    shippingPhoneController.value.clear();
+    shippingAddressController.value.clear();
+  }
+
+  void setPickedShippingAddress(String address) {
+    pickAddress = address;
+    shippingAddressController.value.text = address;
+  }
 
   @override
   void onInit() {
@@ -166,9 +194,13 @@ class OrderSelectAddressController extends GetxController {
       onSuccess: (e,data) async {
         MessageSnackBarWidget.successSnackBarWidget(context: context, message: e);
         userShippingAddressResponseModel.value = UserShippingAddressResponseModel.fromJson(data);
-        shippingNameController.value.text = userShippingAddressResponseModel.value.data?.name ?? "";
-        shippingEmailController.value.text = userShippingAddressResponseModel.value.data?.email ?? "";
-        shippingPhoneController.value.text = userShippingAddressResponseModel.value.data?.phone ?? "";
+        if (isDelivery) {
+          shippingNameController.value.text = userShippingAddressResponseModel.value.data?.name ?? "";
+          shippingEmailController.value.text = userShippingAddressResponseModel.value.data?.email ?? "";
+          shippingPhoneController.value.text = userShippingAddressResponseModel.value.data?.phone ?? "";
+        } else {
+          clearShippingAddress();
+        }
         isLoading.value = false;
       },
       onFail: (e,data) {
@@ -193,7 +225,6 @@ class OrderSelectAddressController extends GetxController {
     List<Map<String,dynamic>> items = [];
     LoginResponseModel loginResponseModel = LoginResponseModel.fromJson(jsonDecode(LocalStorageUtils.getString(AppConstantUtils.loginResponse)!),);
 
-
     getAllProductCartResponse.value.data?.carts?.forEach((value) {
       items.add({
         "product": value.product?.sId,
@@ -202,12 +233,13 @@ class OrderSelectAddressController extends GetxController {
         "shipping_fee": value.shippingFee,
         "amount": value.product?.price,
         "quantity": value.quantity,
-      });
+      }); 
     });
 
     Map<String,dynamic> data = {
       "payment_status": "unpaid",
       "payment_method": "stripe",
+      "fulfillment_type": fulfillmentType.value,
       "pointsToRedeem": pointsToRedeem,
       "items": items,
       "billing_address": {
@@ -221,26 +253,32 @@ class OrderSelectAddressController extends GetxController {
         "house_no": billingHouseNoController.value.text,
         "email": billingEmailController.value.text,
         "phone": billingPhoneController.value.text,
-      },
-      "shipping_address": {
+      }
+    };
+
+    if (isDelivery) {
+      data["shipping_address"] = {
         "name": shippingNameController.value.text,
         "email": shippingEmailController.value.text,
         "phone": shippingPhoneController.value.text,
         "address": shippingAddressController.value.text,
-      }
-    };
+      };
+    }
     debugPrint(jsonEncode(data));
 
     print(data);
 
-    BaseApiUtils.post(
+    await BaseApiUtils.post(
       url: ApiUtils.createPaymentResponse,
       data: data,
       authorization: loginResponseModel.data?.accessToken,
       onSuccess: (e,data) async {
+        final paymentData = data is Map ? data["data"] : null;
+        final paymentUrl = paymentData is Map ? paymentData["url"]?.toString() ?? "" : "";
+
         MessageSnackBarWidget.successSnackBarWidget(context: context, message: e);
         isSubmit.value = false;
-        Get.off(()=>OrderPaymentView(paymentUrl: data["data"]["url"]),duration: const Duration(milliseconds: 100),preventDuplicates: false);
+        _goToPaymentView(paymentUrl);
       },
       onFail: (e,data) {
         MessageSnackBarWidget.errorSnackBarWidget(context: context, message: e);
@@ -255,83 +293,24 @@ class OrderSelectAddressController extends GetxController {
 
   }
 
+  void _goToPaymentView(String paymentUrl) {
+    if (paymentUrl.isEmpty) {
+      MessageSnackBarWidget.errorSnackBarWidget(
+        context: context,
+        message: "Payment URL not found",
+      );
+      return;
+    }
 
-
-  // Future<void> createOrderController({
-  //   required BuildContext context,
-  // }) async {
-  //
-  //   isSubmit.value = true;
-  //
-  //   List<Map<String,dynamic>> items = [];
-  //   getAllProductCartResponse.value.data?.carts?.forEach((value) {
-  //     items.add({
-  //       "product": value.product?.sId,
-  //       "store": value.product?.store?.sId,
-  //       "name": value.product?.name,
-  //       "shipping_fee": value.shippingFee,
-  //       "amount": value.product?.price,
-  //       "quantity": value.quantity,
-  //     });
-  //   });
-  //
-  //   Map<String,dynamic> data = {
-  //     "subtotal": (discount.value + shippingFee.value + total.value),
-  //     "discount": discount.value,
-  //     "shipping_fee": shippingFee.value,
-  //     "total": total.value,
-  //     "payment_status": "unpaid",
-  //     "payment_method": "cash on delivery",
-  //     "items": items,
-  //     "billing_address": {
-  //       "name": billingNameController.value.text,
-  //       "company_name": billingCompanyNameController.value.text,
-  //       "street_address": billingStreetAddressController.value.text,
-  //       "country": billingCountryController.value.text,
-  //       "state": billingStateController.value.text,
-  //       "city": billingCityController.value.text,
-  //       "zip_code": billingZipCodeController.value.text,
-  //       "house_no": billingHouseNoController.value.text,
-  //       "email": billingEmailController.value.text,
-  //       "phone": billingPhoneController.value.text,
-  //     },
-  //     "shipping_address": {
-  //       "name": shippingNameController.value.text,
-  //       "email": shippingEmailController.value.text,
-  //       "phone": shippingPhoneController.value.text,
-  //       "address": shippingAddressController.value.text,
-  //     }
-  //   };
-  //   debugPrint(jsonEncode(data));
-  //
-  //   print(data);
-  //
-  //   String accessToken = "";
-  //   await AppLocalStorage.getString(key: "Login").then((value) {
-  //     accessToken = jsonDecode(value!)["data"]["accessToken"];
-  //   });
-  //   print(accessToken);
-  //
-  //   BaseApiUtils.post(
-  //     url: ApiUtils.createOrderResponse,
-  //     data: data,
-  //     authorization: accessToken,
-  //     onSuccess: (e,data) async {
-  //       MessageSnackBarWidget.successSnackBarWidget(context: context, message: e);
-  //       isSubmit.value = false;
-  //       print(jsonEncode(data));
-  //     },
-  //     onFail: (e,data) {
-  //       MessageSnackBarWidget.errorSnackBarWidget(context: context, message: e);
-  //       isSubmit.value = false;
-  //     },
-  //     onExceptionFail: (e,data) {
-  //       MessageSnackBarWidget.errorSnackBarWidget(context: context, message: e);
-  //       isSubmit.value = false;
-  //     },
-  //   );
-  //
-  // }
+    Get.off(
+      () => OrderPaymentView(
+        paymentUrl: paymentUrl,
+        fulfillmentType: fulfillmentType.value,
+      ),
+      duration: const Duration(milliseconds: 100),
+      preventDuplicates: false,
+    );
+  }
 
 
 

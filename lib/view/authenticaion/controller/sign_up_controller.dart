@@ -9,7 +9,6 @@ import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:discount_me_app/utils/utils.dart';
-import '../../../res/res.dart';
 
 class SignUpController extends GetxController {
 
@@ -26,7 +25,7 @@ class SignUpController extends GetxController {
       if (permission == LocationPermission.denied) {
         permission = await Geolocator.requestPermission();
       }
-    }
+    } 
 
     if (permission == LocationPermission.deniedForever) {
       LocationPermissionDeniedBox().locationPermissionDeniedBox(context: context);

@@ -1,16 +1,12 @@
-import 'dart:io';
+
 import 'dart:ui';
 import 'package:discount_me_app/res/res.dart';
 import 'package:discount_me_app/utils/utils.dart';
 import 'package:discount_me_app/view/authenticaion/widget/sign_up_widget/role_wise_form_fields.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/gestures.dart';
 import 'package:get/get.dart';
 import 'package:discount_me_app/view/view.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 
 class SignUpView extends StatelessWidget {
   SignUpView({super.key});

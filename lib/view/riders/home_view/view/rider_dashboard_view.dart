@@ -4,7 +4,7 @@ import 'package:get/get.dart';
 import 'package:discount_me_app/view/view.dart';
 
 class RiderDashboardView extends StatelessWidget {
-  const RiderDashboardView({super.key,required this.index});
+  const RiderDashboardView({super.key,required this.index}); 
 
   final int index;
 

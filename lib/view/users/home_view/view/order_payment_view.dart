@@ -4,9 +4,16 @@ import 'package:get/get.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class OrderPaymentView extends StatefulWidget {
-  const OrderPaymentView({super.key,required this.paymentUrl});
+  const OrderPaymentView({
+    super.key,
+    required this.paymentUrl,
+    required this.fulfillmentType,
+  });
+
   final String paymentUrl;
-  @override
+  final String fulfillmentType;
+
+  @override 
   State<OrderPaymentView> createState() => _OrderPaymentViewState();
 }
 
@@ -35,13 +42,13 @@ class _OrderPaymentViewState extends State<OrderPaymentView> {
           },
           onNavigationRequest: (NavigationRequest request) async {
             print("hello ${request.url}");
-            //Handle redirects or specific URLs (e.g., success/failure callbacks)
-            await paymentController.getPaymentController(context: context, paymentUrl: request.url);
-            if (request.url.contains('success') || request.url.contains('failure')) {
-              //Handle payment result
-              //_handlePaymentResult(request.url);
-
-              return NavigationDecision.prevent; // Prevent navigation in WebView
+            if (paymentController.isPaymentCallbackUrl(request.url)) {
+              await paymentController.getPaymentController(
+                context: context,
+                paymentUrl: request.url,
+                fulfillmentType: widget.fulfillmentType,
+              );
+              return NavigationDecision.prevent;
             }
             return NavigationDecision.navigate;
           },

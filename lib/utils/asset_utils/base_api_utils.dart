@@ -1,14 +1,21 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:discount_me_app/utils/utils.dart';
 import 'package:dio/dio.dart' as dio;
 import 'package:discount_me_app/view/authenticaion/view/sign_in_view.dart';
 import 'package:get/get.dart';
+import 'package:logger/web.dart';
 
 class BaseApiUtils {
-
+  static final Logger _logger = Logger(
+    printer: PrettyPrinter(
+      colors: true,
+      printEmojis: false,
+    ),
+  );
 
   /// -----------------------------------------
-  ///  BUILD HEADERS (JSON + MULTIPART)
+  ///  BUILD HEADERS (JSON + MULTIPART) 
   /// -----------------------------------------
   static Map<String, String> _jsonHeaders({
     String authorization = "",
@@ -24,9 +31,127 @@ class BaseApiUtils {
     String authorization = "",
   }) {
     return {
-      "Content-Type": "multipart/form-data",
+      "Accept": "application/json",
       if (authorization != "") "Authorization": "Bearer ${authorization}",
     };
+  }
+
+  static void _logRequest({
+    required String url,
+    required String method,
+    required Map<String, String> headers,
+    Map<String, dynamic>? data,
+    dio.FormData? formData,
+    Map<String, dynamic>? queryParams,
+  }) {
+    if (!kDebugMode) return;
+
+    final body = formData != null
+        ? {
+            "fields": formData.fields
+                .map((field) => {
+                      "key": field.key,
+                      "value": field.value,
+                    })
+                .toList(),
+            "files": formData.files
+                .map((file) => {
+                      "key": file.key,
+                      "filename": file.value.filename,
+                    })
+                .toList(),
+          }
+        : data;
+
+    _logger.i(
+      'API REQUEST => $method\n'
+      'URL => $url\n'
+      'Headers => $headers\n'
+      'QueryParams => ${queryParams ?? {}}\n'
+      'Body => ${body != null ? jsonEncode(body) : null}',
+    );
+  }
+
+  static void _logResponse({
+    required String url,
+    required String method,
+    required int? statusCode,
+    required dio.Headers? headers,
+    dynamic responseData,
+  }) {
+    if (!kDebugMode) return;
+
+    _logger.i(
+      'API RESPONSE => $method\n'
+      'URL => $url\n'
+      'StatusCode => $statusCode\n'
+      'Headers => ${headers?.map ?? {}}\n'
+      'Body => $responseData',
+    );
+  }
+
+  static void _logError({
+    required String url,
+    required String method,
+    required int? statusCode,
+    required String errorMessage,
+    dynamic responseData,
+    Object? error,
+  }) {
+    if (!kDebugMode) return;
+
+    _logger.e(
+      'API ERROR => $method\n'
+      'URL => $url\n'
+      'StatusCode => $statusCode\n'
+      'Error => $errorMessage\n'
+      'Body => $responseData\n'
+      'DioError => $error',
+    );
+  }
+
+  static String _errorMessageFromResponse(dynamic responseData) {
+    const fallbackMessage = "Something went wrong";
+
+    if (responseData is Map<String, dynamic>) {
+      final errorModel = ErrorMessageModel.fromJson(responseData);
+      return errorModel.message ?? fallbackMessage;
+    }
+
+    if (responseData is Map) {
+      final errorModel = ErrorMessageModel.fromJson(
+        Map<String, dynamic>.from(responseData),
+      );
+      return errorModel.message ?? fallbackMessage;
+    }
+
+    if (responseData is String && responseData.isNotEmpty) {
+      try {
+        final decodedData = jsonDecode(responseData);
+        if (decodedData is Map<String, dynamic>) {
+          final errorModel = ErrorMessageModel.fromJson(decodedData);
+          return errorModel.message ?? fallbackMessage;
+        }
+      } catch (_) {
+        return responseData;
+      }
+    }
+
+    return fallbackMessage;
+  }
+
+  static String _messageFromResponse(dynamic responseData) {
+    const fallbackMessage = "Response message";
+
+    if (responseData is Map<String, dynamic>) {
+      return responseData["message"]?.toString() ?? fallbackMessage;
+    }
+
+    if (responseData is Map) {
+      return responseData["message"]?.toString() ?? fallbackMessage;
+    }
+
+    return fallbackMessage;
   }
 
   /// -----------------------------------------
@@ -44,7 +169,22 @@ class BaseApiUtils {
     required Map<String, String> headers,
   }) async {
     try {
-      final response = await dio.Dio().request(
+      _logRequest(
+        url: url,
+        method: method,
+        headers: headers,
+        data: data,
+        formData: formData,
+        queryParams: queryParams,
+      );
+
+      final response = await dio.Dio(
+        dio.BaseOptions(
+          connectTimeout: const Duration(seconds: 20),
+          receiveTimeout: const Duration(seconds: 20),
+          sendTimeout: const Duration(seconds: 20),
+        ),
+      ).request(
         url,
         data: formData ?? (data != null ? jsonEncode(data) : null),
         queryParameters: queryParams,
@@ -53,27 +193,51 @@ class BaseApiUtils {
           headers: headers,
         ),
       );
+      _logResponse(
+        url: url,
+        method: method,
+        statusCode: response.statusCode,
+        headers: response.headers,
+        responseData: response.data,
+      );
+
       if (response.statusCode == 200 || response.statusCode == 201) {
-        onSuccess(response.data?["message"], response.data);
+        onSuccess(_messageFromResponse(response.data), response.data);
       } else {
-        onFail(response.data?["message"], response.data);
+        onFail(_errorMessageFromResponse(response.data), response.data);
       }
     } on dio.DioException catch (e) {
-      if(e.response?.data?["message"] == "jwt expired" || e.response?.data?["message"] == "invalid token") {
-        onExceptionFail(
-          e.response?.data?["message"] ?? "Something went wrong",
-          e.response?.data,
-        );
+      final responseData = e.response?.data;
+      final errorMessage = _errorMessageFromResponse(responseData);
+
+      _logError(
+        url: url,
+        method: method,
+        statusCode: e.response?.statusCode,
+        errorMessage: errorMessage,
+        responseData: responseData,
+        error: e,
+      );
+
+      if (errorMessage == "jwt expired" || errorMessage == "invalid token") {
+        onExceptionFail(errorMessage, responseData);
         await LocalStorageUtils.remove(AppConstantUtils.loginResponse);
         await LocalStorageUtils.remove(AppConstantUtils.loginCredentialResponse);
-        await Get.offAll(()=>SignInView(),duration: Duration(milliseconds: 100));
-      } else {
-        onExceptionFail(
-          e.response?.data?["message"] ?? "Something went wrong",
-          e.response?.data,
+        await Get.offAll(
+          () => SignInView(),
+          duration: Duration(milliseconds: 100),
         );
+      } else {
+        onExceptionFail(errorMessage, responseData);
       }
     } catch (e) {
+      _logError(
+        url: url,
+        method: method,
+        statusCode: null,
+        errorMessage: "Unexpected error occurred",
+        error: e,
+      );
       onExceptionFail("Unexpected error occurred", null);
     }
   }

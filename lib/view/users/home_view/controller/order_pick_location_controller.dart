@@ -13,6 +13,7 @@ class OrderPickLocationController extends GetxController {
   RxDouble longitude = 0.0.obs;
 
   final Rx<LatLng> initialPosition = const LatLng(0, 0).obs; // Dhaka
+  final Rx<LatLng> cameraTarget = const LatLng(0, 0).obs;
 
   final RxSet<Marker> markers = <Marker>{}.obs;
 
@@ -44,14 +45,44 @@ class OrderPickLocationController extends GetxController {
       ),
     );
 
-    markers.clear();
-    markers.add(
+    markers.value = {
       Marker(
         markerId: const MarkerId("selected_place"),
         position: position,
         infoWindow: InfoWindow(title: title),
       ),
-    );
+    };
+  }
+
+  Future<void> pickLocationFromMap(LatLng position) async {
+    latitude.value = position.latitude;
+    longitude.value = position.longitude;
+    initialPosition.value = position;
+    cameraTarget.value = position;
+    try {
+      List<Placemark> placemarks =
+          await placemarkFromCoordinates(position.latitude, position.longitude);
+      Placemark place = placemarks.first;
+      locationPicker.value = "${place.street} ${place.subLocality}, ${place.locality}, ${place.administrativeArea}, ${place.postalCode}, ${place.country}";
+    } catch (_) {
+      locationPicker.value = "${position.latitude}, ${position.longitude}";
+    }
+
+    markers.value = {
+      Marker(
+        markerId: const MarkerId("selected_place"),
+        position: position,
+        infoWindow: InfoWindow(title: locationPicker.value),
+      ),
+    };
+  }
+
+  void onCameraMove(CameraPosition position) {
+    cameraTarget.value = position.target;
+  }
+
+  Future<void> pickCameraCenterLocation() async {
+    await pickLocationFromMap(cameraTarget.value);
   }
 
   /// Check & request permission
@@ -89,6 +120,7 @@ class OrderPickLocationController extends GetxController {
       Placemark place = placemarks.first;
       locationPicker.value = "${place.street} ${place.subLocality}, ${place.locality}, ${place.administrativeArea}, ${place.postalCode}, ${place.country}";
       initialPosition.value = LatLng(latitude.value, longitude.value);
+      cameraTarget.value = initialPosition.value;
       isLoading.value = false;
       mapController?.animateCamera(
         CameraUpdate.newCameraPosition(
@@ -96,14 +128,13 @@ class OrderPickLocationController extends GetxController {
         ),
       );
 
-      markers.clear();
-      markers.add(
+      markers.value = {
         Marker(
           markerId: const MarkerId("selected_place"),
           position: initialPosition.value,
           infoWindow: InfoWindow(title: locationPicker.value),
         ),
-      );
+      };
     });
   }
 

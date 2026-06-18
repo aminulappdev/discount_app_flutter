@@ -50,10 +50,19 @@ class SplashController extends GetxController{
       url: ApiUtils.loginResponse,
       data: data,
       onSuccess: (e,data) async {
-        print(data);
+        print("===== SPLASH RAW LOGIN API RESPONSE =====");
+        print(jsonEncode(data));
+        print("=========================================");
         await LocalStorageUtils.setString(AppConstantUtils.loginResponse, jsonEncode(data));
         Map<String, dynamic> decodedToken = parseJwt(data["data"]["accessToken"]);
         loginResponseModel.value = LoginResponseModel.fromJson(jsonDecode(LocalStorageUtils.getString(AppConstantUtils.loginResponse)!));
+        print("===== SPLASH PARSED LOGIN MODEL =====");
+        print("role: ${decodedToken['role']}");
+        print("hasFreeTrial: ${loginResponseModel.value.data?.hasFreeTrial}");
+        print("subscription: ${jsonEncode(loginResponseModel.value.data?.subscription?.toJson())}");
+        print("hasActiveSubscription: ${loginResponseModel.value.data?.subscription?.hasActiveSubscription}");
+        print("subscriptionStatus: ${loginResponseModel.value.data?.subscription?.subscriptionStatus}");
+        print("=====================================");
         onSuccess(decodedToken);
       },
       onFail: (e,data) {

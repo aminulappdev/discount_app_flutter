@@ -20,6 +20,7 @@
         android:label="discount_me_app"
         android:name="${applicationName}"
         android:requestLegacyExternalStorage="true"
+        android:usesCleartextTraffic="true"
         android:icon="@drawable/logo">
         <activity
             android:name=".MainActivity"

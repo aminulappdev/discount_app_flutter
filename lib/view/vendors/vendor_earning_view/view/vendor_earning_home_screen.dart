@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:discount_me_app/utils/utils.dart';
 import 'package:get/get.dart';
 
-
 class VendorEaringHomeScreen extends StatelessWidget {
   const VendorEaringHomeScreen({super.key});
 
@@ -18,6 +17,14 @@ class VendorEaringHomeScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(
+            Icons.arrow_back_ios,
+            color: ColorUtils.blackColor,
+            size: 18,
+          ),
+          onPressed: () => Navigator.pop(context),
+        ),
         title: CustomText(
           title: "Earnings",
           color: ColorUtils.blackColor,
@@ -31,7 +38,6 @@ class VendorEaringHomeScreen extends StatelessWidget {
         child: SingleChildScrollView(
           child: Column(
             children: [
-
               // wallet
               Container(
                 padding: EdgeInsets.all(15),
@@ -40,8 +46,9 @@ class VendorEaringHomeScreen extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: ColorUtils.greenLightHover,
                   image: DecorationImage(
-                      image: AssetImage(ImageUtils.walletBg),
-                      alignment: Alignment.centerRight),
+                    image: AssetImage(ImageUtils.walletBg),
+                    alignment: Alignment.centerRight,
+                  ),
                 ),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -70,7 +77,7 @@ class VendorEaringHomeScreen extends StatelessWidget {
                       onTap: () {
                         Get.to(VendorPaymentWithdrawScreen());
                       },
-                    )
+                    ),
                   ],
                 ),
               ),
@@ -82,7 +89,6 @@ class VendorEaringHomeScreen extends StatelessWidget {
               // transaction table
               20.heightBox,
               VendorTransactionTableWidget(),
-
             ],
           ),
         ),

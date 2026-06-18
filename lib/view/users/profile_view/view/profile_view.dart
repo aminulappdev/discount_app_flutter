@@ -232,6 +232,15 @@ class ProfileView extends StatelessWidget {
                                   },
                                 ),
 
+                                ProfileItemWidget(
+                                  title: "Voucher",
+                                  icon: Icon(Icons.confirmation_number_outlined, size: 24.r(context), color: ColorUtils.black29,),
+                                  navigateIcon: Icon(Icons.navigate_next,size: 24.r(context), color: Colors.black54,),
+                                  onTap: () {
+                                    Get.off(()=>GetVoucherScreen(),preventDuplicates: false,duration: Duration(milliseconds: 100));
+                                  },
+                                ),
+
 
                                 ProfileItemWidget(
                                   title: "Support Chat",

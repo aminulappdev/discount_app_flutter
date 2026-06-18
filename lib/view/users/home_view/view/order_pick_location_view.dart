@@ -16,22 +16,23 @@ class OrderPickLocationView extends StatelessWidget {
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (canPop,onOpoInvoked) {
-        Get.off(()=>CartView(),duration: const Duration(milliseconds: 100),preventDuplicates: false);
+        Get.back();
       },
       child: Scaffold(
-        body: Container(
-          height: 926.h(context),
-          width: 428.w(context),
-          decoration: BoxDecoration(
-            color: Colors.white,
-          ),
+        body: SafeArea(
+          child: Container(
+            height: double.infinity,
+            width: 428.w(context),
+            decoration: BoxDecoration(
+              color: Colors.white,
+            ),
           child: Obx(()=>Skeletonizer(
             effect: PulseEffect(),
             enabled: orderPickLocationController.isLoading.value,
             child: CustomScrollView(
               physics: NeverScrollableScrollPhysics(),
               slivers: [
-
+ 
                 SliverToBoxAdapter(
                   child: Padding(
                     padding: EdgeInsets.symmetric(horizontal: 16.hpm(context)),
@@ -43,7 +44,7 @@ class OrderPickLocationView extends StatelessWidget {
                         UserProfileAppbarWidget(
                           title: "Pick Location",
                           onTap: () {
-                            Get.off(()=>CartView(),duration: const Duration(milliseconds: 100),preventDuplicates: false);
+                            Get.back();
                           },
                         ),
 
@@ -66,31 +67,48 @@ class OrderPickLocationView extends StatelessWidget {
                           ),
                           onMapCreated: orderPickLocationController.onMapCreated,
                           markers: orderPickLocationController.markers,
+                          onTap: orderPickLocationController.pickLocationFromMap,
+                          onCameraMove: orderPickLocationController.onCameraMove,
+                          onCameraIdle: orderPickLocationController.pickCameraCenterLocation,
                           myLocationEnabled: true,
                           myLocationButtonEnabled: true,
                         ),),
                       ),
 
 
-                      Padding(
+                      Obx(()=>Padding(
                         padding: EdgeInsets.all(16.r(context)),
-                        child: CustomButtonContainer.plainButtonContainer(
-                          plainButtonHeight: 64.h(context),
-                          plainButtonWidth: 428.w(context),
-                          plainButtonRadius: 8.r(context),
-                          plainButtonOnPress:  () async {
-                            if(orderPickLocationController.locationPicker.value == "") {
-                              MessageSnackBarWidget.errorSnackBarWidget(context: context,message: "Address is not pick.");
-                            } else {
-                              Get.off(()=>OrderSelectAddressView(pickAddress: orderPickLocationController.locationPicker.value,pointsToRedeem: pointsToRedeem,),duration: const Duration(milliseconds: 100),preventDuplicates: false);
-                            }
-                          },
-                          plainButtonHint: "Complete Order",
-                          plainButtonHintFontSize: 22.sp(context),
-                          plainButtonColor: ColorUtils.green176,
-                          plainButtonHintFontColor: ColorUtils.white255,
+                        child: Column(
+                          children: [
+                            if (orderPickLocationController.locationPicker.value.isNotEmpty) ...[
+                              CustomTextContainer.plainTextContainerWidgetWithoutHeightWidth(
+                                plainTextString: orderPickLocationController.locationPicker.value,
+                                plainTextStringFontSize: 14.sp(context),
+                                plainTextStringFontWeight: FontWeight.w500,
+                                plainTextContainerAlignment: Alignment.centerLeft,
+                                plainTextStringColor: ColorUtils.black29,
+                              ),
+                              CustomSpaceWidget.spacerWidget(spaceHeight: 8.h(context)),
+                            ],
+                            CustomButtonContainer.plainButtonContainer(
+                              plainButtonHeight: 64.h(context),
+                              plainButtonWidth: 428.w(context),
+                              plainButtonRadius: 8.r(context),
+                              plainButtonOnPress:  () async {
+                                if(orderPickLocationController.locationPicker.value == "") {
+                                  MessageSnackBarWidget.errorSnackBarWidget(context: context,message: "Address is not pick.");
+                                } else {
+                                  Get.back(result: orderPickLocationController.locationPicker.value);
+                                }
+                              },
+                              plainButtonHint: "Complete Order",
+                              plainButtonHintFontSize: 22.sp(context),
+                              plainButtonColor: ColorUtils.green176,
+                              plainButtonHintFontColor: ColorUtils.white255,
+                            ),
+                          ],
                         ),
-                      )
+                      ))
 
 
                     ],
@@ -100,6 +118,7 @@ class OrderPickLocationView extends StatelessWidget {
               ],
             ),
           )),
+          ),
         ),
       ),
     );
