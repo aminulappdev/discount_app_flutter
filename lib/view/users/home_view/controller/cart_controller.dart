@@ -58,6 +58,89 @@ class CartController extends GetxController {
     return finalAmount;
   }
 
+  double getFirstResponderDiscountPercentage() {
+    final type = userProfileResponseModel.value.data?.firstResponderType
+            ?.toString()
+            .toLowerCase()
+            .replaceAll("_", " ")
+            .replaceAll("-", " ")
+            .trim() ??
+        "";
+
+    if (type.isEmpty) return 0;
+
+    if (type.contains("police") ||
+        type.contains("firefighter") ||
+        type.contains("fire fighter") ||
+        type.contains("ems") ||
+        type.contains("paramedic") ||
+        type.contains("active military")) {
+      return 20;
+    }
+
+    if (type.contains("veteran") || type.contains("nurse")) {
+      return 15;
+    }
+
+    if (type.contains("doctor")) {
+      return 10;
+    }
+
+    return 0;
+  }
+
+  String getFirstResponderDiscountLabel() {
+    final type = userProfileResponseModel.value.data?.firstResponderType
+            ?.toString()
+            .toLowerCase()
+            .replaceAll("_", " ")
+            .replaceAll("-", " ")
+            .trim() ??
+        "";
+
+    if (type.contains("police")) return "Police Officer";
+    if (type.contains("firefighter") || type.contains("fire fighter")) {
+      return "Firefighter";
+    }
+    if (type.contains("ems") || type.contains("paramedic")) {
+      return "EMS / Paramedic";
+    }
+    if (type.contains("active military")) return "Active Military";
+    if (type.contains("veteran")) return "Veteran";
+    if (type.contains("nurse")) return "Nurse";
+    if (type.contains("doctor")) return "Doctor";
+    return "";
+  }
+
+  double getFirstResponderDiscountAmount(double amount) {
+    final percentage = getFirstResponderDiscountPercentage();
+    return amount * (percentage / 100);
+  }
+
+  double getCartTotalAmount() {
+    final shippingFee = double.parse(
+      getAllProductCartResponse.value.data?.totalShippingFee.toString() ?? "0",
+    );
+    final baseAmount = shippingFee + subTotal.value;
+    final firstResponderDiscount = getFirstResponderDiscountAmount(baseAmount);
+    final pointsDiscount = isDiscountApplied.value == true
+        ? baseAmount -
+            calculateDiscountedAmount(
+              amount: baseAmount,
+              point: getRewardTier(
+                double.parse(
+                  userProfileResponseModel.value.data?.totalRewardPoints
+                          .toString() ??
+                      "0",
+                ),
+              ),
+            )
+        : 0.0;
+
+    final total = baseAmount - firstResponderDiscount - pointsDiscount;
+    return total < 0 ? 0 : total;
+  }
+
 
   double getRewardTier(double points) {
     if (points >= 2000) {

@@ -1,15 +1,24 @@
 import 'package:discount_me_app/res/app_const/import_list.dart';
+import 'package:discount_me_app/view/vendors/vendor_earning_view/model/vendor_earnings_response_model.dart';
 import 'package:flutter/material.dart';
 import 'package:discount_me_app/utils/utils.dart';
+import 'package:intl/intl.dart';
 
 class VendorTransactionDetailsScreen extends StatelessWidget {
-  const VendorTransactionDetailsScreen({super.key});
+  const VendorTransactionDetailsScreen({
+    super.key,
+    required this.earningItem,
+  });
+
+  final VendorEarningItem earningItem;
 
   @override
   Widget build(BuildContext context) {
     // Get the screen width and height
     double width = MediaQuery.of(context).size.width;
-    double height = MediaQuery.of(context).size.height;
+    final amount = _asDouble(earningItem.amount);
+    final companyFee = _asDouble(earningItem.companyFee);
+    final finalAmount = amount - companyFee;
 
     return Scaffold(
       appBar: AppBar(
@@ -31,26 +40,56 @@ class VendorTransactionDetailsScreen extends StatelessWidget {
               children: [
                 ClipRRect(
                   borderRadius: BorderRadius.circular(10.r(context)),
-                  child: Image.asset(
-                    ImageUtils.transactionDetailsBg,
-                    scale: 4,
-                  ),
+                  child: earningItem.payerImage == null
+                      ? Image.asset(
+                          ImageUtils.transactionDetailsBg,
+                          height: 90.h(context),
+                          width: 90.w(context),
+                          fit: BoxFit.cover,
+                        )
+                      : Image.network(
+                          earningItem.payerImage.toString(),
+                          height: 90.h(context),
+                          width: 90.w(context),
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            return Image.asset(
+                              ImageUtils.transactionDetailsBg,
+                              height: 90.h(context),
+                              width: 90.w(context),
+                              fit: BoxFit.cover,
+                            );
+                          },
+                        ),
                 ),
                 10.widthBox,
                 Expanded(
-                    child: Container(
-                      width: width,
-                      child: Column(
-                        mainAxisSize: MainAxisSize.max,
-                        children: [
-                          _userDetails(title: "Full name :", value: "Jane Cooper", context: context),
-                          5.heightBox,
-                          _userDetails(title: "Phone number :", value: "(319) 555-0115", context: context),
-                          5.heightBox,
-                          _userDetails(title: "Email :", value: "abc@example.com", context: context),
-                        ],
-                      ),
-                    ))
+                  child: Container(
+                    width: width,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                        _userDetails(
+                          title: "Full name :",
+                          value: earningItem.payerName?.toString() ?? "N/A",
+                          context: context,
+                        ),
+                        5.heightBox,
+                        _userDetails(
+                          title: "Transaction :",
+                          value: earningItem.transactionId?.toString() ?? "N/A",
+                          context: context,
+                        ),
+                        5.heightBox,
+                        _userDetails(
+                          title: "Date :",
+                          value: _formatDate(earningItem.date),
+                          context: context,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
               ],
             ),
 
@@ -62,17 +101,41 @@ class VendorTransactionDetailsScreen extends StatelessWidget {
               color: Colors.black,
             ),
             20.heightBox,
-            _transactionDetailsWidget(title: "Transaction ID : ", value: "12345678", context: context),
+            _transactionDetailsWidget(
+              title: "Transaction ID : ",
+              value: earningItem.transactionId?.toString() ?? "N/A",
+              context: context,
+            ),
             8.heightBox,
-            _transactionDetailsWidget(title: "A/C holder name:", value: "Wade Warren", context: context),
+            _transactionDetailsWidget(
+              title: "Payer name:",
+              value: earningItem.payerName?.toString() ?? "N/A",
+              context: context,
+            ),
             8.heightBox,
-            _transactionDetailsWidget(title: "A/C number:", value: "**** **** *456", context: context),
+            _transactionDetailsWidget(
+              title: "Date:",
+              value: _formatDate(earningItem.date),
+              context: context,
+            ),
             8.heightBox,
-            _transactionDetailsWidget(title: "Received amount:", value: "\$ 500", context: context),
+            _transactionDetailsWidget(
+              title: "Received amount:",
+              value: "\$ ${amount.toStringAsFixed(2)}",
+              context: context,
+            ),
             8.heightBox,
-            _transactionDetailsWidget(title: "Detect Percentage:", value: "\$ 100", context: context),
+            _transactionDetailsWidget(
+              title: "Company fee:",
+              value: "\$ ${companyFee.toStringAsFixed(2)}",
+              context: context,
+            ),
             8.heightBox,
-            _transactionDetailsWidget(title: "Final Amount:", value: "\$ 400", context: context),
+            _transactionDetailsWidget(
+              title: "Final Amount:",
+              value: "\$ ${finalAmount.toStringAsFixed(2)}",
+              context: context,
+            ),
           ],
         ),
       ),
@@ -83,17 +146,26 @@ class VendorTransactionDetailsScreen extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        CustomText(
-          title: title,
-          fontSize: 16.sp(context),
-          fontWeight: FontWeight.w400,
-          color: ColorUtils.blackColor,
+        Expanded(
+          child: CustomText(
+            title: title,
+            fontSize: 16.sp(context),
+            fontWeight: FontWeight.w400,
+            color: ColorUtils.blackColor,
+          ),
         ),
-        CustomText(
-          title: value,
-          fontSize: 16.sp(context),
-          fontWeight: FontWeight.w600,
-          color: ColorUtils.blackColor,
+        Expanded(
+          child: Text(
+            value,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            textAlign: TextAlign.right,
+            style: TextStyle(
+              fontSize: 16.sp(context),
+              fontWeight: FontWeight.w600,
+              color: ColorUtils.blackColor,
+            ),
+          ),
         ),
       ],
     );
@@ -104,19 +176,41 @@ class VendorTransactionDetailsScreen extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        CustomText(
-          title: title,
-          fontSize: 16.sp(context),
-          fontWeight: FontWeight.w400,
-          color: Color(0xff47586E),
+        Expanded(
+          child: CustomText(
+            title: title,
+            fontSize: 16.sp(context),
+            fontWeight: FontWeight.w400,
+            color: Color(0xff47586E),
+          ),
         ),
-        CustomText(
-          title: value,
-          fontSize: 16.sp(context),
-          fontWeight: FontWeight.w400,
-          color: Color(0xff47586E),
+        Expanded(
+          child: Text(
+            value,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            textAlign: TextAlign.right,
+            style: TextStyle(
+              fontSize: 16.sp(context),
+              fontWeight: FontWeight.w400,
+              color: Color(0xff47586E),
+            ),
+          ),
         ),
       ],
     );
+  }
+
+  double _asDouble(dynamic value) {
+    return double.tryParse(value?.toString() ?? "0") ?? 0;
+  }
+
+  String _formatDate(dynamic value) {
+    if (value == null) return "N/A";
+    try {
+      return DateFormat("dd-MM-yyyy").format(DateTime.parse(value.toString()));
+    } catch (_) {
+      return value.toString();
+    }
   }
 }

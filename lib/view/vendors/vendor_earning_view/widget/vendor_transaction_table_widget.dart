@@ -64,7 +64,7 @@ class VendorTransactionTableWidget extends StatelessWidget {
                   cells: [
                     DataCell(
                       Text((entry.key + 1).toString().padLeft(2, '0')),
-                      onTap: () => Get.to(VendorTransactionDetailsScreen()),
+                      onTap: () => _openDetails(item),
                     ),
 
                     DataCell(
@@ -88,28 +88,28 @@ class VendorTransactionTableWidget extends StatelessWidget {
                           ),
                         ],
                       ),
-                      onTap: () => Get.to(VendorTransactionDetailsScreen()),
+                      onTap: () => _openDetails(item),
                     ),
 
                     DataCell(
                       Text(item.transactionId?.toString() ?? "N/A"),
-                      onTap: () => Get.to(VendorTransactionDetailsScreen()),
+                      onTap: () => _openDetails(item),
                     ),
                     DataCell(
                       Text(_formatDate(item.date)),
-                      onTap: () => Get.to(VendorTransactionDetailsScreen()),
+                      onTap: () => _openDetails(item),
                     ),
                     DataCell(
                       Text("\$${amount.toStringAsFixed(2)}"),
-                      onTap: () => Get.to(VendorTransactionDetailsScreen()),
+                      onTap: () => _openDetails(item),
                     ),
                     DataCell(
                       Text("\$${companyFee.toStringAsFixed(2)}"),
-                      onTap: () => Get.to(VendorTransactionDetailsScreen()),
+                      onTap: () => _openDetails(item),
                     ),
                     DataCell(
                       Text("\$${(amount - companyFee).toStringAsFixed(2)}"),
-                      onTap: () => Get.to(VendorTransactionDetailsScreen()),
+                      onTap: () => _openDetails(item),
                     ),
                   ],
                 );
@@ -132,5 +132,15 @@ class VendorTransactionTableWidget extends StatelessWidget {
     } catch (_) {
       return value.toString();
     }
+  }
+
+  void _openDetails(VendorEarningItem item) {
+    Get.to(
+      () => VendorTransactionDetailsScreen(
+        earningItem: item,
+      ),
+      duration: const Duration(milliseconds: 100),
+      preventDuplicates: false,
+    );
   }
 }

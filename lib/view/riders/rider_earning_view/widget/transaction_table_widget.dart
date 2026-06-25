@@ -1,26 +1,38 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
 
 import 'package:discount_me_app/res/app_const/import_list.dart';
+import 'package:discount_me_app/view/riders/rider_earning_view/model/rider_earnings_response_model.dart';
 import 'package:discount_me_app/view/riders/rider_earning_view/view/rider_transaction_details_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:discount_me_app/utils/utils.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 
 class TransactionTableWidget extends StatelessWidget {
-  TransactionTableWidget({super.key});
+  const TransactionTableWidget({
+    super.key,
+    required this.earnings,
+  });
 
-  final List<Map<String, String>> transactions = List.generate(
-    8,
-        (index) => {
-      'name': 'Robert Fox',
-      'account': '(516) 831-1111',
-      'date': '02-24-2024',
-      'amount': '\$200',
-    },
-  );
+  final List<RiderEarningItem> earnings;
 
   @override
   Widget build(BuildContext context) {
+    if (earnings.isEmpty) {
+      return Padding(
+        padding: EdgeInsets.symmetric(vertical: 24.vpm(context)),
+        child: TextHelperClass.headingTextWithoutWidth(
+          context: context,
+          alignment: Alignment.center,
+          textAlign: TextAlign.center,
+          fontSize: 18,
+          fontWeight: FontWeight.w600,
+          textColor: ColorUtils.black114,
+          text: "No earnings found",
+        ),
+      );
+    }
+
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: Padding(
@@ -30,10 +42,11 @@ class TransactionTableWidget extends StatelessWidget {
           child: DataTable(
             headingRowColor: MaterialStateProperty.all(ColorUtils.secondaryColor),
             headingTextStyle: TextStyle(color: Colors.white),
+            showCheckboxColumn: false,
             columns: <DataColumn>[
               DataColumn(label: Text('#SI')),
               DataColumn(label: Text('Full Name')),
-              DataColumn(label: Text('Acc Number')),
+              DataColumn(label: Text('Transaction ID')),
               DataColumn(
                 label: Row(
                   children: [
@@ -43,42 +56,65 @@ class TransactionTableWidget extends StatelessWidget {
                 ),
               ),
               DataColumn(label: Text('Amount')),
+              DataColumn(label: Text('Company Fee')),
+              DataColumn(label: Text('Net')),
             ],
-            rows: transactions.asMap().entries.map(
+            rows: earnings.asMap().entries.map(
                   (entry) {
+                final item = entry.value;
+                final amount = _asDouble(item.amount);
+                final companyFee = _asDouble(item.companyFee);
                 return DataRow(
-
-                  onSelectChanged: (isSelected) {
-                    if(isSelected == true){
-                      Get.to(RiderTransactionDetailsScreen());
-                    }
-                  },
-
                   cells: [
-                    DataCell(Text((entry.key + 1).toString().padLeft(2, '0'))),
+                    DataCell(
+                      Text((entry.key + 1).toString().padLeft(2, '0')),
+                      onTap: () => _openDetails(item),
+                    ),
 
                     DataCell(
                       Row(
                         children: [
                           CircleAvatar(
-                            backgroundImage: AssetImage(ImageUtils.homeProfileAvatar),
+                            backgroundImage: item.payerImage == null
+                                ? AssetImage(ImageUtils.homeProfileAvatar)
+                                : NetworkImage(item.payerImage.toString())
+                                    as ImageProvider,
                             radius: 15,
                           ),
                           SizedBox(width: 10),
                           // Instead of Flexible, use Expanded inside the Row
-                          Expanded(
+                          SizedBox(
+                            width: 120.w(context),
                             child: Text(
-                              entry.value['name']!,
+                              item.payerName?.toString() ?? "N/A",
                               overflow: TextOverflow.ellipsis,
                             ),
                           ),
                         ],
                       ),
+                      onTap: () => _openDetails(item),
                     ),
 
-                    DataCell(Text(entry.value['account']!)),
-                    DataCell(Text(entry.value['date']!)),
-                    DataCell(Text(entry.value['amount']!)),
+                    DataCell(
+                      Text(item.transactionId?.toString() ?? "N/A"),
+                      onTap: () => _openDetails(item),
+                    ),
+                    DataCell(
+                      Text(_formatDate(item.date)),
+                      onTap: () => _openDetails(item),
+                    ),
+                    DataCell(
+                      Text("\$${amount.toStringAsFixed(2)}"),
+                      onTap: () => _openDetails(item),
+                    ),
+                    DataCell(
+                      Text("\$${companyFee.toStringAsFixed(2)}"),
+                      onTap: () => _openDetails(item),
+                    ),
+                    DataCell(
+                      Text("\$${(amount - companyFee).toStringAsFixed(2)}"),
+                      onTap: () => _openDetails(item),
+                    ),
                   ],
                 );
               },
@@ -86,6 +122,29 @@ class TransactionTableWidget extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+
+  double _asDouble(dynamic value) {
+    return double.tryParse(value?.toString() ?? "0") ?? 0;
+  }
+
+  String _formatDate(dynamic value) {
+    if (value == null) return "N/A";
+    try {
+      return DateFormat("dd-MM-yyyy").format(DateTime.parse(value.toString()));
+    } catch (_) {
+      return value.toString();
+    }
+  }
+
+  void _openDetails(RiderEarningItem item) {
+    Get.to(
+      () => RiderTransactionDetailsScreen(
+        earningItem: item,
+      ),
+      duration: const Duration(milliseconds: 100),
+      preventDuplicates: false,
     );
   }
 }

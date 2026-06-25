@@ -20,7 +20,7 @@ class RiderProfileHome extends StatelessWidget {
       body: Container(
         height: 926.h(context),
         width: 428.w(context),
-        decoration: BoxDecoration(
+        decoration: BoxDecoration( 
           color: Colors.white,
         ),
         child: Obx(()=>Skeletonizer(
@@ -28,7 +28,7 @@ class RiderProfileHome extends StatelessWidget {
           enabled: riderProfileController.isLoading.value,
           child: RefreshIndicator(
             onRefresh: () async {
-              Get.off(()=>RiderDashboardView(index: 3,),duration: const Duration(milliseconds: 100),preventDuplicates: false);
+              Get.to(()=>RiderDashboardView(index: 3,),duration: const Duration(milliseconds: 100),preventDuplicates: false);
             },
             child: CustomScrollView(
               slivers: [
@@ -162,7 +162,7 @@ class RiderProfileHome extends StatelessWidget {
                             color: Colors.black54,
                           ),
                           onTap: () {
-                            Get.off(()=>RiderProfileEditScreen(),preventDuplicates: false,duration: Duration(milliseconds: 100));
+                            Get.to(()=>RiderProfileEditScreen(),preventDuplicates: false,duration: Duration(milliseconds: 100));
                           },
                         ),
 
@@ -198,7 +198,7 @@ class RiderProfileHome extends StatelessWidget {
                             color: Colors.black54,
                           ),
                           onTap: () {
-                            Get.off(()=>RiderSettingScreen(),preventDuplicates: false,duration: Duration(milliseconds: 100));
+                            Get.to(()=>RiderSettingScreen(),preventDuplicates: false,duration: Duration(milliseconds: 100));
                           },
                         ),
 

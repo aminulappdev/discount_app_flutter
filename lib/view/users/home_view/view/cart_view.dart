@@ -142,7 +142,7 @@ class CartView extends StatelessWidget {
                                     Get.off(()=>UserDashboardView(index: 2,),duration: const Duration(milliseconds: 100),preventDuplicates: false);
                                   },
                                   isIconLeft: true,
-                                  iconData: Icons.add,
+                                  iconData: Icons.add, 
                                   iconColor: ColorUtils.whiteColor,
                                   iconSize: 18,
                                   text: "Add Item",
@@ -496,6 +496,47 @@ class CartView extends StatelessWidget {
 
                                 SpaceHelperWidget.v(5.h(context)),
 
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Expanded(
+                                      child: TextHelperClass.headingTextWithoutWidth(
+                                        context: context,
+                                        text: cartController.getFirstResponderDiscountPercentage() > 0 ?
+                                        'Discount ${cartController.getFirstResponderDiscountPercentage().toStringAsFixed(0)}% (${cartController.getFirstResponderDiscountLabel()})' :
+                                        'Discount',
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w700,
+                                        textColor: Color(0xfffefeff),
+                                        alignment: Alignment.centerLeft,
+                                        maxLines: 2,
+                                      ),
+                                    ),
+
+
+                                    Expanded(
+                                      child: TextHelperClass.headingTextWithoutWidth(
+                                        context: context,
+                                        text: cartController.getFirstResponderDiscountPercentage() > 0 ?
+                                        "USD ${cartController.getFirstResponderDiscountAmount(
+                                          double.parse(cartController.getAllProductCartResponse.value.data?.totalShippingFee.toString() ?? "0") + double.parse(cartController.subTotal.value.toString()),
+                                        ).toStringAsFixed(2)}" :
+                                        "USD 0.00",
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w700,
+                                        textColor: Color(0xfffefeff),
+                                        alignment: Alignment.centerRight,
+                                        textAlign: TextAlign.right,
+                                        maxLines: 2,
+                                      ),
+                                    ),
+
+                                  ],
+                                ),
+
+
+                                SpaceHelperWidget.v(5.h(context)),
+
 
                                 if(double.parse(cartController.userProfileResponseModel.value.data?.totalRewardPoints.toString() ?? "0") > 500)...[
                                   Row(
@@ -542,22 +583,6 @@ class CartView extends StatelessWidget {
                                             },
                                           ),
 
-                                          SpaceHelperWidget.h(8.w(context)),
-
-                                          /// Discount Amount
-                                          TextHelperClass.headingTextWithoutWidth(
-                                            context: context,
-                                            text: cartController.isDiscountApplied.value == true ?
-                                            "Rs ${cartController.calculateDiscountedAmount(
-                                              amount: (double.parse(cartController.getAllProductCartResponse.value.data?.totalShippingFee.toString() ?? "0") + double.parse(cartController.subTotal.value.toString())),
-                                              point: cartController.getRewardTier(double.parse(cartController.userProfileResponseModel.value.data?.totalRewardPoints.toString() ?? "0")),
-                                            )}" :
-                                            "Rs ${0.0}",
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.w700,
-                                            textColor: ColorUtils.whiteColor,
-                                          ),
-
                                         ],
                                       ),
                                     ],
@@ -585,12 +610,7 @@ class CartView extends StatelessWidget {
 
                                     TextHelperClass.headingTextWithoutWidth(
                                       context: context,
-                                      text: cartController.isDiscountApplied.value == true ?
-                                      "Rs ${cartController.calculateDiscountedAmount(
-                                        amount: (double.parse(cartController.getAllProductCartResponse.value.data?.totalShippingFee.toString() ?? "0") + double.parse(cartController.subTotal.value.toString())),
-                                        point: cartController.getRewardTier(double.parse(cartController.userProfileResponseModel.value.data?.totalRewardPoints.toString() ?? "0")),
-                                      )}" :
-                                      "Rs ${double.parse(cartController.getAllProductCartResponse.value.data?.totalShippingFee.toString() ?? "0") + double.parse(cartController.subTotal.value.toString())}",
+                                      text: "Rs ${cartController.getCartTotalAmount().toStringAsFixed(2)}",
                                       fontSize: 16,
                                       fontWeight: FontWeight.w700,
                                       textColor: ColorUtils.whiteColor,

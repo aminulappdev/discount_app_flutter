@@ -122,6 +122,7 @@ class ApiUtils {
   static const String getAllOrdersResponse = "$baseUrl/orders/user?limit=9999";
   static const String getVendorOrdersResponse = "$baseUrl/orders/vendor";
   static const String vendorEarnings = "$baseUrl/settlements/vendor/earnings";
+  static const String riderEarnings = "$baseUrl/settlements/rider/earnings";
   static const String myVouchers = "$baseUrl/vouchers/my-vouchers";
   static String validateVoucher(String code) {
     return "$baseUrl/vouchers/validate/$code";
