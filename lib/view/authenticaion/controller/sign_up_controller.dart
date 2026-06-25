@@ -109,6 +109,16 @@ class SignUpController extends GetxController {
     'Other'
   ].obs;
   RxString selectedPosition = "".obs;
+  RxList<String> firstResponderTypes = [
+    'police_officer',
+    'firefighter',
+    'ems_paramedic',
+    'active_military',
+    'veteran',
+    'nurse',
+    'doctor',
+  ].obs;
+  RxString selectedFirstResponderType = "".obs;
 
   Future<void> changeRole(String value) async {
     selectedRole.value = value;
@@ -137,10 +147,13 @@ class SignUpController extends GetxController {
     phoneNumberController = TextEditingController().obs;
     referralCodeController = TextEditingController().obs;
     selectedPosition = "".obs;
+    selectedFirstResponderType = "".obs;
     passwordController = TextEditingController().obs;
     confirmPasswordController = TextEditingController().obs;
     documentFile = File("").obs;
     phoneNumber.value = "";
+    lat.value = "";
+    long.value = "";
     initialCountryCode.value = "BD";
     drivingLicenceFile = File("").obs;
     coverFile = File("").obs;
@@ -157,6 +170,16 @@ class SignUpController extends GetxController {
       maxLength: 0,
       minLength: 0,
     );
+  }
+
+  void setPickedLocation({
+    required String address,
+    required double latitude,
+    required double longitude,
+  }) {
+    locationController.value.text = address;
+    lat.value = latitude.toString();
+    long.value = longitude.toString();
   }
 
 

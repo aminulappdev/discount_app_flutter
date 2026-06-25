@@ -139,7 +139,7 @@ class VendorHomeScreenWidget extends GetxController {
     return Obx(()=>Container(
       height: 928.h(context),
       width: 428.w(context),
-      decoration: BoxDecoration(
+      decoration: BoxDecoration( 
           color: Colors.white
       ),
       child: Skeletonizer(
@@ -172,19 +172,19 @@ class VendorHomeScreenWidget extends GetxController {
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
 
-                                Container(
-                                  height: 35.h(context),
-                                  width: 35.w(context),
-                                  decoration: BoxDecoration(
-                                    color: Colors.transparent,
-                                  ),
-                                  child: IconButton(
-                                    padding: EdgeInsets.zero,
-                                    onPressed: () async {},
-                                    icon: Icon(Icons.menu,color: Colors.black,),
-                                    iconSize: 32.r(context),
-                                  ),
-                                ),
+                                // Container(
+                                //   height: 35.h(context),
+                                //   width: 35.w(context),
+                                //   decoration: BoxDecoration(
+                                //     color: Colors.transparent,
+                                //   ),
+                                //   child: IconButton(
+                                //     padding: EdgeInsets.zero,
+                                //     onPressed: () async {},
+                                //     icon: Icon(Icons.menu,color: Colors.black,),
+                                //     iconSize: 32.r(context),
+                                //   ),
+                                // ),
 
                                 CustomSpaceWidget.spacerWidget(spaceWidth: 20.w(context)),
 

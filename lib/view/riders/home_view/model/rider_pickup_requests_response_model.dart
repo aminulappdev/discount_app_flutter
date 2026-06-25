@@ -11,6 +11,20 @@ class RiderPickupRequestsResponseModel {
     data = json['data'] != null
         ? RiderPickupRequestsData.fromJson(json['data'])
         : null;
+  } 
+}
+
+class RiderPickupRequestDetailsResponseModel {
+  bool? success;
+  String? message;
+  RiderPickupRequest? data;
+
+  RiderPickupRequestDetailsResponseModel({this.success, this.message, this.data});
+
+  RiderPickupRequestDetailsResponseModel.fromJson(Map<String, dynamic> json) {
+    success = json['success'];
+    message = json['message'];
+    data = json['data'] != null ? RiderPickupRequest.fromJson(json['data']) : null;
   }
 }
 
@@ -34,24 +48,46 @@ class RiderPickupRequestsData {
 }
 
 class RiderPickupRequest {
+  RiderPickupCoordinates? deliveryCoordinates;
+  RiderPickupCoordinates? storeCoordinates;
   String? sId;
   RiderPickupOrder? order;
   String? deliveryLocation;
   String? status;
+  List<dynamic>? rejections;
+  bool? isCancelled;
 
   RiderPickupRequest({
+    this.deliveryCoordinates,
+    this.storeCoordinates,
     this.sId,
     this.order,
     this.deliveryLocation,
     this.status,
+    this.rejections,
+    this.isCancelled,
   });
 
   RiderPickupRequest.fromJson(Map<String, dynamic> json) {
+    deliveryCoordinates = _coordinatesFromJson(json['delivery_coordinates']);
+    storeCoordinates = _coordinatesFromJson(json['store_coordinates']);
     sId = json['_id'];
     order =
         json['order'] != null ? RiderPickupOrder.fromJson(json['order']) : null;
     deliveryLocation = json['delivery_location'];
     status = json['status'];
+    rejections = json['rejections'] != null
+        ? List<dynamic>.from(json['rejections'])
+        : null;
+    isCancelled = json['isCancelled'];
+  }
+
+  RiderPickupCoordinates? _coordinatesFromJson(dynamic value) {
+    if (value == null) return null;
+    if (value is Map) {
+      return RiderPickupCoordinates.fromJson(Map<String, dynamic>.from(value));
+    }
+    return null;
   }
 }
 
@@ -67,8 +103,8 @@ class RiderPickupOrder {
   String? status;
   String? paymentStatus;
   List<RiderPickupOrderItem>? items;
-  String? billingAddress;
-  String? shippingAddress;
+  RiderPickupAddress? billingAddress;
+  RiderPickupAddress? shippingAddress;
   String? fulfillmentType;
   String? createdAt;
   String? updatedAt;
@@ -112,23 +148,35 @@ class RiderPickupOrder {
         items?.add(RiderPickupOrderItem.fromJson(value));
       });
     }
-    billingAddress = json['billing_address'];
-    shippingAddress = json['shipping_address'];
+    billingAddress = _addressFromJson(json['billing_address']);
+    shippingAddress = _addressFromJson(json['shipping_address']);
     fulfillmentType = json['fulfillment_type'];
     createdAt = json['createdAt'];
     updatedAt = json['updatedAt'];
+  }
+
+  RiderPickupAddress? _addressFromJson(dynamic value) {
+    if (value == null) return null;
+    if (value is Map<String, dynamic>) {
+      return RiderPickupAddress.fromJson(value);
+    }
+    return RiderPickupAddress(sId: value.toString());
   }
 }
 
 class RiderPickupCustomer {
   String? sId;
   String? name;
+  String? image;
+  String? contact;
 
-  RiderPickupCustomer({this.sId, this.name});
+  RiderPickupCustomer({this.sId, this.name, this.image, this.contact});
 
   RiderPickupCustomer.fromJson(Map<String, dynamic> json) {
     sId = json['_id'];
     name = json['name'];
+    image = json['image'];
+    contact = json['contact'];
   }
 }
 
@@ -162,8 +210,20 @@ class RiderPickupLocation {
   }
 }
 
+class RiderPickupCoordinates {
+  num? latitude;
+  num? longitude;
+
+  RiderPickupCoordinates({this.latitude, this.longitude});
+
+  RiderPickupCoordinates.fromJson(Map<String, dynamic> json) {
+    latitude = json['latitude'];
+    longitude = json['longitude'];
+  }
+}
+
 class RiderPickupOrderItem {
-  String? product;
+  RiderPickupProduct? product;
   num? quantity;
   num? discount;
   String? sId;
@@ -171,10 +231,97 @@ class RiderPickupOrderItem {
   RiderPickupOrderItem({this.product, this.quantity, this.discount, this.sId});
 
   RiderPickupOrderItem.fromJson(Map<String, dynamic> json) {
-    product = json['product'];
+    product = _productFromJson(json['product']);
     quantity = json['quantity'];
     discount = json['discount'];
     sId = json['_id'];
+  }
+
+  RiderPickupProduct? _productFromJson(dynamic value) {
+    if (value == null) return null;
+    if (value is Map<String, dynamic>) {
+      return RiderPickupProduct.fromJson(value);
+    }
+    return RiderPickupProduct(sId: value.toString());
+  }
+}
+
+class RiderPickupProduct {
+  String? sId;
+  String? name;
+  List<String>? images;
+
+  RiderPickupProduct({this.sId, this.name, this.images});
+
+  RiderPickupProduct.fromJson(Map<String, dynamic> json) {
+    sId = json['_id'];
+    name = json['name'];
+    images = json['images'] != null ? List<String>.from(json['images']) : null;
+  }
+}
+
+class RiderPickupAddress {
+  RiderPickupCoordinates? locationCoordinates;
+  String? sId;
+  String? user;
+  String? name;
+  String? email;
+  String? phone;
+  String? companyName;
+  String? streetAddress;
+  String? country;
+  String? state;
+  String? city;
+  String? zipCode;
+  String? houseNo;
+  String? address;
+  String? createdAt;
+  String? updatedAt;
+
+  RiderPickupAddress({
+    this.locationCoordinates,
+    this.sId,
+    this.user,
+    this.name,
+    this.email,
+    this.phone,
+    this.companyName,
+    this.streetAddress,
+    this.country,
+    this.state,
+    this.city,
+    this.zipCode,
+    this.houseNo,
+    this.address,
+    this.createdAt,
+    this.updatedAt,
+  });
+
+  RiderPickupAddress.fromJson(Map<String, dynamic> json) {
+    locationCoordinates = _coordinatesFromJson(json['location_coordinates']);
+    sId = json['_id'];
+    user = json['user'];
+    name = json['name'];
+    email = json['email'];
+    phone = json['phone'];
+    companyName = json['company_name'];
+    streetAddress = json['street_address'];
+    country = json['country'];
+    state = json['state'];
+    city = json['city'];
+    zipCode = json['zip_code'];
+    houseNo = json['house_no'];
+    address = json['address'];
+    createdAt = json['createdAt'];
+    updatedAt = json['updatedAt'];
+  }
+
+  RiderPickupCoordinates? _coordinatesFromJson(dynamic value) {
+    if (value == null) return null;
+    if (value is Map) {
+      return RiderPickupCoordinates.fromJson(Map<String, dynamic>.from(value));
+    }
+    return null;
   }
 }
 

@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../res/res.dart';
 import 'package:discount_me_app/view/view.dart';
-import '../../../../utils/utils.dart';
+import '../../../../utils/utils.dart'; 
 
 
 class OrderSelectAddressController extends GetxController {
@@ -42,6 +42,8 @@ class OrderSelectAddressController extends GetxController {
   Rx<TextEditingController> shippingEmailController = TextEditingController().obs;
   Rx<TextEditingController> shippingPhoneController = TextEditingController().obs;
   Rx<TextEditingController> shippingAddressController = TextEditingController().obs;
+  Rxn<double> shippingLatitude = Rxn<double>();
+  Rxn<double> shippingLongitude = Rxn<double>();
 
   BuildContext context;
   String pickAddress;
@@ -73,11 +75,19 @@ class OrderSelectAddressController extends GetxController {
     shippingEmailController.value.clear();
     shippingPhoneController.value.clear();
     shippingAddressController.value.clear();
+    shippingLatitude.value = null;
+    shippingLongitude.value = null;
   }
 
-  void setPickedShippingAddress(String address) {
+  void setPickedShippingAddress(
+    String address, {
+    double? latitude,
+    double? longitude,
+  }) {
     pickAddress = address;
     shippingAddressController.value.text = address;
+    shippingLatitude.value = latitude;
+    shippingLongitude.value = longitude;
   }
 
   @override
@@ -262,6 +272,10 @@ class OrderSelectAddressController extends GetxController {
         "email": shippingEmailController.value.text,
         "phone": shippingPhoneController.value.text,
         "address": shippingAddressController.value.text,
+        "location_coordinates": {
+          "latitude": shippingLatitude.value,
+          "longitude": shippingLongitude.value,
+        },
       };
     }
     debugPrint(jsonEncode(data));

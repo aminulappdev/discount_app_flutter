@@ -2,16 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import '../../../../res/res.dart';
 import '../../../view.dart';
 import 'package:discount_me_app/utils/utils.dart';
 
 class StoreListViewScreenWidget extends GetxController {
-
-
   Rx<StoresResponseModel> storesResponseModel = StoresResponseModel().obs;
-  Rx<UserProfileResponseModel> userProfileResponseModel = UserProfileResponseModel().obs;
+  Rx<UserProfileResponseModel> userProfileResponseModel =
+      UserProfileResponseModel().obs;
 
   RxBool isLoading = false.obs;
   BuildContext context;
@@ -21,7 +21,9 @@ class StoreListViewScreenWidget extends GetxController {
   RxDouble long = 0.0.obs;
 
   Future<void> determinePosition() async {
-    Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+    Position position = await Geolocator.getCurrentPosition(
+      desiredAccuracy: LocationAccuracy.high,
+    );
     lat.value = position.latitude;
     long.value = position.longitude;
     print(lat.value);
@@ -38,22 +40,21 @@ class StoreListViewScreenWidget extends GetxController {
     }
   }
 
-
-
   Future<void> checkLocationPermission() async {
-    Future.delayed(const Duration(milliseconds: 500),() async {
+    Future.delayed(const Duration(milliseconds: 500), () async {
       LocationPermission permission;
       var checkPermission = await Geolocator.checkPermission();
       permission = await Geolocator.requestPermission();
       print(permission);
-      if(permission == LocationPermission.denied) {
+      if (permission == LocationPermission.denied) {
         await checkLocationPermission();
-      }else if(permission == LocationPermission.deniedForever){
+      } else if (permission == LocationPermission.deniedForever) {
         CustomSnackBar().errorCustomSnackBar(
           context: context,
-          message: "Location Permission need.Please go to app setting or unInstall the app",
+          message:
+              "Location Permission need.Please go to app setting or unInstall the app",
         );
-      }else {
+      } else {
         await determinePosition();
       }
     });
@@ -64,43 +65,58 @@ class StoreListViewScreenWidget extends GetxController {
     // TODO: implement onInit
     super.onInit();
     isLoading.value = true;
-    Future.delayed(Duration(seconds: 1),() async {
+    Future.delayed(Duration(seconds: 1), () async {
       await StoreListViewController.getStoriesApiService(
-          onSuccess: (e) {
-            storesResponseModel.value = StoresResponseModel.fromJson(e);
-            stores.value = storesResponseModel.value.data!.data!;
-          },
-          onFail: (e) {
-            isLoading.value = false;
-            CustomSnackBar().errorCustomSnackBar(context: context, message: "${e}");
-          },
-          onExceptionFail: (e) {
-            isLoading.value = false;
-            CustomSnackBar().errorCustomSnackBar(context: context, message: "${e}");
-          }
+        onSuccess: (e) {
+          storesResponseModel.value = StoresResponseModel.fromJson(e);
+          stores.value = storesResponseModel.value.data!.data!;
+        },
+        onFail: (e) {
+          isLoading.value = false;
+          CustomSnackBar().errorCustomSnackBar(
+            context: context,
+            message: "${e}",
+          );
+        },
+        onExceptionFail: (e) {
+          isLoading.value = false;
+          CustomSnackBar().errorCustomSnackBar(
+            context: context,
+            message: "${e}",
+          );
+        },
       );
       await UserProfileController.getUserProfileApiService(
-          onSuccess: (e) {
-            isLoading.value = false;
-            userProfileResponseModel.value = UserProfileResponseModel.fromJson(e);
-          },
-          onFail: (e) {
-            isLoading.value = false;
-            CustomSnackBar().errorCustomSnackBar(context: context, message: "${e}");
-          },
-          onExceptionFail: (e) async {
-            if(e == "jwt expired") {
-              await AppLocalStorage.removeKey(key: "Login");
-              Get.off(()=>SignInView(),preventDuplicates: false,duration: Duration(milliseconds: 100));
-            }
-            isLoading.value = false;
-            CustomSnackBar().errorCustomSnackBar(context: context, message: "${e}");
+        onSuccess: (e) {
+          isLoading.value = false;
+          userProfileResponseModel.value = UserProfileResponseModel.fromJson(e);
+        },
+        onFail: (e) {
+          isLoading.value = false;
+          CustomSnackBar().errorCustomSnackBar(
+            context: context,
+            message: "${e}",
+          );
+        },
+        onExceptionFail: (e) async {
+          if (e == "jwt expired") {
+            await AppLocalStorage.removeKey(key: "Login");
+            Get.off(
+              () => SignInView(),
+              preventDuplicates: false,
+              duration: Duration(milliseconds: 100),
+            );
           }
+          isLoading.value = false;
+          CustomSnackBar().errorCustomSnackBar(
+            context: context,
+            message: "${e}",
+          );
+        },
       );
       await checkLocationPermission();
     });
   }
-
 
   Widget storeListViewScreenWidget({required BuildContext context}) {
     return Container(
@@ -112,61 +128,66 @@ class StoreListViewScreenWidget extends GetxController {
           opacity: 0.5,
         ),
       ),
-      child: Obx(()=>Skeletonizer(
-        effect: PulseEffect(),
-        enabled: isLoading.value,
-        child: CustomScrollView(
-            slivers: [
-
-
-
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16.hpm(context), vertical: 16.vpm(context)),
-                  child: Column(
-                    children: [
-
-
-                      CustomSpaceWidget.spacerWidget(spaceHeight: 40.h(context)),
+      child: Obx(
+        () => Skeletonizer(
+          effect: PulseEffect(),
+          enabled: isLoading.value,
+          child: Padding(
+            padding: EdgeInsets.symmetric(
+              horizontal: 16.hpm(context),
+              vertical: 16.vpm(context),
+            ),
+            child: Column(
+              children: [
+                      CustomSpaceWidget.spacerWidget(
+                        spaceHeight: 40.h(context),
+                      ),
                       Container(
                         width: 428.w(context),
-                        decoration: BoxDecoration(
-                            color: Colors.transparent
-                        ),
+                        decoration: BoxDecoration(color: Colors.transparent),
                         child: Row(
                           children: [
                             Expanded(
                               child: Row(
                                 children: [
-
-                                  userProfileResponseModel.value.data?.image == null ?
-                                  Container(
-                                    width: 45.w(context),
-                                    height: 45.h(context),
-                                    decoration: BoxDecoration(
-                                        shape: BoxShape.circle,
-                                        color: Colors.lightBlueAccent,
-                                        image: DecorationImage(
-                                          image: AssetImage(ImageUtils.homeProfileAvatar),
-                                          fit: BoxFit.cover,
-                                          scale: 1
+                                  userProfileResponseModel.value.data?.image ==
+                                          null
+                                      ? Container(
+                                          width: 45.w(context),
+                                          height: 45.h(context),
+                                          decoration: BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            color: Colors.lightBlueAccent,
+                                            image: DecorationImage(
+                                              image: AssetImage(
+                                                ImageUtils.homeProfileAvatar,
+                                              ),
+                                              fit: BoxFit.cover,
+                                              scale: 1,
+                                            ),
+                                          ),
                                         )
-                                    ),
-                                  ) :
-                                  Container(
-                                    width: 45.w(context),
-                                    height: 45.h(context),
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      color: Colors.lightBlueAccent,
-                                      image: DecorationImage(
-                                        image: NetworkImage(userProfileResponseModel.value.data!.image),
-                                        fit: BoxFit.fitHeight,
-                                      ),
-                                    ),
-                                  ),
+                                      : Container(
+                                          width: 45.w(context),
+                                          height: 45.h(context),
+                                          decoration: BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            color: Colors.lightBlueAccent,
+                                            image: DecorationImage(
+                                              image: NetworkImage(
+                                                userProfileResponseModel
+                                                    .value
+                                                    .data!
+                                                    .image,
+                                              ),
+                                              fit: BoxFit.fitHeight,
+                                            ),
+                                          ),
+                                        ),
 
-                                  CustomSpaceWidget.spacerWidget(spaceWidth: 20.w(context)),
+                                  CustomSpaceWidget.spacerWidget(
+                                    spaceWidth: 20.w(context),
+                                  ),
 
                                   Expanded(
                                     child: Align(
@@ -183,6 +204,44 @@ class StoreListViewScreenWidget extends GetxController {
 
                             Row(
                               children: [
+                                Container(
+                                  width: 45.w(context),
+                                  height: 45.h(context),
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: ColorUtils.primaryColor,
+                                    boxShadow: const [
+                                      BoxShadow(
+                                        color: ColorUtils.whiteColor,
+                                        blurRadius: 10,
+                                        offset: Offset(0, 1),
+                                      ),
+                                    ],
+                                  ),
+                                  child: TextButton(
+                                    style: TextButton.styleFrom(
+                                      padding: EdgeInsets.zero,
+                                    ),
+                                    onPressed: () {
+                                      Get.off(
+                                        () => UserNotificationView(),
+                                        preventDuplicates: false,
+                                        duration: const Duration(
+                                          milliseconds: 100,
+                                        ),
+                                      );
+                                    },
+                                    child: Icon(
+                                      Icons.notifications,
+                                      color: ColorUtils.whiteColor,
+                                      size: 25.r(context),
+                                    ),
+                                  ),
+                                ),
+
+                                CustomSpaceWidget.spacerWidget(
+                                  spaceWidth: 6.w(context),
+                                ),
 
                                 Container(
                                   width: 45.w(context),
@@ -193,41 +252,23 @@ class StoreListViewScreenWidget extends GetxController {
                                     boxShadow: const [
                                       BoxShadow(
                                         color: ColorUtils.whiteColor,
-                                        blurRadius: 10, offset: Offset(0, 1),
-                                      )
+                                        blurRadius: 10,
+                                        offset: Offset(0, 2),
+                                      ),
                                     ],
                                   ),
                                   child: TextButton(
-                                    style: TextButton.styleFrom(padding: EdgeInsets.zero),
-                                    onPressed: () {
-                                      Get.off(()=>UserNotificationView(),preventDuplicates: false,duration: const Duration(milliseconds: 100));
-                                    },
-                                    child: Icon(
-                                      Icons.notifications,
-                                      color: ColorUtils.whiteColor,
-                                      size: 25.r(context),
+                                    style: TextButton.styleFrom(
+                                      padding: EdgeInsets.zero,
                                     ),
-                                  ),
-                                ),
-
-                                CustomSpaceWidget.spacerWidget(spaceWidth: 6.w(context)),
-
-
-                                Container(
-                                  width: 45.w(context),
-                                  height: 45.h(context),
-                                  decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      color: ColorUtils.primaryColor,
-                                      boxShadow: const [
-                                        BoxShadow(color: ColorUtils.whiteColor,
-                                            blurRadius: 10, offset: Offset(0, 2))
-                                      ]
-                                  ),
-                                  child: TextButton(
-                                    style: TextButton.styleFrom(padding: EdgeInsets.zero),
                                     onPressed: () {
-                                      Get.off(()=>CartView(),preventDuplicates: false,duration: const Duration(milliseconds: 100));
+                                      Get.off(
+                                        () => CartView(),
+                                        preventDuplicates: false,
+                                        duration: const Duration(
+                                          milliseconds: 100,
+                                        ),
+                                      );
                                     },
                                     child: Icon(
                                       Icons.shopping_cart,
@@ -236,14 +277,15 @@ class StoreListViewScreenWidget extends GetxController {
                                     ),
                                   ),
                                 ),
-
                               ],
                             ),
                           ],
                         ),
                       ),
 
-                      CustomSpaceWidget.spacerWidget(spaceHeight: 20.h(context)),
+                      CustomSpaceWidget.spacerWidget(
+                        spaceHeight: 20.h(context),
+                      ),
 
                       CustomTextContainer.plainTextContainerWidgetWithoutHeightWidth(
                         plainTextString: "Find Nearby Restaurants",
@@ -261,7 +303,10 @@ class StoreListViewScreenWidget extends GetxController {
                         decoration: BoxDecoration(
                           color: Colors.transparent,
                           borderRadius: BorderRadius.circular(8.r(context)),
-                          border:Border.all(width: 1, color: ColorUtils.whiteDark),
+                          border: Border.all(
+                            width: 1,
+                            color: ColorUtils.whiteDark,
+                          ),
                         ),
                         child: TextField(
                           onTap: () async {
@@ -282,7 +327,11 @@ class StoreListViewScreenWidget extends GetxController {
                             // );
                           },
                           onChanged: (search) async {
-                            stores.value = storesResponseModel.value.data!.data!.where((e)=>e.name.toString().contains(search)).toList();
+                            stores.value = storesResponseModel.value.data!.data!
+                                .where(
+                                  (e) => e.name.toString().contains(search),
+                                )
+                                .toList();
                           },
                           decoration: InputDecoration(
                             hintText: "Search by store name",
@@ -293,13 +342,13 @@ class StoreListViewScreenWidget extends GetxController {
                             ),
                             border: OutlineInputBorder(
                               borderSide: BorderSide.none,
-                              borderRadius: BorderRadius.circular(10.r(context),
+                              borderRadius: BorderRadius.circular(
+                                10.r(context),
                               ),
                             ),
                           ),
                         ),
                       ),
-
 
                       Container(
                         height: 34.h(context),
@@ -311,242 +360,367 @@ class StoreListViewScreenWidget extends GetxController {
                               lat: lat.value,
                               long: long.value,
                               onSuccess: (e) {
-                                storesResponseModel.value = StoresResponseModel.fromJson(e);
-                                stores.value = storesResponseModel.value.data!.data!;
+                                storesResponseModel.value =
+                                    StoresResponseModel.fromJson(e);
+                                stores.value =
+                                    storesResponseModel.value.data!.data!;
                                 isLoading.value = false;
                               },
                               onFail: (e) {
                                 isLoading.value = false;
-                                CustomSnackBar().errorCustomSnackBar(context: context, message: "${e}");
+                                CustomSnackBar().errorCustomSnackBar(
+                                  context: context,
+                                  message: "${e}",
+                                );
                               },
                               onExceptionFail: (e) {
                                 isLoading.value = false;
-                                CustomSnackBar().errorCustomSnackBar(context: context, message: "${e}");
+                                CustomSnackBar().errorCustomSnackBar(
+                                  context: context,
+                                  message: "${e}",
+                                );
                               },
                             );
                           },
-                          child: CustomTextContainer.plainTextContainerWidgetWithoutHeightWidth(
-                            plainTextString: "Find Nearby Restaurants",
-                            plainTextStringFontSize: 16.sp(context),
-                            plainTextStringFontWeight: FontWeight.w600,
-                            plainTextContainerAlignment: Alignment.centerRight,
-                            plainTextStringColor: ColorUtils.primaryColor,
-                            plainTextStringTextAlign: TextAlign.end,
-                          ),
+                          child:
+                              CustomTextContainer.plainTextContainerWidgetWithoutHeightWidth(
+                                plainTextString: "Find Nearby Restaurants",
+                                plainTextStringFontSize: 16.sp(context),
+                                plainTextStringFontWeight: FontWeight.w600,
+                                plainTextContainerAlignment:
+                                    Alignment.centerRight,
+                                plainTextStringColor: ColorUtils.primaryColor,
+                                plainTextStringTextAlign: TextAlign.end,
+                              ),
                         ),
                       ),
 
-                      CustomSpaceWidget.spacerWidget(spaceHeight: 20.h(context)),
+                      CustomSpaceWidget.spacerWidget(
+                        spaceHeight: 20.h(context),
+                      ),
 
-                      stores != [] && stores.isNotEmpty == true ?
-                      ListView.builder(
-                        padding: EdgeInsets.zero,
-                        itemCount: stores.length,
-                        shrinkWrap: true,
-                        physics: ScrollPhysics(),
-                        itemBuilder: (context, index) {
-                          return Container(
-                            margin: EdgeInsets.only(
-                              left: 10.lpm(context),
-                              right: 2.rpm(context),
-                              top: 10.tpm(context),
-                              bottom: 10.bpm(context),
-                            ),
-                            child: TextButton(
-                              onPressed: () async {
-                                Get.off(()=>SingleStoreViewScreen(
-                                  storeId: stores[index].sId,
-                                  isHomePage: false,
-                                  isStoreListPage: true,
-                                ),preventDuplicates: false,duration: Duration(milliseconds: 100));
-                              },
-                              style: TextButton.styleFrom(padding: EdgeInsets.zero),
-                              child: Container(
-                                width: 428.w(context),
-                                padding: EdgeInsets.symmetric(
-                                  vertical: 10.vpm(context),
-                                  horizontal: 10.hpm(context),
-                                ),
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(4.r(context)),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black.withOpacity(0.1),
-                                      spreadRadius: 0,
-                                      blurRadius: 10,
-                                      offset: const Offset(0, 2), // Shadow position
+                      Expanded(
+                        child: stores.isNotEmpty
+                          ? ListView.builder(
+                              padding: EdgeInsets.zero,
+                              itemCount: stores.length,
+                              physics: const AlwaysScrollableScrollPhysics(),
+                              itemBuilder: (context, index) {
+                                return Container(
+                                  height: 150.h(context),
+
+                                  margin: EdgeInsets.only(
+                                    left: 10.lpm(context),
+                                    right: 2.rpm(context),
+                                    top: 10.tpm(context),
+                                    bottom: 10.bpm(context),
+                                  ),
+                                  child: TextButton(
+                                    onPressed: () async {
+                                      Get.to(
+                                        () => SingleStoreViewScreen(
+                                          storeId: stores[index].sId,
+                                          isHomePage: false,
+                                          isStoreListPage: true,
+                                        ),
+                                        preventDuplicates: false,
+                                        duration: Duration(milliseconds: 100),
+                                      );
+                                    },
+                                    style: TextButton.styleFrom(
+                                      padding: EdgeInsets.zero,
                                     ),
-                                  ],
-                                ),
-                                child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    // Restaurant Image
-                                    ClipRRect(
-                                      borderRadius: BorderRadius.circular(5.r(context)),
-                                      child: Image.network(
-                                        stores[index].coverImages!.first,
-                                        scale: 10,
-                                        fit: BoxFit.cover,
-                                        errorBuilder: (BuildContext context, Object exception, StackTrace? stackTrace) {
-                                          return Container(
-                                            height: 180.h(context),
-                                            width: 90.w(context),
-                                            decoration: BoxDecoration(
-                                              image: DecorationImage(
-                                                image: AssetImage(ImageUtils.carousel1),
-                                                fit: BoxFit.fill,
-                                              ),
-                                              borderRadius: BorderRadius.circular(5.r(context)),
-                                              color: Color.fromRGBO(175, 175, 175, 1),
-                                            ),
-                                          );
-                                        },
+                                    child: Container(
+                                      width: 428.w(context),
+                                      padding: EdgeInsets.symmetric(
+                                        vertical: 10.vpm(context),
+                                        horizontal: 10.hpm(context),
                                       ),
-                                    ),
-
-                                    SizedBox(width: 10.w(context)),
-
-                                    // Right Section
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        mainAxisAlignment: MainAxisAlignment.start,
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius: BorderRadius.circular(
+                                          4.r(context),
+                                        ),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.black.withOpacity(
+                                              0.1,
+                                            ),
+                                            spreadRadius: 0,
+                                            blurRadius: 10,
+                                            offset: const Offset(
+                                              0,
+                                              2,
+                                            ), // Shadow position
+                                          ),
+                                        ],
+                                      ),
+                                      child: Row(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
                                         children: [
-                                          // Top Row with Restaurant Name and Rating
-                                          Row(
-                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              // Restaurant Name
-                                              Expanded(
-                                                child: CustomTextContainer.plainTextContainerWidgetWithoutHeightWidth(
-                                                  plainTextString: stores[index].name,
-                                                  plainTextStringFontSize: 14.sp(context),
-                                                  plainTextStringFontWeight: FontWeight.w700,
-                                                  plainTextContainerAlignment: Alignment.centerLeft,
-                                                  plainTextStringColor: ColorUtils.black29,
-                                                  plainTextStringTextAlign: TextAlign.start,
-                                                ),
-                                              ),
-
-                                              SizedBox(width: 5.w(context)),
-
-                                              // Rating
-                                              Row(
-                                                children: [
-                                                  Row(
-                                                    mainAxisSize: MainAxisSize.min,
-                                                    children: List.generate(5, (Index) {
-                                                      // Calculate the fill amount for each star
-                                                      double starValue = double.parse(stores[index].ratings.toString()) - Index;
-                                                      bool isFilled = starValue >= 1.0;
-                                                      bool isHalfFilled = starValue > 0.0 && starValue < 1.0;
-
-                                                      return Icon(
-                                                        isFilled
-                                                            ? Icons.star
-                                                            : isHalfFilled
-                                                            ? Icons.star_half
-                                                            : Icons.star_border,
-                                                        size: 14.r(context),
-                                                        color: isFilled || isHalfFilled ? Colors.amber : Colors.grey.shade600,
+                                          // Restaurant Image
+                                          SizedBox(
+                                            width: 100.w(context),
+                                            child: ClipRRect(
+                                              borderRadius:
+                                                  BorderRadius.circular(
+                                                    5.r(context),
+                                                  ),
+                                              child: Image.network(
+                                                stores[index]
+                                                    .coverImages!
+                                                    .first,
+                                                scale: 10,
+                                                fit: BoxFit.cover,
+                                                errorBuilder:
+                                                    (
+                                                      BuildContext context,
+                                                      Object exception,
+                                                      StackTrace? stackTrace,
+                                                    ) {
+                                                      return Container(
+                                                        height: 180.h(context),
+                                                        width: 120.w(context),
+                                                        decoration: BoxDecoration(
+                                                          image: DecorationImage(
+                                                            image: AssetImage(
+                                                              ImageUtils
+                                                                  .carousel1,
+                                                            ),
+                                                            fit: BoxFit.fill,
+                                                          ),
+                                                          borderRadius:
+                                                              BorderRadius.circular(
+                                                                5.r(context),
+                                                              ),
+                                                          color: Color.fromRGBO(
+                                                            175,
+                                                            175,
+                                                            175,
+                                                            1,
+                                                          ),
+                                                        ),
                                                       );
-                                                    }),
-                                                  ),
-                                                  SizedBox(width: 5.w(context)),
-                                                  CustomTextContainer.plainTextContainerWidgetWithoutHeightWidth(
-                                                    plainTextString: stores[index].ratings.toStringAsFixed(1).toString(),
-                                                    plainTextStringFontSize: 14.sp(context),
-                                                    plainTextStringFontWeight: FontWeight.w600,
-                                                    plainTextContainerAlignment: Alignment.center,
-                                                    plainTextStringColor: ColorUtils.black29,
-                                                    plainTextStringTextAlign: TextAlign.start,
-                                                  ),
-                                                ],
+                                                    },
                                               ),
-                                            ],
+                                            ),
                                           ),
 
-                                          SizedBox(height: 6.h(context)),
+                                          SizedBox(width: 10.w(context)),
 
-
-
-                                          // Description Text
-
-                                          CustomTextContainer.plainTextContainerWidgetWithoutHeightWidth(
-                                            plainTextString: stores[index].description != null ?
-                                            "${stores[index].description.toString().length > 50 ?
-                                            stores[index].description.toString().substring(0,50) :
-                                            stores[index].description.toString()}...." : "N/A",
-                                            plainTextStringFontSize: 14.sp(context),
-                                            plainTextStringFontWeight: FontWeight.w700,
-                                            plainTextContainerAlignment: Alignment.centerLeft,
-                                            plainTextStringColor: ColorUtils.blackColor,
-                                            plainTextStringTextAlign: TextAlign.start,
-                                          ),
-
-
-                                          SizedBox(height: 6.h(context)),
-
-                                          // Location
-                                          FutureBuilder(
-                                              future: _getAddressFromLatLng(stores[index].location!.coordinates!.last,
-                                                  stores[index].location!.coordinates!.first),
-                                              builder: (context, snapshot) {
-                                                return Row(
+                                          // Right Section
+                                          Expanded(
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.start,
+                                              children: [
+                                                // Top Row with Restaurant Name and Rating
+                                                Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
                                                   children: [
-                                                    Icon(Icons.location_on, color: Colors.grey, size: 16),
-                                                    SizedBox(width: 5.w(context)),
+                                                    // Restaurant Name
                                                     Expanded(
                                                       child: CustomTextContainer.plainTextContainerWidgetWithoutHeightWidth(
-                                                        plainTextString: "${snapshot.data}",
-                                                        plainTextStringFontSize: 14.sp(context),
-                                                        plainTextStringFontWeight: FontWeight.w600,
-                                                        plainTextContainerAlignment: Alignment.centerLeft,
-                                                        plainTextStringColor: ColorUtils.blackColor,
-                                                        plainTextStringTextAlign: TextAlign.start,
+                                                        plainTextString:
+                                                            stores[index].name,
+                                                        plainTextStringFontSize:
+                                                            14.sp(context),
+                                                        plainTextStringFontWeight:
+                                                            FontWeight.w700,
+                                                        plainTextContainerAlignment:
+                                                            Alignment
+                                                                .centerLeft,
+                                                        plainTextStringColor:
+                                                            ColorUtils.black29,
+                                                        plainTextStringTextAlign:
+                                                            TextAlign.start,
                                                       ),
                                                     ),
+
+                                                    SizedBox(
+                                                      width: 5.w(context),
+                                                    ),
+
+                                                    // Rating
+                                                    Row(
+                                                      children: [
+                                                        Row(
+                                                          mainAxisSize:
+                                                              MainAxisSize.min,
+                                                          children: List.generate(5, (
+                                                            Index,
+                                                          ) {
+                                                            // Calculate the fill amount for each star
+                                                            double starValue =
+                                                                double.parse(
+                                                                  stores[index]
+                                                                      .ratings
+                                                                      .toString(),
+                                                                ) -
+                                                                Index;
+                                                            bool isFilled =
+                                                                starValue >=
+                                                                1.0;
+                                                            bool isHalfFilled =
+                                                                starValue >
+                                                                    0.0 &&
+                                                                starValue < 1.0;
+
+                                                            return Icon(
+                                                              isFilled
+                                                                  ? Icons.star
+                                                                  : isHalfFilled
+                                                                  ? Icons
+                                                                        .star_half
+                                                                  : Icons
+                                                                        .star_border,
+                                                              size: 14.r(
+                                                                context,
+                                                              ),
+                                                              color:
+                                                                  isFilled ||
+                                                                      isHalfFilled
+                                                                  ? Colors.amber
+                                                                  : Colors
+                                                                        .grey
+                                                                        .shade600,
+                                                            );
+                                                          }),
+                                                        ),
+                                                        SizedBox(
+                                                          width: 5.w(context),
+                                                        ),
+                                                        CustomTextContainer.plainTextContainerWidgetWithoutHeightWidth(
+                                                          plainTextString:
+                                                              stores[index]
+                                                                  .ratings
+                                                                  .toStringAsFixed(
+                                                                    1,
+                                                                  )
+                                                                  .toString(),
+                                                          plainTextStringFontSize:
+                                                              14.sp(context),
+                                                          plainTextStringFontWeight:
+                                                              FontWeight.w600,
+                                                          plainTextContainerAlignment:
+                                                              Alignment.center,
+                                                          plainTextStringColor:
+                                                              ColorUtils
+                                                                  .black29,
+                                                          plainTextStringTextAlign:
+                                                              TextAlign.start,
+                                                        ),
+                                                      ],
+                                                    ),
                                                   ],
-                                                );
-                                              }
+                                                ),
+
+                                                SizedBox(height: 6.h(context)),
+
+                                                // Description Text
+                                                CustomTextContainer.plainTextContainerWidgetWithoutHeightWidth(
+                                                  plainTextString:
+                                                      stores[index]
+                                                              .description !=
+                                                          null
+                                                      ? "${stores[index].description.toString().length > 50 ? stores[index].description.toString().substring(0, 50) : stores[index].description.toString()}...."
+                                                      : "N/A",
+                                                  plainTextStringFontSize: 14
+                                                      .sp(context),
+                                                  plainTextStringFontWeight:
+                                                      FontWeight.w700,
+                                                  plainTextContainerAlignment:
+                                                      Alignment.centerLeft,
+                                                  plainTextStringColor:
+                                                      ColorUtils.blackColor,
+                                                  plainTextStringTextAlign:
+                                                      TextAlign.start,
+                                                ),
+
+                                                SizedBox(height: 6.h(context)),
+
+                                                // Location
+                                                FutureBuilder(
+                                                  future: _getAddressFromLatLng(
+                                                    stores[index]
+                                                        .location!
+                                                        .coordinates!
+                                                        .last,
+                                                    stores[index]
+                                                        .location!
+                                                        .coordinates!
+                                                        .first,
+                                                  ),
+                                                  builder: (context, snapshot) {
+                                                    return Row(
+                                                      children: [
+                                                        Icon(
+                                                          Icons.location_on,
+                                                          color: Colors.grey,
+                                                          size: 16,
+                                                        ),
+                                                        SizedBox(
+                                                          width: 5.w(context),
+                                                        ),
+                                                        Expanded(
+                                                          child: Text(
+                                                            maxLines: 2,
+                                                            snapshot.data ??
+                                                                "N/A",
+                                                            style: GoogleFonts.urbanist(
+                                                              fontSize: 12.sp(
+                                                                context,
+                                                              ),
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w500,
+                                                              color:
+                                                                  const Color.fromARGB(
+                                                                    255,
+                                                                    88,
+                                                                    88,
+                                                                    88,
+                                                                  ),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    );
+                                                  },
+                                                ),
+                                              ],
+                                            ),
                                           ),
                                         ],
                                       ),
                                     ),
-                                  ],
-                                ),
-                              ),
+                                  ),
+                                );
+                              },
+                            )
+                          : Center(
+                            child: CustomTextContainer.plainTextContainerWidgetWithoutHeightWidth(
+                              plainTextString: "No Store Available",
+                              plainTextStringFontSize: 22.sp(context),
+                              plainTextStringFontWeight: FontWeight.w700,
+                              plainTextContainerAlignment: Alignment.center,
+                              plainTextStringColor: ColorUtils.black29,
+                              plainTextStringTextAlign: TextAlign.center,
                             ),
-                          );
-                        },
-                      ) :
-                      stores == [] ?
-                      CustomTextContainer.plainTextContainerWidgetWithoutHeightWidth(
-                        plainTextString: "No Store Available",
-                        plainTextStringFontSize: 22.sp(context),
-                        plainTextStringFontWeight: FontWeight.w700,
-                        plainTextContainerAlignment: Alignment.center,
-                        plainTextStringColor: ColorUtils.black29,
-                        plainTextStringTextAlign: TextAlign.center,
-                      ) :
-                      CustomSpaceWidget.spacerWidget(),
-
-
+                          ),
+                      ),
                     ],
                   ),
                 ),
-              )
-
-            ],
-          ),
-      ),),
+        ),
+      ),
     );
   }
-
-
-
-
 }

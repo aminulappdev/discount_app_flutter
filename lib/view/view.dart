@@ -95,6 +95,7 @@ export 'users/user_profile_order_view/model/get_order_details_retrieved_response
 export 'users/user_profile_order_view/controller/order_details_controller.dart';
 export 'users/user_profile_order_view/view/user_order_delivered_status_view.dart';
 export 'users/user_profile_order_view/view/user_profile_order_view.dart';
+export 'users/user_profile_order_view/view/user_profile_picked_order_view.dart';
 export 'users/home_view/view/user_home_view.dart';
 export 'users/notification_view/view/user_notification_view.dart';
 export 'vendors/vendor_home_view/controller/dashboard_vendor_controller.dart';

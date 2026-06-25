@@ -5,11 +5,30 @@ import 'package:get/get.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class UserProfileOrderView extends StatelessWidget {
-  const UserProfileOrderView({super.key});
+  const UserProfileOrderView({
+    super.key,
+    this.title = "Order",
+    this.emptyMessage = "No Order Available",
+    this.fulfillmentType = "delivery",
+    this.showTabs = true,
+    this.fixedStatus,
+  });
+
+  final String title;
+  final String emptyMessage;
+  final String fulfillmentType;
+  final bool showTabs;
+  final String? fixedStatus;
 
   @override
   Widget build(BuildContext context) {
-    final OrderStatusController orderStatusController = Get.put(OrderStatusController(context: context));
+    final OrderStatusController orderStatusController = Get.put(
+      OrderStatusController(
+        context: context,
+        fulfillmentType: fulfillmentType,
+      ),
+      tag: fulfillmentType,
+    );
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (canPop,onOpoInvoked) {
@@ -21,8 +40,18 @@ class UserProfileOrderView extends StatelessWidget {
           enabled: orderStatusController.isLoading.value,
           child: RefreshIndicator(
             onRefresh: () async {
-              Get.delete<OrderStatusController>(force: true);
-              Get.off(()=>UserProfileOrderView(),duration: const Duration(milliseconds: 100),preventDuplicates: false);
+              Get.delete<OrderStatusController>(tag: fulfillmentType, force: true);
+              Get.off(
+                ()=>UserProfileOrderView(
+                  title: title,
+                  emptyMessage: emptyMessage,
+                  fulfillmentType: fulfillmentType,
+                  showTabs: showTabs,
+                  fixedStatus: fixedStatus,
+                ),
+                duration: const Duration(milliseconds: 100),
+                preventDuplicates: false,
+              );
             },
             child: Container(
               height: 926.h(context),
@@ -50,7 +79,7 @@ class UserProfileOrderView extends StatelessWidget {
 
 
                               UserProfileAppbarWidget(
-                                title: "Order",
+                                title: title,
                                 onTap: () {
                                   Get.off(()=>UserDashboardView(index: 3,),duration: const Duration(milliseconds: 100),preventDuplicates: false);
                                 },
@@ -71,50 +100,54 @@ class UserProfileOrderView extends StatelessWidget {
                           child: Column(
                             children: [
 
-                              /// Tabs
-                              Obx(() => Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                children: List.generate(orderStatusController.tabs.length, (i) {
-                                  return GestureDetector(
-                                    onTap: () => orderStatusController.changeTab(i),
-                                    child: Column(
-                                      children: [
-                                        TextHelperClass.headingTextWithoutWidth(
-                                          context: context,
-                                          text: orderStatusController.tabs[i],
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w600,
-                                          textColor:  orderStatusController.selectedTab.value == i ? orderStatusController.getTextColor(orderStatusController.tabs[i]) : Colors.black,
-                                        ),
-                                        SpaceHelperWidget.v(5.h(context)),
+                              if (showTabs) ...[
+                                /// Tabs
+                                Obx(() => Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                  children: List.generate(orderStatusController.tabs.length, (i) {
+                                    return GestureDetector(
+                                      onTap: () => orderStatusController.changeTab(i),
+                                      child: Column(
+                                        children: [
+                                          TextHelperClass.headingTextWithoutWidth(
+                                            context: context,
+                                            text: orderStatusController.tabs[i],
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w600,
+                                            textColor:  orderStatusController.selectedTab.value == i ? orderStatusController.getTextColor(orderStatusController.tabs[i]) : Colors.black,
+                                          ),
+                                          SpaceHelperWidget.v(5.h(context)),
 
-                                        Container(
-                                          height: 2.h(context),
-                                          width: 50.w(context),
-                                          color: orderStatusController.selectedTab.value == i
-                                              ? orderStatusController.getColor(orderStatusController.tabs[i])
-                                              : Colors.transparent,
-                                        )
-                                      ],
-                                    ),
-                                  );
-                                }),
-                              )),
+                                          Container(
+                                            height: 2.h(context),
+                                            width: 50.w(context),
+                                            color: orderStatusController.selectedTab.value == i
+                                                ? orderStatusController.getColor(orderStatusController.tabs[i])
+                                                : Colors.transparent,
+                                          )
+                                        ],
+                                      ),
+                                    );
+                                  }),
+                                )),
 
 
-                              SpaceHelperWidget.v(20.h(context)),
+                                SpaceHelperWidget.v(20.h(context)),
+                              ],
 
 
 
                               Expanded(
                                 child: Obx(() {
-                                  final list = orderStatusController.filteredOrders;
+                                  final list = fixedStatus == null
+                                      ? orderStatusController.filteredOrders
+                                      : orderStatusController.orders.where((e) => e.status == fixedStatus).toList();
 
                                   if (list.isEmpty) {
                                     return Center(
                                       child: TextHelperClass.headingTextWithoutWidth(
                                           context: context,
-                                          text: "No Order Available",
+                                          text: emptyMessage,
                                           fontSize: 22,
                                           fontWeight: FontWeight.w700,
                                           textColor: ColorUtils.black21,
@@ -125,7 +158,10 @@ class UserProfileOrderView extends StatelessWidget {
 
                                   return ListView.builder(
                                     itemCount: list.length,
-                                    itemBuilder: (_, i) => OrderCardWidget(order: list[i]),
+                                    itemBuilder: (_, i) => OrderCardWidget(
+                                      order: list[i],
+                                      controller: orderStatusController,
+                                    ),
                                   );
                                 }),
                               )

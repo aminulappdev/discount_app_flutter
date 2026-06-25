@@ -1,4 +1,5 @@
 import 'package:discount_me_app/utils/utils.dart';
+import 'package:discount_me_app/view/users/home_view/controller/order_pick_location_controller.dart';
 import 'package:discount_me_app/view/users/home_view/controller/order_select_address_controller.dart';
 import 'package:discount_me_app/view/users/home_view/view/order_pick_location_view.dart';
 import 'package:flutter/material.dart';
@@ -67,13 +68,29 @@ class OrderShippingAddressWidget {
           plainButtonWidth: 428.w(context),
           plainButtonRadius: 8.r(context),
           plainButtonOnPress: () async {
-            final pickedAddress = await Get.to<String>(
-              ()=>OrderPickLocationView(pointsToRedeem: 0.0),
+            if (Get.isRegistered<OrderPickLocationController>()) {
+              Get.delete<OrderPickLocationController>();
+            }
+
+            final pickedLocation = await Get.to<Map<String, dynamic>>(
+              ()=>OrderPickLocationView(
+                pointsToRedeem: 0.0,
+                actionButtonText: "Pick Location",
+              ),
               duration: const Duration(milliseconds: 100),
               preventDuplicates: false,
             );
-            if (pickedAddress != null && pickedAddress.isNotEmpty) {
-              orderSelectAddressController.setPickedShippingAddress(pickedAddress);
+            final pickedAddress = pickedLocation?["address"]?.toString() ?? "";
+            if (pickedAddress.isNotEmpty) {
+              orderSelectAddressController.setPickedShippingAddress(
+                pickedAddress,
+                latitude: pickedLocation?["latitude"] is num
+                    ? (pickedLocation?["latitude"] as num).toDouble()
+                    : null,
+                longitude: pickedLocation?["longitude"] is num
+                    ? (pickedLocation?["longitude"] as num).toDouble()
+                    : null,
+              );
             }
           },
           plainButtonHint: "Pick Location",

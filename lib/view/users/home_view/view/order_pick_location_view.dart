@@ -7,20 +7,20 @@ import 'package:discount_me_app/view/view.dart';
 import '../../../../res/res.dart';
 
 class OrderPickLocationView extends StatelessWidget {
-  OrderPickLocationView({super.key,required this.pointsToRedeem});
+  OrderPickLocationView({
+    super.key,
+    required this.pointsToRedeem,
+    this.actionButtonText = "Complete Order",
+  });
   final double pointsToRedeem;
+  final String actionButtonText;
   final OrderPickLocationController orderPickLocationController = Get.put(OrderPickLocationController());
 
   @override
   Widget build(BuildContext context) {
-    return PopScope(
-      canPop: false,
-      onPopInvokedWithResult: (canPop,onOpoInvoked) {
-        Get.back();
-      },
-      child: Scaffold(
-        body: SafeArea(
-          child: Container(
+    return Scaffold(
+      body: SafeArea(
+        child: Container(
             height: double.infinity,
             width: 428.w(context),
             decoration: BoxDecoration(
@@ -98,10 +98,14 @@ class OrderPickLocationView extends StatelessWidget {
                                 if(orderPickLocationController.locationPicker.value == "") {
                                   MessageSnackBarWidget.errorSnackBarWidget(context: context,message: "Address is not pick.");
                                 } else {
-                                  Get.back(result: orderPickLocationController.locationPicker.value);
+                                  Get.back(result: {
+                                    "address": orderPickLocationController.locationPicker.value,
+                                    "latitude": orderPickLocationController.latitude.value,
+                                    "longitude": orderPickLocationController.longitude.value,
+                                  });
                                 }
                               },
-                              plainButtonHint: "Complete Order",
+                              plainButtonHint: actionButtonText,
                               plainButtonHintFontSize: 22.sp(context),
                               plainButtonColor: ColorUtils.green176,
                               plainButtonHintFontColor: ColorUtils.white255,
@@ -120,7 +124,6 @@ class OrderPickLocationView extends StatelessWidget {
           )),
           ),
         ),
-      ),
     );
   }
 }

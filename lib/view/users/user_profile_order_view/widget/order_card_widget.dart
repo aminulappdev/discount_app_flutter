@@ -1,17 +1,19 @@
 import 'package:discount_me_app/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:discount_me_app/view/view.dart';
-import 'package:get/get.dart';
 
 class OrderCardWidget extends StatelessWidget {
   final OrderStatusModel order;
+  final OrderStatusController controller;
 
-  const OrderCardWidget({super.key, required this.order});
+  const OrderCardWidget({
+    super.key,
+    required this.order,
+    required this.controller,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.find<OrderStatusController>();
-
     return Container(
       margin: EdgeInsets.only(bottom: 12.bpm(context)),
       decoration: BoxDecoration(
@@ -69,13 +71,12 @@ class OrderCardWidget extends StatelessWidget {
                           textColor: ColorUtils.black21,
                         ),
                       ),
-
+ 
 
 
                       TextHelperClass.headingTextWithoutWidth(
                           context: context,
                           text: order.status == "received" ? "Received" :
-                          order.status == "processing" ? "Processing" :
                           order.status == "ongoing" ? "Ongoing" :
                           order.status == "delivered" ? "Delivered" :
                           "Canceled",
@@ -83,12 +84,10 @@ class OrderCardWidget extends StatelessWidget {
                           borderRadius: BorderRadius.circular(7.r(context)),
                           fontWeight: FontWeight.w700,
                           textColor: controller.getTextColor(order.status == "received" ? "Received" :
-                          order.status == "processing" ? "Processing" :
                           order.status == "ongoing" ? "Ongoing" :
                           order.status == "delivered" ? "Delivered" :
                           "Canceled"),
                           containerColor: controller.getColor(order.status == "received" ? "Received" :
-                          order.status == "processing" ? "Processing" :
                           order.status == "ongoing" ? "Ongoing" :
                           order.status == "delivered" ? "Delivered" :
                           "Canceled"),

@@ -108,10 +108,6 @@ class SignUpView extends StatelessWidget {
                                   signUpController.changeRole(value);
 
                                   await signUpController.resetFunction();
-
-                                  if (value == "Vendor") {
-                                    await signUpController.checkLocationPermission(context: context);
-                                  }
                                 },
                               ),
                             
@@ -151,7 +147,7 @@ class SignUpView extends StatelessWidget {
                                         await signUpController.getUserSignUpResponse(
                                           image: signUpController.imageFile.value,
                                           document: signUpController.documentFile.value,
-                                          data: _commonUserData(),
+                                          data: _userData(),
                                           context: context,
                                         );
                                         break;
@@ -160,7 +156,7 @@ class SignUpView extends StatelessWidget {
                                         await signUpController.getRiderSignUpResponse(
                                           image: signUpController.imageFile.value,
                                           document: signUpController.drivingLicenceFile.value,
-                                          data: _commonUserData(),
+                                          data: _riderData(),
                                           context: context,
                                         );
                                         break;
@@ -245,7 +241,6 @@ class SignUpView extends StatelessWidget {
     // Common validations
     if (c.emailController.value.text.isEmpty) return "Please Enter Your Email";
     if (c.phoneNumber.value.isEmpty) return "Please Enter Your Contact Number";
-    if (c.locationController.value.text.isEmpty) return "Please Enter Your Location";
     if (c.passwordController.value.text.isEmpty) return "Please Enter Your Password";
     if (c.confirmPasswordController.value.text.isEmpty) return "Please Enter Your Confirm Password";
     if (c.confirmPasswordController.value.text != c.passwordController.value.text) {
@@ -255,6 +250,7 @@ class SignUpView extends StatelessWidget {
     // Role-specific validations
     switch (role) {
       case "User":
+        if (c.imageFile.value.path.isEmpty) return "Please Pick A Profile Image";
         if (c.firstNameController.value.text.isEmpty) return "Please Enter Your First Name";
         if (c.lastNameController.value.text.isEmpty) return "Please Enter Your Last Name";
         if (c.documentFile.value.path.isEmpty) {
@@ -263,6 +259,8 @@ class SignUpView extends StatelessWidget {
         break;
 
       case "Rider":
+        if (c.imageFile.value.path.isEmpty) return "Please Pick A Profile Image";
+        if (c.locationController.value.text.isEmpty) return "Please Enter Your Location";
         if (c.drivingLicenceFile.value.path.isEmpty) {
           return "Please upload your driving Licence Document";
         }
@@ -271,6 +269,8 @@ class SignUpView extends StatelessWidget {
         break;
 
       case "Vendor":
+        if (c.locationController.value.text.isEmpty) return "Please Enter Your Location";
+        if (c.lat.value.isEmpty || c.long.value.isEmpty) return "Please Pick Your Location";
         if (c.restaurantNameController.value.text.isEmpty) return "Please Enter Your Restaurant Name";
         if (c.restaurantDescriptionController.value.text.isEmpty) return "Please Enter Your Restaurant Description";
         if (c.taxFile.value.path.isEmpty) return "Please upload your tax Document";
@@ -278,6 +278,7 @@ class SignUpView extends StatelessWidget {
 
       default:
         if (c.imageFile.value.path.isEmpty) return "Please Pick A Profile Image";
+        if (c.locationController.value.text.isEmpty) return "Please Enter Your Location";
         if (c.firstNameController.value.text.isEmpty) return "Please Enter Your First Name";
         if (c.lastNameController.value.text.isEmpty) return "Please Enter Your Last Name";
     }
@@ -286,7 +287,21 @@ class SignUpView extends StatelessWidget {
   }
 
 
-  Map<String, dynamic> _commonUserData() {
+  Map<String, dynamic> _userData() {
+    final c = signUpController;
+
+    return {
+      "name": "${c.firstNameController.value.text},${c.lastNameController.value.text}",
+      "password": c.passwordController.value.text,
+      "email": c.emailController.value.text,
+      "contact": c.phoneNumber.value,
+      if (c.selectedFirstResponderType.value.isNotEmpty)
+        "first_responder_type": c.selectedFirstResponderType.value,
+    };
+  }
+
+
+  Map<String, dynamic> _riderData() {
     final c = signUpController;
 
     return {
@@ -295,7 +310,6 @@ class SignUpView extends StatelessWidget {
       "email": c.emailController.value.text,
       "location": c.locationController.value.text,
       "contact": c.phoneNumber.value,
-      "broker_referral": c.referralCodeController.value.text,
     };
   }
 

@@ -1,14 +1,24 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
 import 'package:discount_me_app/res/app_const/import_list.dart';
+import 'package:discount_me_app/view/riders/home_view/controller/rider_home_controller.dart';
+import 'package:discount_me_app/view/riders/home_view/controller/rider_pickup_request_details_controller.dart';
+import 'package:discount_me_app/view/riders/home_view/controller/rider_pickup_request_action_controller.dart';
+import 'package:discount_me_app/view/riders/rider_order_view/controller/rider_order_controller.dart';
 import 'package:discount_me_app/utils/utils.dart';
 import 'package:discount_me_app/view/riders/home_view/view/view_home_map_route_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class RiderHomeOrderRequestDetailsScreen extends StatelessWidget {
-  const RiderHomeOrderRequestDetailsScreen({super.key});
+  const RiderHomeOrderRequestDetailsScreen({
+    super.key,
+    required this.pickupRequestId,
+  });
+
+  final String pickupRequestId;
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +29,17 @@ class RiderHomeOrderRequestDetailsScreen extends StatelessWidget {
       Brightness.dark, // Use Brightness.light for dark icons
     ));
 
-
+    final RiderPickupRequestDetailsController controller = Get.put(
+      RiderPickupRequestDetailsController(
+        context: context,
+        pickupRequestId: pickupRequestId,
+      ),
+      tag: pickupRequestId,
+    );
+    final RiderPickupRequestActionController actionController = Get.put(
+      RiderPickupRequestActionController(),
+      tag: pickupRequestId,
+    );
 
     var width = MediaQuery.of(context).size.width;
     var height = MediaQuery.of(context).size.height;
@@ -34,7 +54,29 @@ class RiderHomeOrderRequestDetailsScreen extends StatelessWidget {
           ),
         ),
       ),
-      body: SafeArea(
+      body: Obx(() {
+        final request = controller.pickupRequest;
+        final order = request?.order;
+        final customer = order?.customer;
+        final productNames = order?.items
+                ?.map((item) => item.product?.name ?? "N/A")
+                .where((name) => name.isNotEmpty)
+                .join(", ") ??
+            "N/A";
+        final productImages = order?.items
+                ?.expand((item) => item.product?.images ?? <String>[])
+                .toList() ??
+            <String>[];
+        final pickupLocation = order?.store?.name ?? "Pickup location not available";
+        final deliveryLocation = _deliveryLocationText(
+          request?.deliveryLocation,
+          fallback: order?.shippingAddress?.address,
+        );
+        final requestStatus = request?.status?.toLowerCase() ?? "";
+
+        return Skeletonizer(
+          enabled: controller.isLoading.value,
+          child: SafeArea(
           child: Padding(
         padding: EdgeInsets.all(16),
         child: SingleChildScrollView(
@@ -51,10 +93,10 @@ class RiderHomeOrderRequestDetailsScreen extends StatelessWidget {
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(50),
                             color: Colors.lightBlueAccent),
-                        child: Image.asset(
-                          ImageUtils.homeProfileAvatar,
-                          scale: 4,
-                          fit: BoxFit.cover,
+                        clipBehavior: Clip.antiAlias,
+                        child: _customerImage(
+                          imageUrl: customer?.image,
+                          context: context,
                         ),
                       ),
                       10.widthBox,
@@ -62,13 +104,13 @@ class RiderHomeOrderRequestDetailsScreen extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           CustomText(
-                            title: "Davidson Edgar",
+                            title: customer?.name ?? "N/A",
                             fontSize: 18.sp(context),
                             fontWeight: FontWeight.w600,
                             color: ColorUtils.secondaryColor,
                           ),
                           CustomText(
-                            title: "20 Deliveries",
+                            title: order?.orderId ?? "N/A",
                             fontSize: 14.sp(context),
                             fontWeight: FontWeight.w400,
                             color: ColorUtils.primaryColor,
@@ -134,9 +176,10 @@ class RiderHomeOrderRequestDetailsScreen extends StatelessWidget {
                     ],
                   ),
                   SizedBox(width: 10),
-                  Column(
+                  Expanded(
+                    child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: const [
+                    children: [
                       Text(
                         'Pickup Location',
                         style: TextStyle(
@@ -144,8 +187,8 @@ class RiderHomeOrderRequestDetailsScreen extends StatelessWidget {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      Text('32 Samwell Sq, Chevron'),
-                      SizedBox(height: 20),
+                      Text(pickupLocation),
+                      const SizedBox(height: 20),
                       Text(
                         'Delivery Location',
                         style: TextStyle(
@@ -153,8 +196,9 @@ class RiderHomeOrderRequestDetailsScreen extends StatelessWidget {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      Text('21b, Karimu Kotun Street, Victoria Island'),
+                      Text(deliveryLocation),
                     ],
+                    ),
                   )
                 ],
               ),
@@ -175,7 +219,7 @@ class RiderHomeOrderRequestDetailsScreen extends StatelessWidget {
                             fontSize: 16.sp(context),
                           ),
                           CustomText(
-                            title: "Pizza",
+                            title: productNames,
                             color: ColorUtils.blackColor,
                             fontWeight: FontWeight.w600,
                             fontSize: 18.sp(context),
@@ -192,7 +236,7 @@ class RiderHomeOrderRequestDetailsScreen extends StatelessWidget {
                             fontSize: 16.sp(context),
                           ),
                           CustomText(
-                            title: "Donald Duck",
+                            title: customer?.name ?? "N/A",
                             color: ColorUtils.blackColor,
                             fontWeight: FontWeight.w600,
                             fontSize: 18.sp(context),
@@ -212,7 +256,9 @@ class RiderHomeOrderRequestDetailsScreen extends StatelessWidget {
                         fontSize: 16.sp(context),
                       ),
                       CustomText(
-                        title: "08123456789",
+                        title: customer?.contact ??
+                            order?.shippingAddress?.phone ??
+                            "N/A",
                         color: ColorUtils.blackColor,
                         fontWeight: FontWeight.w600,
                         fontSize: 18.sp(context),
@@ -230,7 +276,7 @@ class RiderHomeOrderRequestDetailsScreen extends StatelessWidget {
                         fontSize: 16.sp(context),
                       ),
                       CustomText(
-                        title: "\$150",
+                        title: "\$${order?.shippingFee ?? 0}",
                         color: ColorUtils.blackColor,
                         fontWeight: FontWeight.w600,
                         fontSize: 18.sp(context),
@@ -249,14 +295,29 @@ class RiderHomeOrderRequestDetailsScreen extends StatelessWidget {
                       ),
                       10.heightBox,
                       Row(
-                        children: List.generate(
-                          3,
-                              (index) {
+                        children: productImages.isEmpty
+                            ? [
+                                Image.asset(
+                                  ImageUtils.burger,
+                                  scale: 4,
+                                ),
+                              ]
+                            : List.generate(
+                          productImages.length,
+                          (index) {
                             return Padding(
                               padding: EdgeInsets.symmetric(horizontal: 5),
-                              child: Image.asset(
-                                ImageUtils.burger,
-                                scale: 4,
+                              child: Image.network(
+                                productImages[index],
+                                height: 60.h(context),
+                                width: 60.w(context),
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return Image.asset(
+                                    ImageUtils.burger,
+                                    scale: 4,
+                                  );
+                                },
                               ),
                             );
                           },
@@ -292,37 +353,128 @@ class RiderHomeOrderRequestDetailsScreen extends StatelessWidget {
                     ),
                   ),
                 ),
-              ),
+              ), 
 
-              40.heightBox,
-              Row(
-                children: [
-                  Expanded(
-                    child: Roundbutton(
-                      borderRadius: 10.r(context),
-                      titleColor: ColorUtils.secondaryColor,
-                      buttonColor: Color(0xff086634).withOpacity(0.05),
-                      title: "Reject",
-                      onTap: () {},
-                    ),
-                  ),
-                  10.widthBox,
-                  Expanded(
-                    child: Roundbutton(
-                      borderRadius: 10.r(context),
-                      buttonColor: ColorUtils.secondaryColor,
-                      title: "Accept",
-                      onTap: () {},
-                    ),
-                  ),
-                ],
+              if (requestStatus == "requesting" || requestStatus == "ongoing")
+                40.heightBox,
+              _bottomActionWidget(
+                context: context,
+                requestStatus: requestStatus,
+                pickupRequestId: pickupRequestId,
+                detailsController: controller,
+                actionController: actionController,
               )
             ],
           ),
         ),
       )
       ),
+        );
+      }),
     );
+  }
+
+  Widget _bottomActionWidget({
+    required BuildContext context,
+    required String requestStatus,
+    required String pickupRequestId,
+    required RiderPickupRequestDetailsController detailsController,
+    required RiderPickupRequestActionController actionController,
+  }) {
+    if (requestStatus == "ongoing") {
+      return Obx(
+        () => Roundbutton(
+          borderRadius: 10.r(context), 
+          buttonColor: ColorUtils.secondaryColor,
+          title: "Success Delivery",
+          isLoading: actionController.isStatusUpdateLoading.value,
+          onTap: actionController.isStatusUpdateLoading.value
+              ? null
+              : () {
+                  actionController.updatePickupRequestStatus(
+                    context: context,
+                    pickupRequestId: pickupRequestId,
+                    status: "delivered",
+                    onSuccess: () async {
+                      detailsController.updatePickupRequestStatus("delivered");
+                      await _refreshPickupRequestLists(context);
+                    },
+                  );
+                },
+        ),
+      );
+    }
+
+    if (requestStatus == "requesting") {
+      return Row(
+        children: [
+          Expanded(
+            child: Obx(
+              () => Roundbutton(
+                borderRadius: 10.r(context),
+                titleColor: ColorUtils.secondaryColor,
+                buttonColor: Color(0xff086634).withOpacity(0.05),
+                title: "Reject",
+                isLoading: actionController.isRejectLoading.value,
+                onTap: actionController.isRejectLoading.value ||
+                        actionController.isAcceptLoading.value
+                    ? null
+                    : () {
+                        actionController.rejectPickupRequest(
+                          context: context,
+                          pickupRequestId: pickupRequestId,
+                          onSuccess: () async {
+                            detailsController.updatePickupRequestStatus("cancelled");
+                            await _refreshPickupRequestLists(context);
+                            Get.back();
+                          },
+                        );
+                      },
+              ),
+            ),
+          ),
+          10.widthBox,
+          Expanded(
+            child: Obx(
+              () => Roundbutton(
+                borderRadius: 10.r(context),
+                buttonColor: ColorUtils.secondaryColor,
+                title: "Accept",
+                isLoading: actionController.isAcceptLoading.value,
+                onTap: actionController.isAcceptLoading.value ||
+                        actionController.isRejectLoading.value
+                    ? null
+                    : () {
+                        actionController.acceptPickupRequest(
+                          context: context,
+                          pickupRequestId: pickupRequestId,
+                          onSuccess: () async {
+                            detailsController.updatePickupRequestStatus("ongoing");
+                            await _refreshPickupRequestLists(context);
+                            Get.back();
+                          },
+                        );
+                      },
+              ),
+            ),
+          ),
+        ],
+      );
+    }
+
+    return const SizedBox.shrink();
+  }
+
+  Future<void> _refreshPickupRequestLists(BuildContext context) async {
+    if (Get.isRegistered<RiderOrderController>()) {
+      await Get.find<RiderOrderController>()
+          .getAllStatusPickupRequestsController(context: context);
+    }
+
+    if (Get.isRegistered<RiderHomeController>()) {
+      await Get.find<RiderHomeController>()
+          .getPickupRequestsController(context: context);
+    }
   }
 
   Widget _dashedLineWidget() {
@@ -339,5 +491,52 @@ class RiderHomeOrderRequestDetailsScreen extends StatelessWidget {
         );
       }),
     );
+  }
+
+  Widget _customerImage({
+    required String? imageUrl,
+    required BuildContext context,
+  }) {
+    if (imageUrl == null || imageUrl.trim().isEmpty) {
+      return Image.asset(
+        ImageUtils.homeProfileAvatar,
+        scale: 4,
+        fit: BoxFit.cover,
+      );
+    }
+
+    return Image.network(
+      imageUrl,
+      fit: BoxFit.cover,
+      errorBuilder: (context, error, stackTrace) {
+        return Image.asset(
+          ImageUtils.homeProfileAvatar,
+          scale: 4,
+          fit: BoxFit.cover,
+        );
+      },
+    );
+  }
+
+  String _deliveryLocationText(String? value, {String? fallback}) {
+    if (value == null || value.trim().isEmpty) {
+      return fallback?.trim().isNotEmpty == true
+          ? fallback!.trim()
+          : "Delivery location not available";
+    }
+
+    final parts = value
+        .split(",")
+        .map((part) => part.trim())
+        .where((part) => part.isNotEmpty && part.toLowerCase() != "null")
+        .toList();
+
+    if (parts.isEmpty) {
+      return fallback?.trim().isNotEmpty == true
+          ? fallback!.trim()
+          : "Delivery location not available";
+    }
+
+    return parts.join(", ");
   }
 }

@@ -14,6 +14,7 @@ class RiderHomeController extends GetxController {
   Rx<RiderPickupRequestsResponseModel> riderPickupRequestsResponseModel =
       RiderPickupRequestsResponseModel().obs;
   RxList<RiderPickupRequest> pickupRequests = <RiderPickupRequest>[].obs;
+  List<RiderPickupRequest> get requestingPickupRequests => pickupRequests;
   BuildContext context;
   Rx<TextEditingController> whereToControllerText = TextEditingController().obs;
   RiderHomeController({required this.context});
@@ -71,13 +72,16 @@ class RiderHomeController extends GetxController {
     );
 
     await BaseApiUtils.get(
-      url: ApiUtils.pickupRequests,
+      url: ApiUtils.pickupRequestsByStatus("requesting"),
       authorization: loginResponseModel.data?.accessToken ?? "",
       onSuccess: (e, data) async {
         riderPickupRequestsResponseModel.value =
             RiderPickupRequestsResponseModel.fromJson(data);
-        pickupRequests.value =
-            riderPickupRequestsResponseModel.value.data?.data ?? [];
+        pickupRequests.value = (riderPickupRequestsResponseModel
+                    .value.data?.data ??
+                [])
+            .where((request) => request.status?.toLowerCase() == "requesting")
+            .toList();
       },
       onFail: (e, data) {
         MessageSnackBarWidget.errorSnackBarWidget(context: context, message: e);

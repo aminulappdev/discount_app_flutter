@@ -38,8 +38,6 @@ class OrderDetailsController extends GetxController {
     switch (status) {
       case "Received":
         return Colors.blue.shade100;
-      case "Processing":
-        return Colors.orange.shade100;
       case "Ongoing":
         return Colors.deepOrange.shade100;
       case "Delivered":
@@ -56,8 +54,6 @@ class OrderDetailsController extends GetxController {
     switch (status) {
       case "Received":
         return Colors.blue;
-      case "Processing":
-        return Colors.orange;
       case "Ongoing":
         return Colors.deepOrange;
       case "Delivered":

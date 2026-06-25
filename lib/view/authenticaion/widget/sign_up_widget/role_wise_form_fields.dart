@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:discount_me_app/view/view.dart';
 import 'package:discount_me_app/utils/utils.dart';
 import 'package:discount_me_app/res/res.dart';
+import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 
 class RoleWiseFormField {
@@ -60,7 +61,7 @@ class RoleWiseFormField {
 
           _space20(context: context),
 
-          /// Vendor Location (read-only)
+          /// Vendor Location
           _label(text: "Location", context: context),
           _space8(context: context),
           TextFormFieldWidget.build(
@@ -68,13 +69,15 @@ class RoleWiseFormField {
             hintText: "Enter Location",
             controller: controller.locationController.value,
             keyboardType: TextInputType.emailAddress,
+            readOnly: true,
+            onTap: () => _pickVendorLocation(controller: controller),
             borderColor: ColorUtils.whiteNormalActive,
             enableBorderColor: ColorUtils.whiteNormalActive,
             focusedBorderColor: ColorUtils.secondaryColor,
             prefixIcon: Padding(
               padding: EdgeInsets.all(20.r(context)),
               child: InkWell(
-                onTap: () async {},
+                onTap: () => _pickVendorLocation(controller: controller),
                 child: ImageHelperWidget.assetImageWidget(
                   context: context,
                   height: 24.h(context),
@@ -117,31 +120,33 @@ class RoleWiseFormField {
 
           _space20(context: context),
 
-          _label(text: "Location", context: context),
-          _space8(context: context),
-          TextFormFieldWidget.build(
-            context: context,
-            hintText: "Enter Location",
-            controller: controller.locationController.value,
-            keyboardType: TextInputType.emailAddress,
-            borderColor: ColorUtils.whiteNormalActive,
-            enableBorderColor: ColorUtils.whiteNormalActive,
-            focusedBorderColor: ColorUtils.secondaryColor,
-            prefixIcon: Padding(
-              padding: EdgeInsets.all(20.r(context)),
-              child: InkWell(
-                onTap: () async {},
-                child: ImageHelperWidget.assetImageWidget(
-                  context: context,
-                  height: 24.h(context),
-                  width: 24.w(context),
-                  imageString: ImageUtils.locationImage,
+          if (isRider || isBroker) ...[
+            _label(text: "Location", context: context),
+            _space8(context: context),
+            TextFormFieldWidget.build(
+              context: context,
+              hintText: "Enter Location",
+              controller: controller.locationController.value,
+              keyboardType: TextInputType.emailAddress,
+              borderColor: ColorUtils.whiteNormalActive,
+              enableBorderColor: ColorUtils.whiteNormalActive,
+              focusedBorderColor: ColorUtils.secondaryColor,
+              prefixIcon: Padding(
+                padding: EdgeInsets.all(20.r(context)),
+                child: InkWell(
+                  onTap: () async {},
+                  child: ImageHelperWidget.assetImageWidget(
+                    context: context,
+                    height: 24.h(context),
+                    width: 24.w(context),
+                    imageString: ImageUtils.locationImage,
+                  ),
                 ),
               ),
             ),
-          ),
 
-          _space20(context: context),
+            _space20(context: context),
+          ],
         ],
 
         /// ================= EMAIL (ALL ROLES) =================
@@ -175,7 +180,7 @@ class RoleWiseFormField {
         ],
 
 
-        if (isUser || isRider || isVendor)...[
+        if (isVendor)...[
 
           _label(text: "Referral Code", context: context),
           _space8(context: context),
@@ -199,6 +204,13 @@ class RoleWiseFormField {
         _space8(context: context),
         _phoneField(context: context, controller: controller),
         _space20(context: context),
+
+        if (isUser) ...[
+          _label(text: "First Responder Type", context: context),
+          _space8(context: context),
+          _firstResponderDropdown(context: context, controller: controller),
+          _space20(context: context),
+        ],
 
         /// ================= DOCUMENTS =================
         if (isUser) ...[
@@ -420,6 +432,33 @@ class RoleWiseFormField {
     );
   }
 
+  Future<void> _pickVendorLocation({required SignUpController controller}) async {
+    if (Get.isRegistered<OrderPickLocationController>()) {
+      Get.delete<OrderPickLocationController>();
+    }
+
+    final pickedLocation = await Get.to<Map<String, dynamic>>(
+      () => OrderPickLocationView(
+        pointsToRedeem: 0.0,
+        actionButtonText: "Pick Location",
+      ),
+      duration: const Duration(milliseconds: 100),
+      preventDuplicates: false,
+    );
+
+    final pickedAddress = pickedLocation?["address"]?.toString() ?? "";
+    final pickedLatitude = pickedLocation?["latitude"];
+    final pickedLongitude = pickedLocation?["longitude"];
+
+    if (pickedAddress.isNotEmpty && pickedLatitude is num && pickedLongitude is num) {
+      controller.setPickedLocation(
+        address: pickedAddress,
+        latitude: pickedLatitude.toDouble(),
+        longitude: pickedLongitude.toDouble(),
+      );
+    }
+  }
+
   Widget _space8({required BuildContext context}) {
     return SpaceHelperWidget.v(10.h(context));
   }
@@ -479,6 +518,58 @@ class RoleWiseFormField {
       onCountryChanged: (country) {
         controller.initialCountryCode.value = country.code;
         controller.phoneNumber.value = "+${country.dialCode}${controller.phoneNumberController.value.text}";
+      },
+    );
+  }
+
+  Widget _firstResponderDropdown({
+    required BuildContext context,
+    required SignUpController controller,
+  }) {
+    return DropdownButtonFormField<String>(
+      value: controller.selectedFirstResponderType.value.isEmpty
+          ? null
+          : controller.selectedFirstResponderType.value,
+      hint: Text(
+        "Select first responder type (optional)",
+        style: TextStyle(
+          color: ColorUtils.black48,
+          fontSize: 14,
+          fontWeight: FontWeight.w400,
+        ),
+      ),
+      isExpanded: true,
+      decoration: InputDecoration(
+        filled: true,
+        fillColor: ColorUtils.white253,
+        contentPadding: EdgeInsets.symmetric(
+          horizontal: 16.hpm(context),
+          vertical: 16.vpm(context),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8.r(context)),
+          borderSide: BorderSide(color: ColorUtils.whiteNormalActive),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8.r(context)),
+          borderSide: BorderSide(color: ColorUtils.secondaryColor),
+        ),
+      ),
+      items: controller.firstResponderTypes.map((type) {
+        return DropdownMenuItem<String>(
+          value: type,
+          child: Text(
+            type,
+            style: TextStyle(
+              color: ColorUtils.black21,
+              fontSize:  14,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        );
+      }).toList(),
+      onChanged: (value) {
+        controller.selectedFirstResponderType.value = value ?? "";
       },
     );
   }

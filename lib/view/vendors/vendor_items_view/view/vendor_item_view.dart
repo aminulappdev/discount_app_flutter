@@ -9,7 +9,7 @@ import 'package:discount_me_app/utils/utils.dart';
 import '../../../../res/res.dart';
 
 class VendorItemView extends StatelessWidget {
-  const VendorItemView({super.key});
+  const VendorItemView({super.key}); 
 
   @override
   Widget build(BuildContext context) {
@@ -174,7 +174,7 @@ class VendorItemView extends StatelessWidget {
                             crossAxisCount: 2,
                             mainAxisSpacing: 10.h(context),
                             crossAxisSpacing: 10.w(context),
-                            childAspectRatio: 186.w(context) / 380.h(context),
+                            childAspectRatio: 186.w(context) / 320.h(context),
                           ),
                           itemBuilder: (context, index) {
                             return TextButton(

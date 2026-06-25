@@ -1,7 +1,9 @@
 import 'package:discount_me_app/res/app_const/import_list.dart';
 import 'package:discount_me_app/view/riders/home_view/controller/rider_home_controller.dart';
+import 'package:discount_me_app/view/riders/home_view/controller/rider_pickup_request_action_controller.dart';
 import 'package:discount_me_app/view/riders/home_view/model/rider_pickup_requests_response_model.dart';
 import 'package:discount_me_app/view/riders/home_view/view/rider_home_order_request_details_screen.dart';
+import 'package:discount_me_app/view/riders/rider_order_view/view/rider_order_home_screen.dart';
 import 'package:discount_me_app/view/view.dart';
 import 'package:flutter/material.dart';
 import 'package:discount_me_app/utils/utils.dart';
@@ -16,6 +18,8 @@ class RiderHomeView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final RiderHomeController riderHomeController = Get.put(RiderHomeController(context: context));
+    final RiderPickupRequestActionController actionController =
+        Get.put(RiderPickupRequestActionController());
     return Scaffold(
       body: Obx(()=>Container(
         height: 926.h(context),
@@ -227,7 +231,9 @@ class RiderHomeView extends StatelessWidget {
                                   plainButtonHeight: 34.h(context),
                                   plainButtonWidth: 428.w(context),
                                   plainButtonRadius: 8.r(context),
-                                  plainButtonOnPress: () async {},
+                                  plainButtonOnPress: () async {
+                                    Get.to(()=>RiderOrderHomeScreen());
+                                  },
                                   plainButtonHint: "View all",
                                   plainButtonHintAlign: Alignment.centerRight,
                                   plainButtonHintTextAlign: TextAlign.end,
@@ -253,11 +259,11 @@ class RiderHomeView extends StatelessWidget {
                   child: ListView.builder(
                     padding: EdgeInsets.zero,
                     physics: const AlwaysScrollableScrollPhysics(),
-                    itemCount: riderHomeController.pickupRequests.isEmpty
+                    itemCount: riderHomeController.requestingPickupRequests.isEmpty
                         ? 1
-                        : riderHomeController.pickupRequests.length,
+                        : riderHomeController.requestingPickupRequests.length,
                     itemBuilder: (context,int index) {
-                        if (riderHomeController.pickupRequests.isEmpty) {
+                        if (riderHomeController.requestingPickupRequests.isEmpty) {
                           return Padding(
                             padding: EdgeInsets.all(16.r(context)),
                             child: CustomTextContainer.plainTextContainerWidgetWithoutHeightWidth(
@@ -272,7 +278,13 @@ class RiderHomeView extends StatelessWidget {
 
                         return _requestWidget(
                           context: context,
-                          request: riderHomeController.pickupRequests[index],
+                          request: riderHomeController.requestingPickupRequests[index],
+                          actionController: actionController,
+                          onRejected: () async {
+                            await riderHomeController.getPickupRequestsController(
+                              context: context,
+                            );
+                          },
                         );
                       },
                   ),
@@ -288,11 +300,17 @@ class RiderHomeView extends StatelessWidget {
   Widget _requestWidget({
     required BuildContext context,
     required RiderPickupRequest request,
+    required RiderPickupRequestActionController actionController,
+    required Future<void> Function() onRejected,
   }){
     final order = request.order;
     final storeName = order?.store?.name ?? "N/A";
     final customerName = order?.customer?.name ?? "N/A";
-    final deliveryLocation = _deliveryLocationText(request.deliveryLocation);
+    final customerImage = order?.customer?.image;
+    final deliveryLocation = _deliveryLocationText(
+      request.deliveryLocation,
+      fallback: order?.shippingAddress?.address,
+    );
     final orderId = order?.orderId ?? "";
     final requestStatus = request.status ?? "N/A";
 
@@ -320,13 +338,23 @@ class RiderHomeView extends StatelessWidget {
 
             CustomSpaceWidget.spacerWidget(spaceHeight: 6.h(context)),
 
-
-            CustomTextContainer.plainTextContainerWidgetWithoutHeightWidth(
-              plainTextString: "Recipient: $customerName${orderId.isEmpty ? "" : " ($orderId)"}",
-              plainTextStringFontSize: 15.sp(context),
-              plainTextStringFontWeight: FontWeight.w600,
-              plainTextContainerAlignment: Alignment.centerLeft,
-              plainTextStringColor: ColorUtils.blackColor,
+            Row(
+              children: [
+                _customerImage(
+                  imageUrl: customerImage,
+                  context: context,
+                ),
+                CustomSpaceWidget.spacerWidget(spaceWidth: 8.w(context)),
+                Expanded(
+                  child: CustomTextContainer.plainTextContainerWidgetWithoutHeightWidth(
+                    plainTextString: "Recipient: $customerName${orderId.isEmpty ? "" : " ($orderId)"}",
+                    plainTextStringFontSize: 15.sp(context),
+                    plainTextStringFontWeight: FontWeight.w600,
+                    plainTextContainerAlignment: Alignment.centerLeft,
+                    plainTextStringColor: ColorUtils.blackColor,
+                  ),
+                ),
+              ],
             ),
 
             CustomSpaceWidget.spacerWidget(spaceHeight: 6.h(context)),
@@ -400,29 +428,48 @@ class RiderHomeView extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-
+               
                 Expanded(
-                  child: CustomButtonContainer.plainButtonContainer(
-                    plainButtonHeight: 50.h(context),
-                    plainButtonWidth: 428.w(context),
-                    plainButtonRadius: 8.r(context),
-                    plainButtonOnPress:  () async {
-                      CustomAlertDialog().customAlert(
-                        context: context,
-                        title: 'Alert',
-                        message: 'Are you sure you want to reject this request?',
-                        NegativebuttonText: 'Cancel',
-                        PositivvebuttonText: 'Confirm',
-                        onPositiveButtonPressed: () => Navigator.of(context).pop(),
-                        onNegativeButtonPressed: () => Navigator.of(context).pop(),
-                      );
-                    },
-                    plainButtonHint: "Reject",
-                    plainButtonHintFontSize: 17.sp(context),
-                    plainButtonColor: Colors.transparent,
-                    plainButtonBorderColor: ColorUtils.red255,
-                    plainButtonBorderWidth: 1.w(context),
-                    plainButtonHintFontColor: ColorUtils.red255,
+                  child: Obx(
+                    () => actionController.isRejectLoading.value
+                        ? Container(
+                            height: 50.h(context),
+                            alignment: Alignment.center,
+                            child: const CircularProgressIndicator(
+                              color: ColorUtils.red255,
+                            ),
+                          )
+                        : CustomButtonContainer.plainButtonContainer(
+                            plainButtonHeight: 50.h(context),
+                            plainButtonWidth: 428.w(context),
+                            plainButtonRadius: 8.r(context),
+                            plainButtonOnPress:  () async {
+                              CustomAlertDialog().customAlert(
+                                context: context,
+                                title: 'Alert',
+                                message: 'Are you sure you want to reject this request?',
+                                NegativebuttonText: 'Cancel',
+                                PositivvebuttonText: 'Confirm',
+                                onPositiveButtonPressed: () {
+                                  Navigator.of(context).pop();
+                                  actionController.rejectPickupRequest(
+                                    context: context,
+                                    pickupRequestId: request.sId ?? "",
+                                    onSuccess: () async {
+                                      await onRejected();
+                                    },
+                                  );
+                                },
+                                onNegativeButtonPressed: () => Navigator.of(context).pop(),
+                              );
+                            },
+                            plainButtonHint: "Reject",
+                            plainButtonHintFontSize: 17.sp(context),
+                            plainButtonColor: Colors.transparent,
+                            plainButtonBorderColor: ColorUtils.red255,
+                            plainButtonBorderWidth: 1.w(context),
+                            plainButtonHintFontColor: ColorUtils.red255,
+                          ),
                   ),
                 ),
 
@@ -436,7 +483,11 @@ class RiderHomeView extends StatelessWidget {
                     plainButtonWidth: 428.w(context),
                     plainButtonRadius: 8.r(context),
                     plainButtonOnPress:  () async {
-                      Get.to(RiderHomeOrderRequestDetailsScreen());
+                      Get.to(
+                        RiderHomeOrderRequestDetailsScreen(
+                          pickupRequestId: request.sId ?? "",
+                        ),
+                      );
                     },
                     plainButtonHint: "View Details",
                     plainButtonHintFontSize: 17.sp(context),
@@ -455,9 +506,35 @@ class RiderHomeView extends StatelessWidget {
     );
   }
 
-  String _deliveryLocationText(String? value) {
+  Widget _customerImage({
+    required String? imageUrl,
+    required BuildContext context,
+  }) {
+    return ClipOval(
+      child: SizedBox(
+        height: 36.h(context),
+        width: 36.w(context),
+        child: imageUrl == null || imageUrl.trim().isEmpty
+            ? Image.asset(ImageUtils.homeProfileAvatar, fit: BoxFit.cover)
+            : Image.network(
+                imageUrl,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  return Image.asset(
+                    ImageUtils.homeProfileAvatar,
+                    fit: BoxFit.cover,
+                  );
+                },
+              ),
+      ),
+    );
+  }
+
+  String _deliveryLocationText(String? value, {String? fallback}) {
     if (value == null || value.trim().isEmpty) {
-      return "Delivery location not available";
+      return fallback?.trim().isNotEmpty == true
+          ? fallback!.trim()
+          : "Delivery location not available";
     }
 
     final parts = value
@@ -467,7 +544,9 @@ class RiderHomeView extends StatelessWidget {
         .toList();
 
     if (parts.isEmpty) {
-      return "Delivery location not available";
+      return fallback?.trim().isNotEmpty == true
+          ? fallback!.trim()
+          : "Delivery location not available";
     }
 
     return parts.join(", ");

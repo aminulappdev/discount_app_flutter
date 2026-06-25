@@ -442,7 +442,7 @@ class CartView extends StatelessWidget {
                                         fontSize: 16,
                                         fontWeight: FontWeight.w700,
                                         textColor: Color(0xfffefeff),
-                                        alignment: Alignment.centerLeft,
+                                        alignment: Alignment.centerLeft, 
                                       ),
                                     ),
 

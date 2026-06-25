@@ -6,6 +6,8 @@ import 'package:get/get.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:discount_me_app/utils/utils.dart';
+import 'package:discount_me_app/view/users/chat_view/controller/chat_controller.dart';
+import 'package:discount_me_app/view/users/chat_view/view/user_chat_screen.dart';
 import '../../../../res/res.dart';
 import '../../../view.dart';
 
@@ -15,6 +17,7 @@ class SingleStoreViewScreenWidget extends GetxController {
   Rx<SingleStoreResponseModel> singleStoreResponseModel = SingleStoreResponseModel().obs;
   Rx<UserProfileResponseModel> userProfileResponseModel = UserProfileResponseModel().obs;
   RxBool isLoading = false.obs;
+  RxBool isChatOpening = false.obs;
 
   final BuildContext context;
   final String storeId;
@@ -104,6 +107,63 @@ class SingleStoreViewScreenWidget extends GetxController {
         await determinePosition();
       }
     });
+  }
+
+  Future<void> openSupportChat() async {
+    final vendorId = _currentVendorId();
+    if (vendorId.isEmpty) {
+      MessageSnackBarWidget.errorSnackBarWidget(
+        context: context,
+        message: "Vendor not found",
+      );
+      return;
+    }
+
+    isChatOpening.value = true;
+    final chatController = Get.put(ChatController());
+    final conversation = await chatController.createConversation(vendorId);
+    isChatOpening.value = false;
+
+    if (conversation == null) {
+      MessageSnackBarWidget.errorSnackBarWidget(
+        context: context,
+        message: chatController.errorMessage.value.isEmpty
+            ? "Unable to start chat"
+            : chatController.errorMessage.value,
+      );
+      return;
+    }
+
+    await chatController.openConversation(conversation);
+    Get.to(
+      () => UserChatScreen(conversation: conversation),
+      preventDuplicates: false,
+      duration: const Duration(milliseconds: 100),
+    );
+  }
+
+  String _currentVendorId() {
+    final storeVendorId = singleStoreResponseModel.value.data?.vendorId?.toString() ?? "";
+    if (storeVendorId.isNotEmpty) return storeVendorId;
+
+    final firstProductStore = productsResponseModel.value.data?.data?.isNotEmpty == true
+        ? productsResponseModel.value.data!.data!.first.store
+        : null;
+    return _readId(firstProductStore) ?? "";
+  }
+
+  String? _readId(dynamic value) {
+    if (value == null) return null;
+    if (value is String) return null;
+    if (value is Map) {
+      return value['vendorId']?.toString() ??
+          value['vendor_id']?.toString() ??
+          value['ownerId']?.toString() ??
+          value['owner_id']?.toString() ??
+          _readId(value['vendor']) ??
+          _readId(value['owner']);
+    }
+    return null;
   }
 
   @override

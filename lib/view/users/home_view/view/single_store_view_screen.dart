@@ -4,13 +4,12 @@ import 'package:get/get.dart';
 import 'package:discount_me_app/res/res.dart';
 import '../../../view.dart';
 import 'package:discount_me_app/utils/utils.dart';
-import '../../chat_view/view/user_chat_vendor_list_screen.dart';
 
 class SingleStoreViewScreen extends StatelessWidget {
   const SingleStoreViewScreen({super.key,required this.storeId,required this.isHomePage,required this.isStoreListPage});
   final bool isHomePage;
   final bool isStoreListPage;
-  final String storeId;
+  final String storeId; 
   @override
   Widget build(BuildContext context) {
     SingleStoreViewScreenWidget singleStoreViewScreenWidget = Get.put(SingleStoreViewScreenWidget(context: context, storeId: storeId));
@@ -23,31 +22,42 @@ class SingleStoreViewScreen extends StatelessWidget {
           Get.off(()=>StoreListViewScreen(),duration: const Duration(milliseconds: 100),preventDuplicates: false);
         } else {
           Get.off(()=>UserDashboardView(index: 0,),duration: const Duration(milliseconds: 100),preventDuplicates: false);
-        }
+        } 
       },
       child: Scaffold(
         body: singleStoreViewScreenWidget.singleStoreViewScreenWidget(context: context,isHomePage: isHomePage,isStorePage: isStoreListPage),
-        floatingActionButton: FloatingActionButton(
-          backgroundColor: ColorUtils.primaryColor,
-          elevation: 0,
-          onPressed: () {
-            Get.to(UserChatVendorListScreen());
-          },
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Image.asset(ImageUtils.supportChatIcon, scale: 4,),
-              SizedBox(height: 5.h(context),),
-              CustomTextContainer.plainTextContainerWidgetWithoutHeightWidth(
-                plainTextString: "support",
-                plainTextStringFontSize: 10.sp(context),
-                plainTextStringFontWeight: FontWeight.w600,
-                plainTextContainerAlignment: Alignment.center,
-                plainTextStringColor: Colors.white,
-                plainTextStringTextAlign: TextAlign.center,
-              ),
-            ],
+        floatingActionButton: Obx(
+          () => FloatingActionButton(
+            backgroundColor: ColorUtils.primaryColor,
+            elevation: 0,
+            onPressed: singleStoreViewScreenWidget.isChatOpening.value
+                ? null
+                : singleStoreViewScreenWidget.openSupportChat,
+            child: singleStoreViewScreenWidget.isChatOpening.value
+                ? SizedBox(
+                    height: 24.h(context),
+                    width: 24.w(context),
+                    child: CircularProgressIndicator(
+                      color: Colors.white,
+                      strokeWidth: 2,
+                    ),
+                  )
+                : Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Image.asset(ImageUtils.supportChatIcon, scale: 4,),
+                      SizedBox(height: 5.h(context),),
+                      CustomTextContainer.plainTextContainerWidgetWithoutHeightWidth(
+                        plainTextString: "support",
+                        plainTextStringFontSize: 10.sp(context),
+                        plainTextStringFontWeight: FontWeight.w600,
+                        plainTextContainerAlignment: Alignment.center, 
+                        plainTextStringColor: Colors.white,
+                        plainTextStringTextAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
           ),
         ),
       ),

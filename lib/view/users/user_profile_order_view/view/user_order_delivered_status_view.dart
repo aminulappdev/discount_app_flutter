@@ -8,9 +8,14 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class UserOrderDeliveredStatusView extends StatelessWidget {
-  const UserOrderDeliveredStatusView({super.key,required this.orderId});
+  const UserOrderDeliveredStatusView({
+    super.key,
+    required this.orderId,
+    this.sourceFulfillmentType = "delivery",
+  });
 
   final String orderId;
+  final String sourceFulfillmentType;
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +23,7 @@ class UserOrderDeliveredStatusView extends StatelessWidget {
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (canPop,onOpoInvoked) {
-        Get.off(()=>UserProfileOrderView(),duration: const Duration(milliseconds: 100),preventDuplicates: false);
+        Get.off(()=>_sourceOrderView(),duration: const Duration(milliseconds: 100),preventDuplicates: false);
       },
       child: Scaffold(
         body: Obx(()=>Skeletonizer(
@@ -175,7 +180,6 @@ class UserOrderDeliveredStatusView extends StatelessWidget {
                               TextHelperClass.headingTextWithoutWidth(
                                 context: context,
                                 text: orderDetailsController.getOrderDetailsRetrievedResponseModel.value.data?.status == "received" ? "Received" :
-                                orderDetailsController.getOrderDetailsRetrievedResponseModel.value.data?.status  == "processing" ? "Processing" :
                                 orderDetailsController.getOrderDetailsRetrievedResponseModel.value.data?.status  == "ongoing" ? "Ongoing" :
                                 orderDetailsController.getOrderDetailsRetrievedResponseModel.value.data?.status  == "delivered" ? "Delivered" :
                                 "Canceled",
@@ -183,12 +187,10 @@ class UserOrderDeliveredStatusView extends StatelessWidget {
                                 borderRadius: BorderRadius.circular(7.r(context)),
                                 fontWeight: FontWeight.w700,
                                 textColor: orderDetailsController.getTextColor( orderDetailsController.getOrderDetailsRetrievedResponseModel.value.data?.status == "received" ? "Received" :
-                                orderDetailsController.getOrderDetailsRetrievedResponseModel.value.data?.status  == "processing" ? "Processing" :
                                 orderDetailsController.getOrderDetailsRetrievedResponseModel.value.data?.status  == "ongoing" ? "Ongoing" :
                                 orderDetailsController.getOrderDetailsRetrievedResponseModel.value.data?.status  == "delivered" ? "Delivered" :
                                 "Canceled"),
                                 containerColor: orderDetailsController.getColor( orderDetailsController.getOrderDetailsRetrievedResponseModel.value.data?.status == "received" ? "Received" :
-                                orderDetailsController.getOrderDetailsRetrievedResponseModel.value.data?.status  == "processing" ? "Processing" :
                                 orderDetailsController.getOrderDetailsRetrievedResponseModel.value.data?.status  == "ongoing" ? "Ongoing" :
                                 orderDetailsController.getOrderDetailsRetrievedResponseModel.value.data?.status  == "delivered" ? "Delivered" :
                                 "Canceled"),
@@ -491,6 +493,14 @@ class UserOrderDeliveredStatusView extends StatelessWidget {
         )),
       ),
     );
+  }
+
+  Widget _sourceOrderView() {
+    if (sourceFulfillmentType == "pickup") {
+      return const UserProfilePickedOrderView();
+    }
+
+    return const UserProfileOrderView();
   }
 }
 

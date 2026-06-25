@@ -171,20 +171,56 @@ class PaymentController extends GetxController {
   }
 
   String _extractOrderId(dynamic data) {
-    final directOrder = _findValueByKeys(data, const ["order"]);
+    final directOrder = _findValueByKeys(
+      data,
+      const ["order", "orderId", "order_id"],
+      ignoreKeys: const ["paymentSession", "payment_session"],
+    );
     if (directOrder is String && directOrder.isNotEmpty) {
-      return directOrder;
+      return _isObjectId(directOrder) ? directOrder : "";
     }
 
     if (directOrder is Map) {
       final nestedId = directOrder["_id"] ?? directOrder["id"] ?? directOrder["sId"];
-      if (nestedId != null && nestedId.toString().isNotEmpty) {
+      if (nestedId != null && _isObjectId(nestedId.toString())) {
         return nestedId.toString();
       }
     }
 
-    final id = _findValueByKeys(data, const ["_id", "id", "sId", "order_id", "orderId"]);
-    return id == null ? "" : id.toString();
+    final orderIds = _findValueByKeys(
+      data,
+      const ["orderIds", "order_ids"],
+      ignoreKeys: const ["paymentSession", "payment_session"],
+    );
+    if (orderIds is List && orderIds.isNotEmpty) {
+      final firstOrderId = orderIds.first?.toString() ?? "";
+      if (_isObjectId(firstOrderId)) {
+        return firstOrderId;
+      }
+    }
+
+    final orders = _findValueByKeys(
+      data,
+      const ["orders"],
+      ignoreKeys: const ["paymentSession", "payment_session"],
+    );
+    if (orders is List && orders.isNotEmpty) {
+      final firstOrder = orders.first;
+      if (firstOrder is Map) {
+        final orderId = firstOrder["_id"] ?? firstOrder["id"] ?? firstOrder["sId"];
+        if (orderId != null && _isObjectId(orderId.toString())) {
+          return orderId.toString();
+        }
+      }
+    }
+
+    final id = _findValueByKeys(
+      data,
+      const ["_id", "id", "sId"],
+      ignoreKeys: const ["paymentSession", "payment_session"],
+    );
+    final value = id == null ? "" : id.toString();
+    return _isObjectId(value) ? value : "";
   }
 
   String _extractOrderIdFromPaymentUrl(String paymentUrl) {
@@ -198,7 +234,8 @@ class PaymentController extends GetxController {
 
     if (orderKeys.isEmpty) return "";
 
-    return uri.queryParameters[orderKeys.first]?.toString() ?? "";
+    final orderId = uri.queryParameters[orderKeys.first]?.toString() ?? "";
+    return _isObjectId(orderId) ? orderId : "";
   }
 
   String _extractStringValue(dynamic data, String key) {
@@ -206,7 +243,15 @@ class PaymentController extends GetxController {
     return value == null ? "" : value.toString().toLowerCase();
   }
 
-  dynamic _findValueByKeys(dynamic data, List<String> keys) {
+  bool _isObjectId(String value) {
+    return RegExp(r'^[a-fA-F0-9]{24}$').hasMatch(value);
+  }
+
+  dynamic _findValueByKeys(
+    dynamic data,
+    List<String> keys, {
+    List<String> ignoreKeys = const [],
+  }) {
     if (data is Map) {
       for (final key in keys) {
         if (data.containsKey(key) && data[key] != null) {
@@ -214,8 +259,15 @@ class PaymentController extends GetxController {
         }
       }
 
-      for (final value in data.values) {
-        final nestedValue = _findValueByKeys(value, keys);
+      for (final entry in data.entries) {
+        if (ignoreKeys.contains(entry.key.toString())) {
+          continue;
+        }
+        final nestedValue = _findValueByKeys(
+          entry.value,
+          keys,
+          ignoreKeys: ignoreKeys,
+        );
         if (nestedValue != null) {
           return nestedValue;
         }
@@ -224,7 +276,11 @@ class PaymentController extends GetxController {
 
     if (data is List) {
       for (final item in data) {
-        final nestedValue = _findValueByKeys(item, keys);
+        final nestedValue = _findValueByKeys(
+          item,
+          keys,
+          ignoreKeys: ignoreKeys,
+        );
         if (nestedValue != null) {
           return nestedValue;
         }

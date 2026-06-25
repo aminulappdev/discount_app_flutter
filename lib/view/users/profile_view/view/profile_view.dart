@@ -233,6 +233,15 @@ class ProfileView extends StatelessWidget {
                                 ),
 
                                 ProfileItemWidget(
+                                  title: "Picked Order",
+                                  icon: Image.asset(ImageUtils.userOrder, scale: 5,),
+                                  navigateIcon: Icon(Icons.navigate_next,size: 24.r(context), color: Colors.black54,),
+                                  onTap: () {
+                                    Get.off(()=>UserProfilePickedOrderView(),preventDuplicates: false,duration: Duration(milliseconds: 100));
+                                  },
+                                ),
+ 
+                                ProfileItemWidget(
                                   title: "Voucher",
                                   icon: Icon(Icons.confirmation_number_outlined, size: 24.r(context), color: ColorUtils.black29,),
                                   navigateIcon: Icon(Icons.navigate_next,size: 24.r(context), color: Colors.black54,),

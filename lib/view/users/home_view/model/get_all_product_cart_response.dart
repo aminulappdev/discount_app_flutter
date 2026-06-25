@@ -16,7 +16,7 @@ class GetAllProductCartResponse {
     data['success'] = this.success;
     data['message'] = this.message;
     if (this.data != null) {
-      data['data'] = this.data!.toJson();
+      data['data'] = this.data!.toJson(); 
     }
     return data;
   }

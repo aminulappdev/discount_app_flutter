@@ -14,7 +14,7 @@ class SingleProductViewScreen extends StatelessWidget {
     required this.isStoreScreen,
   });
   final String productId;
-  final String storeId;
+  final String storeId; 
   final bool isHomeScreen;
   final bool isSingleStoreScreen;
   final bool isProductListPage;
@@ -22,18 +22,58 @@ class SingleProductViewScreen extends StatelessWidget {
   final bool isStoreScreen;
   @override
   Widget build(BuildContext context) {
-    SingleProductViewScreenWidget singleProductViewScreenWidget = Get.put(SingleProductViewScreenWidget(context: context, productId: productId));
+    void goBack() {
+      if (isHomeScreen == true) {
+        Get.off(
+          () => UserDashboardView(index: 0),
+          duration: const Duration(milliseconds: 100),
+          preventDuplicates: false,
+        );
+      } else if (isSingleStoreScreen == true) {
+        Get.off(
+          () => SingleStoreViewScreen(
+            storeId: storeId,
+            isStoreListPage: isStoreScreen,
+            isHomePage: isHomeScreen,
+          ),
+          duration: const Duration(milliseconds: 100),
+          preventDuplicates: false,
+        );
+      } else if (isProductListPage == true) {
+        Get.off(
+          () => UserProductListView(categoryId: "", storeId: ""),
+          duration: const Duration(milliseconds: 100),
+          preventDuplicates: false,
+        );
+      } else if (isExplorePage == true) {
+        Get.off(
+          () => UserDashboardView(index: 2),
+          duration: const Duration(milliseconds: 100),
+          preventDuplicates: false,
+        );
+      } else if (Get.key.currentState?.canPop() == true) {
+        Get.back();
+      } else {
+        Get.off(
+          () => UserDashboardView(index: 0),
+          duration: const Duration(milliseconds: 100),
+          preventDuplicates: false,
+        );
+      }
+    }
+
+    SingleProductViewScreenWidget singleProductViewScreenWidget = Get.put(
+      SingleProductViewScreenWidget(
+        context: context,
+        productId: productId,
+        onBack: goBack,
+      ),
+    );
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (canPop,onOpoInvoked) {
-        if(isHomeScreen == true) {
-          Get.off(()=>UserDashboardView(index: 0,),duration: const Duration(milliseconds: 100),preventDuplicates: false);
-        } else if (isSingleStoreScreen == true) {
-          Get.off(()=>SingleStoreViewScreen(storeId: storeId,isStoreListPage: isStoreScreen,isHomePage: isHomeScreen,),duration: const Duration(milliseconds: 100),preventDuplicates: false);
-        } else if (isProductListPage == true) {
-          Get.off(()=>UserProductListView(categoryId: "",storeId: "",),duration: const Duration(milliseconds: 100),preventDuplicates: false);
-        }else if (isExplorePage == true) {
-          Get.off(()=>UserDashboardView(index: 2,),duration: const Duration(milliseconds: 100),preventDuplicates: false);
+        if (!canPop) {
+          goBack();
         }
       },
       child: Scaffold(

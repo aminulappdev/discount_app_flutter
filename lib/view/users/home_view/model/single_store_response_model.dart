@@ -18,7 +18,7 @@ class SingleStoreResponseModel {
     if (this.data != null) {
       data['data'] = this.data!.toJson();
     }
-    return data;
+    return data; 
   }
 }
 
@@ -29,6 +29,7 @@ class SingleStoreResponse {
   StoreLocation? location;
   var ratings;
   var description;
+  var vendorId;
   List<StoreCategories>? categories;
   var isBlocked;
   var isDeleted;
@@ -43,6 +44,7 @@ class SingleStoreResponse {
     this.location,
     this.ratings,
     this.description,
+    this.vendorId,
     this.categories,
     this.isBlocked,
     this.isDeleted,
@@ -60,6 +62,14 @@ class SingleStoreResponse {
         : null;
     ratings = json['ratings'];
     description = json['description'];
+    vendorId = _readId(json['vendorId']) ??
+        _readId(json['vendor_id']) ??
+        _readId(json['ownerId']) ??
+        _readId(json['owner_id']) ??
+        _readId(json['vendor']) ??
+        _readId(json['owner']) ??
+        _readId(json['createdBy']) ??
+        _readId(json['created_by']);
     if (json['categories'] != null) {
       categories = <StoreCategories>[];
       json['categories'].forEach((v) {
@@ -83,6 +93,7 @@ class SingleStoreResponse {
     }
     data['ratings'] = this.ratings;
     data['description'] = this.description;
+    data['vendorId'] = this.vendorId;
     if (this.categories != null) {
       data['categories'] = this.categories!.map((v) => v.toJson()).toList();
     }
@@ -92,6 +103,17 @@ class SingleStoreResponse {
     data['updatedAt'] = this.updatedAt;
     data['__v'] = this.iV;
     return data;
+  }
+
+  String? _readId(dynamic value) {
+    if (value == null) return null;
+    if (value is String) return value;
+    if (value is Map) {
+      return value['_id']?.toString() ??
+          value['id']?.toString() ??
+          value['sId']?.toString();
+    }
+    return value.toString();
   }
 }
 

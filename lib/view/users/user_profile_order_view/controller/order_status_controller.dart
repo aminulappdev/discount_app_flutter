@@ -14,14 +14,15 @@ class OrderStatusController extends GetxController {
   RxInt selectedTab = 0.obs;
   Rx<SingleProductResponseModel> singleProductResponseModel = SingleProductResponseModel().obs;
 
-  RxList<String> tabs = ["Received", "Processing", "Ongoing", "Delivered", "Canceled"].obs;
+  RxList<String> tabs = ["Received", "Ongoing", "Delivered", "Canceled"].obs;
 
   RxList<OrderStatusModel> orders = <OrderStatusModel>[].obs;
   Rx<GetAllOrderRetrievedResponseModel> getAllOrderRetrievedResponseModel = GetAllOrderRetrievedResponseModel().obs;
   Rxn<OrderStatusModel> selectedOrder = Rxn<OrderStatusModel>();
   Rx<LoginResponseModel> loginResponseModel = LoginResponseModel.fromJson(jsonDecode(LocalStorageUtils.getString(AppConstantUtils.loginResponse)!),).obs;
   BuildContext context;
-  OrderStatusController({required this.context});
+  final String fulfillmentType;
+  OrderStatusController({required this.context, this.fulfillmentType = "delivery"});
   var rating = 0.0.obs;
   var reviewText = "".obs;
 
@@ -46,6 +47,9 @@ class OrderStatusController extends GetxController {
         isLoading.value = false;
         getAllOrderRetrievedResponseModel.value = GetAllOrderRetrievedResponseModel.fromJson(data);
         getAllOrderRetrievedResponseModel.value.data?.data?.forEach((value) async {
+          if (value.fulfillmentType != fulfillmentType) {
+            return;
+          }
           await getSingleProductViewController(
             context: context,
             productId: value.items?.first.product,
@@ -103,8 +107,6 @@ class OrderStatusController extends GetxController {
     switch (status) {
       case "Received":
         return Colors.blue.shade100;
-      case "Processing":
-        return Colors.orange.shade100;
       case "Ongoing":
         return Colors.deepOrange.shade100;
       case "Delivered":
@@ -121,8 +123,6 @@ class OrderStatusController extends GetxController {
     switch (status) {
       case "Received":
         return Colors.blue;
-      case "Processing":
-        return Colors.orange;
       case "Ongoing":
         return Colors.deepOrange;
       case "Delivered":
@@ -140,7 +140,14 @@ class OrderStatusController extends GetxController {
 
   void selectOrder(OrderStatusModel order) {
     selectedOrder.value = order;
-    Get.to(()=> UserOrderDeliveredStatusView(orderId: selectedOrder.value!.id),duration: const Duration(milliseconds: 100),preventDuplicates: false);
+    Get.to(
+      ()=> UserOrderDeliveredStatusView(
+        orderId: selectedOrder.value!.id,
+        sourceFulfillmentType: fulfillmentType,
+      ),
+      duration: const Duration(milliseconds: 100),
+      preventDuplicates: false,
+    );
   }
 
   void updateStatus(String id, String status) {

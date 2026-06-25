@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:discount_me_app/view/view.dart';
-
+ 
 class RiderPaymentFreeTrailView extends StatefulWidget {
   const RiderPaymentFreeTrailView({super.key,required this.paymentUrl});
   final String paymentUrl;

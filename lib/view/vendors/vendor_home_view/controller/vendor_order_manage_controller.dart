@@ -112,9 +112,7 @@ class VendorOrderManageController extends GetxController {
     return orders.where((order) {
       final status = order.status.toLowerCase();
       if (tab == "ongoing") {
-        return status == "received" ||
-            status == "processing" ||
-            status == "ongoing";
+        return status == "received" || status == "ongoing";
       }
       if (tab == "canceled") {
         return status == "canceled" || status == "cancelled";

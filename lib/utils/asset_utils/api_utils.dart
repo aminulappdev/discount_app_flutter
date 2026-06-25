@@ -1,8 +1,8 @@
 class ApiUtils {
-
+ 
   //static const baseUrl = "http://206.162.244.133:5020/api/v1";
-  static const baseUrl = "http://10.10.10.25:5001/api/v1";
-  static const socketUrl = "http://10.10.10.25:5001/";
+  static const baseUrl = "http://10.10.28.34:5001/api/v1";
+  static const socketUrl = "http://10.10.28.34:5001";
   //static const baseUrl = "http://10.10.10.16:5020/api/v1";
 
  
@@ -10,6 +10,18 @@ class ApiUtils {
   static const String loginResponse = "$baseUrl/auth/login";
   static const String createPaymentResponse = "$baseUrl/payments/create-payment-session"; //done
   static const String pickupRequests = "$baseUrl/pickup-requests";
+  static String pickupRequestsByStatus(String status) {
+    return "$pickupRequests?status=$status";
+  }
+  static String pickupRequestDetails(String pickupRequestId) {
+    return "$pickupRequests/$pickupRequestId";
+  }
+  static String acceptPickupRequest(String pickupRequestId) {
+    return "$pickupRequests/accept/$pickupRequestId";
+  }
+  static String rejectPickupRequest(String pickupRequestId) {
+    return "$pickupRequests/reject/$pickupRequestId";
+  }
   static const String createCheckoutSession = "$baseUrl/subscriptions/create-checkout-session"; //done
   static const String createOrderResponse = "$baseUrl/orders";//done
   static const String riderProfile = "$baseUrl/riders/profile";//done
@@ -73,7 +85,7 @@ class ApiUtils {
     return "$baseUrl/orders/${orderId}";
   }
   static String getCategoryWiseProducts(String categoryId) {
-    return "$baseUrl/products?category=${categoryId}";
+    return "$baseUrl/products?category=${categoryId}&limit=9999";
   }
   static String getIncreaseCartItem(String productId) {
     return "$baseUrl/carts/increase/${productId}";
@@ -85,7 +97,7 @@ class ApiUtils {
     return "$baseUrl/carts/${cardId}";
   }
   static String getProductsByCategoryApiService(String categoryId) {
-    return "$baseUrl/products?category=${categoryId}";
+    return "$baseUrl/products?category=${categoryId}&limit=9999";
   }
   static String getProductsByStoreApiService(String storeId) {
     return "$baseUrl/products?store=${storeId}";
@@ -101,7 +113,7 @@ class ApiUtils {
   static const String getAllSetting = "$baseUrl/settings";
 
 
-  static const String getAllOrdersResponse = "$baseUrl/orders/user";
+  static const String getAllOrdersResponse = "$baseUrl/orders/user?limit=9999";
   static const String getVendorOrdersResponse = "$baseUrl/orders/vendor";
   static const String myVouchers = "$baseUrl/vouchers/my-vouchers";
   static String validateVoucher(String code) {
@@ -114,14 +126,16 @@ class ApiUtils {
   static const String categoriesResponse = "$baseUrl/categories";
   static const String editUserProfile = "$baseUrl/users";
   static const String vendorsProfile = "$baseUrl/vendors/profile"; //done
-  static const String getAllProductsResponse = "$baseUrl/products?sort=-ratings"; //done
-  static const String getAllExploreProductsResponse = "$baseUrl/products?sort=-ratings"; //done
+  static const String getAllProductsResponse = "$baseUrl/products?sort=-ratings&limit=9999"; //done
+  static const String getAllExploreProductsResponse = "$baseUrl/products?sort=-ratings&limit=9999"; //done
   static const String getAllStoresResponse = "$baseUrl/stores?sort=-ratings"; //done
   static const String getUserProfileResponse = "$baseUrl/users/profile"; //done
   static const String getAllBannerResponse = "$baseUrl/banners"; //done
   static const String addToCartResponse = "$baseUrl/carts"; //done
   static const String getAddToCartResponse = "$baseUrl/carts"; //done
-  static const String getAllProductResponse = "$baseUrl/products"; //done
+  static const String getAllProductResponse = "$baseUrl/products?limit=9999"; //done
+
+
 
 
 
@@ -131,3 +145,4 @@ class ApiUtils {
 
 
 }
+

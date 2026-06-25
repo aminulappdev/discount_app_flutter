@@ -7,7 +7,7 @@ import 'package:discount_me_app/res/app_const/import_list.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:discount_me_app/utils/utils.dart';
-import 'res/app_const/appNames.dart';
+import 'res/app_const/appNames.dart'; 
  
 
 class MyHttpOverrides extends HttpOverrides{

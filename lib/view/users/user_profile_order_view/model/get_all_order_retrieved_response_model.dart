@@ -61,6 +61,7 @@ class GetAllOrderRetrievedResponse {
   var total;
   var status;
   var paymentStatus;
+  var fulfillmentType;
   List<GetAllOrderRetrievedResponseItems>? items;
   var billingAddress;
   var shippingAddress;
@@ -79,6 +80,7 @@ class GetAllOrderRetrievedResponse {
     this.total,
     this.status,
     this.paymentStatus,
+    this.fulfillmentType,
     this.items,
     this.billingAddress,
     this.shippingAddress,
@@ -98,6 +100,7 @@ class GetAllOrderRetrievedResponse {
     total = json['total'];
     status = json['status'];
     paymentStatus = json['payment_status'];
+    fulfillmentType = json['fulfillment_type'];
     if (json['items'] != null) {
       items = <GetAllOrderRetrievedResponseItems>[];
       json['items'].forEach((v) {
@@ -123,6 +126,7 @@ class GetAllOrderRetrievedResponse {
     data['total'] = this.total;
     data['status'] = this.status;
     data['payment_status'] = this.paymentStatus;
+    data['fulfillment_type'] = this.fulfillmentType;
     if (this.items != null) {
       data['items'] = this.items!.map((v) => v.toJson()).toList();
     }
