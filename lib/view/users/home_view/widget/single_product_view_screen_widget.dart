@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:discount_me_app/view/view.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import '../../../../res/res.dart';
@@ -191,7 +192,7 @@ class SingleProductViewScreenWidget extends GetxController {
                                       padding: EdgeInsets.zero,
                                     ),
                                     onPressed: () {
-                                      Get.off(
+                                      Get.to(
                                         () => UserNotificationView(),
                                         preventDuplicates: false,
                                         duration: const Duration(
@@ -340,54 +341,87 @@ class SingleProductViewScreenWidget extends GetxController {
 
                           // Rating
                           singleProductResponseModel.value.data?.ratings != null
-                              ? Row(
+                              ? Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: List.generate(5, (Index) {
-                                        // Calculate the fill amount for each star
-                                        double starValue =
-                                            double.parse(
+                                      children: [
+                                        Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: List.generate(5, (Index) {
+                                            // Calculate the fill amount for each star
+                                            double starValue =
+                                                double.parse(
+                                                  singleProductResponseModel
+                                                      .value
+                                                      .data!
+                                                      .ratings
+                                                      .toString(),
+                                                ) -
+                                                Index;
+                                            bool isFilled = starValue >= 1.0;
+                                            bool isHalfFilled =
+                                                starValue > 0.0 &&
+                                                starValue < 1.0;
+
+                                            return Icon(
+                                              isFilled
+                                                  ? Icons.star
+                                                  : isHalfFilled
+                                                  ? Icons.star_half
+                                                  : Icons.star_border,
+                                              size: 18.r(context),
+                                              color: isFilled || isHalfFilled
+                                                  ? Colors.amber
+                                                  : Colors.grey.shade600,
+                                            );
+                                          }),
+                                        ),
+                                        SizedBox(width: 5.w(context)),
+                                        CustomTextContainer.plainTextContainerWidgetWithoutHeightWidth(
+                                          plainTextString:
                                               singleProductResponseModel
                                                   .value
                                                   .data!
                                                   .ratings
+                                                  .toStringAsFixed(1)
                                                   .toString(),
-                                            ) -
-                                            Index;
-                                        bool isFilled = starValue >= 1.0;
-                                        bool isHalfFilled =
-                                            starValue > 0.0 && starValue < 1.0;
-
-                                        return Icon(
-                                          isFilled
-                                              ? Icons.star
-                                              : isHalfFilled
-                                              ? Icons.star_half
-                                              : Icons.star_border,
-                                          size: 18.r(context),
-                                          color: isFilled || isHalfFilled
-                                              ? Colors.amber
-                                              : Colors.grey.shade600,
-                                        );
-                                      }),
+                                          plainTextStringFontSize: 18.sp(
+                                            context,
+                                          ),
+                                          plainTextStringFontWeight:
+                                              FontWeight.w600,
+                                          plainTextContainerAlignment:
+                                              Alignment.center,
+                                          plainTextStringColor:
+                                              ColorUtils.black29,
+                                          plainTextStringTextAlign:
+                                              TextAlign.start,
+                                        ),
+                                      ],
                                     ),
-                                    SizedBox(width: 5.w(context)),
-                                    CustomTextContainer.plainTextContainerWidgetWithoutHeightWidth(
-                                      plainTextString:
-                                          singleProductResponseModel
-                                              .value
-                                              .data!
-                                              .ratings
-                                              .toStringAsFixed(1)
-                                              .toString(),
-                                      plainTextStringFontSize: 18.sp(context),
-                                      plainTextStringFontWeight:
-                                          FontWeight.w600,
-                                      plainTextContainerAlignment:
-                                          Alignment.center,
-                                      plainTextStringColor: ColorUtils.black29,
-                                      plainTextStringTextAlign: TextAlign.start,
+
+                                    GestureDetector(
+                                      onTap: () {
+                                        Get.to(
+                                          () => ProductReviewsView(
+                                            productId: productId,
+                                          ),
+                                          duration: const Duration(
+                                            milliseconds: 100,
+                                          ),
+                                          preventDuplicates: false,
+                                        );
+                                      },
+                                      child: Text(
+                                        "All Reviews",
+                                        style: GoogleFonts.urbanist(
+                                          fontSize: 12.sp(context),
+                                          fontWeight: FontWeight.w500,
+                                          color: Colors.green.shade600,
+                                        ),
+                                      ),
                                     ),
                                   ],
                                 )

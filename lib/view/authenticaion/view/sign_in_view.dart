@@ -255,6 +255,8 @@ class SignInView extends StatelessWidget {
                                         } else if (decodedToken['role'] == "rider") {
                                           if(signInController.loginResponseModel.value.data?.hasFreeTrial == false && signInController.loginResponseModel.value.data?.subscription?.hasActiveSubscription == false) {
                                             Get.off(()=>RiderSubscriptionFreeTrailView(),duration: const Duration(milliseconds: 100),preventDuplicates: false);
+                                          } else if (signInController.loginResponseModel.value.data?.isPayoutReady == false) {
+                                            Get.off(()=>StripeConnectRequiredView(role: "rider"),duration: const Duration(milliseconds: 100),preventDuplicates: false);
                                           } else {
                                             Get.off(()=>RiderDashboardView(index: 0,),duration: const Duration(milliseconds: 100),preventDuplicates: false);
                                           }
@@ -262,6 +264,8 @@ class SignInView extends StatelessWidget {
                                         } else if (decodedToken['role'] == "vendor") {
                                           if(signInController.loginResponseModel.value.data?.hasFreeTrial == false && signInController.loginResponseModel.value.data?.subscription?.hasActiveSubscription == false) {
                                             Get.off(()=>VendorSubscriptionFreeTrailView(),duration: const Duration(milliseconds: 100),preventDuplicates: false);
+                                          } else if (signInController.loginResponseModel.value.data?.isPayoutReady == false) {
+                                            Get.off(()=>StripeConnectRequiredView(role: "vendor"),duration: const Duration(milliseconds: 100),preventDuplicates: false);
                                           } else {
                                             Get.off(()=>VendorDashboardView(index: 0,),duration: const Duration(milliseconds: 100),preventDuplicates: false);
                                           }
@@ -269,6 +273,8 @@ class SignInView extends StatelessWidget {
                                         } else if (decodedToken['role'] == "broker") {
                                           if(signInController.loginResponseModel.value.data?.hasFreeTrial == false && signInController.loginResponseModel.value.data?.subscription?.hasActiveSubscription == false) {
                                             Get.off(()=>BrokerSubscriptionFreeTrailView(),duration: const Duration(milliseconds: 100),preventDuplicates: false);
+                                          } else if (signInController.loginResponseModel.value.data?.isPayoutReady == false) {
+                                            Get.off(()=>StripeConnectRequiredView(role: "broker"),duration: const Duration(milliseconds: 100),preventDuplicates: false);
                                           } else {
                                             Get.off(()=>BrokerDashboardView(index: 0),duration: const Duration(milliseconds: 100),preventDuplicates: false);
                                           }

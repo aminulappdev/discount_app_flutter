@@ -36,12 +36,14 @@ class LoginResponse {
   var refreshToken;
   LoginResponseSubscription? subscription;
   var hasFreeTrial;
+  var isPayoutReady;
 
   LoginResponse({
     this.accessToken,
     this.refreshToken,
     this.subscription,
     this.hasFreeTrial,
+    this.isPayoutReady,
   });
 
   LoginResponse.fromJson(Map<String, dynamic> json) {
@@ -55,6 +57,10 @@ class LoginResponse {
       'has_free_trial',
       'has_freeTrial',
     ]);
+    isPayoutReady = _readJsonValue(json, [
+      'is_payout_ready',
+      'isPayoutReady',
+    ]);
   }
 
   Map<String, dynamic> toJson() {
@@ -65,6 +71,7 @@ class LoginResponse {
       data['subscription'] = this.subscription!.toJson();
     }
     data['hasFreeTrial'] = this.hasFreeTrial;
+    data['is_payout_ready'] = this.isPayoutReady;
     return data;
   }
 }

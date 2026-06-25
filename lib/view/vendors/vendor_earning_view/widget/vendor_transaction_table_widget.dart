@@ -1,23 +1,35 @@
 import 'package:discount_me_app/view/vendors/vendor_earning_view/view/vendor_transaction_details_screen.dart';
+import 'package:discount_me_app/view/vendors/vendor_earning_view/model/vendor_earnings_response_model.dart';
 import 'package:flutter/material.dart';
 import 'package:discount_me_app/utils/utils.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 
 class VendorTransactionTableWidget extends StatelessWidget {
-  VendorTransactionTableWidget({super.key});
+  const VendorTransactionTableWidget({
+    super.key,
+    required this.earnings,
+  });
 
-  final List<Map<String, String>> transactions = List.generate(
-    8,
-        (index) => {
-      'name': 'Robert Fox',
-      'account': '(516) 831-1111',
-      'date': '02-24-2024',
-      'amount': '\$200',
-    }, 
-  );
+  final List<VendorEarningItem> earnings;
 
   @override
    Widget build(BuildContext context) {
+    if (earnings.isEmpty) {
+      return Padding(
+        padding: EdgeInsets.symmetric(vertical: 24.vpm(context)),
+        child: TextHelperClass.headingTextWithoutWidth(
+          context: context,
+          alignment: Alignment.center,
+          textAlign: TextAlign.center,
+          fontSize: 18,
+          fontWeight: FontWeight.w600,
+          textColor: ColorUtils.black114,
+          text: "No earnings found",
+        ),
+      );
+    }
+
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: Padding(
@@ -30,7 +42,7 @@ class VendorTransactionTableWidget extends StatelessWidget {
             columns: <DataColumn>[
               DataColumn(label: Text('#SI')),
               DataColumn(label: Text('Full Name')),
-              DataColumn(label: Text('Acc Number')),
+              DataColumn(label: Text('Transaction ID')),
               DataColumn(
                 label: Row(
                   children: [
@@ -40,9 +52,14 @@ class VendorTransactionTableWidget extends StatelessWidget {
                 ),
               ),
               DataColumn(label: Text('Amount')),
+              DataColumn(label: Text('Company Fee')),
+              DataColumn(label: Text('Net')),
             ],
-            rows: transactions.asMap().entries.map(
+            rows: earnings.asMap().entries.map(
                   (entry) {
+                final item = entry.value;
+                final amount = _asDouble(item.amount);
+                final companyFee = _asDouble(item.companyFee);
                 return DataRow(
                   cells: [
                     DataCell(
@@ -54,14 +71,18 @@ class VendorTransactionTableWidget extends StatelessWidget {
                       Row(
                         children: [
                           CircleAvatar(
-                            backgroundImage: AssetImage(ImageUtils.homeProfileAvatar),
+                            backgroundImage: item.payerImage == null
+                                ? AssetImage(ImageUtils.homeProfileAvatar)
+                                : NetworkImage(item.payerImage.toString())
+                                    as ImageProvider,
                             radius: 15,
                           ),
                           SizedBox(width: 10),
                           // Instead of Flexible, use Expanded inside the Row
-                          Expanded(
+                          SizedBox(
+                            width: 120.w(context),
                             child: Text(
-                              entry.value['name']!,
+                              item.payerName?.toString() ?? "N/A",
                               overflow: TextOverflow.ellipsis,
                             ),
                           ),
@@ -71,15 +92,23 @@ class VendorTransactionTableWidget extends StatelessWidget {
                     ),
 
                     DataCell(
-                      Text(entry.value['account']!),
+                      Text(item.transactionId?.toString() ?? "N/A"),
                       onTap: () => Get.to(VendorTransactionDetailsScreen()),
                     ),
                     DataCell(
-                      Text(entry.value['date']!),
+                      Text(_formatDate(item.date)),
                       onTap: () => Get.to(VendorTransactionDetailsScreen()),
                     ),
                     DataCell(
-                      Text(entry.value['amount']!),
+                      Text("\$${amount.toStringAsFixed(2)}"),
+                      onTap: () => Get.to(VendorTransactionDetailsScreen()),
+                    ),
+                    DataCell(
+                      Text("\$${companyFee.toStringAsFixed(2)}"),
+                      onTap: () => Get.to(VendorTransactionDetailsScreen()),
+                    ),
+                    DataCell(
+                      Text("\$${(amount - companyFee).toStringAsFixed(2)}"),
                       onTap: () => Get.to(VendorTransactionDetailsScreen()),
                     ),
                   ],
@@ -90,5 +119,18 @@ class VendorTransactionTableWidget extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  double _asDouble(dynamic value) {
+    return double.tryParse(value?.toString() ?? "0") ?? 0;
+  }
+
+  String _formatDate(dynamic value) {
+    if (value == null) return "N/A";
+    try {
+      return DateFormat("dd-MM-yyyy").format(DateTime.parse(value.toString()));
+    } catch (_) {
+      return value.toString();
+    }
   }
 }

@@ -9,6 +9,10 @@ class ApiUtils {
   //user
   static const String loginResponse = "$baseUrl/auth/login";
   static const String createPaymentResponse = "$baseUrl/payments/create-payment-session"; //done
+  static const String reviews = "$baseUrl/reviews";
+  static String productReviews(String productId) {
+    return "$reviews/$productId";
+  }
   static const String pickupRequests = "$baseUrl/pickup-requests";
   static String pickupRequestsByStatus(String status) {
     return "$pickupRequests?status=$status";
@@ -23,6 +27,8 @@ class ApiUtils {
     return "$pickupRequests/reject/$pickupRequestId";
   }
   static const String createCheckoutSession = "$baseUrl/subscriptions/create-checkout-session"; //done
+  static const String stripeConnectOnboardingLink = "$baseUrl/stripe-connect/onboarding-link";
+  static const String stripeConnectStatus = "$baseUrl/stripe-connect/status";
   static const String createOrderResponse = "$baseUrl/orders";//done
   static const String riderProfile = "$baseUrl/riders/profile";//done
   static const String brokersProfile = "$baseUrl/brokers/profile";//done
@@ -115,6 +121,7 @@ class ApiUtils {
 
   static const String getAllOrdersResponse = "$baseUrl/orders/user?limit=9999";
   static const String getVendorOrdersResponse = "$baseUrl/orders/vendor";
+  static const String vendorEarnings = "$baseUrl/settlements/vendor/earnings";
   static const String myVouchers = "$baseUrl/vouchers/my-vouchers";
   static String validateVoucher(String code) {
     return "$baseUrl/vouchers/validate/$code";

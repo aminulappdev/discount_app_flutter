@@ -281,7 +281,7 @@ class VendorProfileHomeView extends StatelessWidget {
                         //   ),
                         //   onTap: () {
                         //     Get.off(()=>VendorCreatedCouponScreen(),preventDuplicates: false,duration: Duration(milliseconds: 100));
-                        //   },
+                        //   }, 
                         // ),
                         ProfileItemWidget(
                           title: "Scan Coupon",

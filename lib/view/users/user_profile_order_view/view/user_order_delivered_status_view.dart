@@ -319,7 +319,30 @@ class UserOrderDeliveredStatusView extends StatelessWidget {
                             context: context,
                             height: 44,
                             onPressed: () async {
-                              Get.to(UserShareReviewScreen());
+                              final productId = orderDetailsController
+                                      .getOrderDetailsRetrievedResponseModel
+                                      .value
+                                      .data
+                                      ?.items
+                                      ?.first
+                                      .product
+                                      ?.sId
+                                      ?.toString() ??
+                                  "";
+
+                              if (productId.isEmpty) {
+                                MessageSnackBarWidget.errorSnackBarWidget(
+                                  context: context,
+                                  message: "Product not found",
+                                );
+                                return;
+                              }
+
+                              Get.to(
+                                () => UserShareReviewScreen(
+                                  productId: productId,
+                                ),
+                              );
                             },
                             text: "Share Review",
                             padding: EdgeInsets.symmetric(vertical: 14.5.vpm(context)),
