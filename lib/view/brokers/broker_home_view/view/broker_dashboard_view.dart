@@ -7,7 +7,7 @@ class BrokerDashboardView extends StatelessWidget {
   const BrokerDashboardView({super.key,required this.index});
 
   final int index;
-
+  
   @override
   Widget build(BuildContext context) {
     final DashboardBrokerController dashboardBrokerController = Get.put(DashboardBrokerController(

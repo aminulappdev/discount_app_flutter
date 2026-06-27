@@ -4,7 +4,7 @@ class ApiUtils {
   static const baseUrl = "http://10.10.28.34:5001/api/v1";
   static const socketUrl = "http://10.10.28.34:5001";
   //static const baseUrl = "http://10.10.10.16:5020/api/v1";
-
+ 
  
   //user
   static const String loginResponse = "$baseUrl/auth/login";
@@ -123,6 +123,7 @@ class ApiUtils {
   static const String getVendorOrdersResponse = "$baseUrl/orders/vendor";
   static const String vendorEarnings = "$baseUrl/settlements/vendor/earnings";
   static const String riderEarnings = "$baseUrl/settlements/rider/earnings";
+  static const String brokerEarnings = "$baseUrl/settlements/broker/earnings";
   static const String myVouchers = "$baseUrl/vouchers/my-vouchers";
   static String validateVoucher(String code) {
     return "$baseUrl/vouchers/validate/$code";
