@@ -19,7 +19,7 @@ class SignUpView extends StatelessWidget {
       body: PopScope(
         canPop: false,
         onPopInvokedWithResult: (didPop, result) async {
-          Get.off(()=>WelcomeView(),duration: const Duration(milliseconds: 100),preventDuplicates: false);
+          Get.to(()=>WelcomeView(),duration: const Duration(milliseconds: 100),preventDuplicates: false);
         },
         child: Obx(()=>Container(
           height: 926.h(context),
@@ -70,7 +70,7 @@ class SignUpView extends StatelessWidget {
                         context: context,
                         title: "Create Account",
                         onPress: () async {
-                          Get.off(()=>WelcomeView(),duration: const Duration(milliseconds: 100),preventDuplicates: false);
+                          Get.to(()=>WelcomeView(),duration: const Duration(milliseconds: 100),preventDuplicates: false);
                         },
                       ),
                             
@@ -207,7 +207,7 @@ class SignUpView extends StatelessWidget {
                                     fontWeight: FontWeight.w700,
                                     color: ColorUtils.orange125,
                                     recognizer: TapGestureRecognizer()..onTap = () {
-                                      Get.off(()=>SignInView(), duration: const Duration(milliseconds: 100),preventDuplicates: false);
+                                      Get.to(()=>SignInView(), duration: const Duration(milliseconds: 100),preventDuplicates: false);
                                     },
                                   ).toTextSpan(),
                                 ],
@@ -291,7 +291,7 @@ class SignUpView extends StatelessWidget {
     final c = signUpController;
 
     return {
-      "name": "${c.firstNameController.value.text},${c.lastNameController.value.text}",
+      "name": "${c.firstNameController.value.text.trim()} ${c.lastNameController.value.text.trim()}",
       "password": c.passwordController.value.text,
       "email": c.emailController.value.text,
       "contact": c.phoneNumber.value,
@@ -305,7 +305,7 @@ class SignUpView extends StatelessWidget {
     final c = signUpController;
 
     return {
-      "name": "${c.firstNameController.value.text},${c.lastNameController.value.text}",
+      "name": "${c.firstNameController.value.text.trim()} ${c.lastNameController.value.text.trim()}",
       "password": c.passwordController.value.text,
       "email": c.emailController.value.text,
       "location": c.locationController.value.text,
@@ -318,7 +318,7 @@ class SignUpView extends StatelessWidget {
     final c = signUpController;
 
     return {
-      "name": "${c.firstNameController.value.text},${c.lastNameController.value.text}",
+      "name": "${c.firstNameController.value.text.trim()} ${c.lastNameController.value.text.trim()}",
       "password": c.passwordController.value.text,
       "email": c.emailController.value.text,
       "location": c.locationController.value.text,

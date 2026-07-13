@@ -15,10 +15,10 @@ class OrderSelectAddressController extends GetxController {
   Rx<GetAllProductCartResponse> getAllProductCartResponse = GetAllProductCartResponse().obs;
   RxBool isLoading = false.obs;
   RxBool isSubmit = false.obs;
-  RxDouble subTotal = 0.0.obs;
+  RxDouble subTotal = 0.0.obs; 
   RxDouble discount = 0.0.obs;
   RxDouble shippingFee = 0.0.obs;
-  RxDouble total = 0.0.obs;
+  RxDouble total = 0.0.obs; 
   Rx<UserBillingAddressResponseModel> userBillingAddressResponseModel = UserBillingAddressResponseModel().obs;
   Rx<UserShippingAddressResponseModel> userShippingAddressResponseModel = UserShippingAddressResponseModel().obs;
   RxString fulfillmentType = "delivery".obs;
@@ -115,7 +115,7 @@ class OrderSelectAddressController extends GetxController {
           CustomSnackBar().errorCustomSnackBar(context: context, message: "${e}");
           if(e == "jwt expired") {
             await AppLocalStorage.removeKey(key: "Login");
-            Get.off(()=>SignInView(),preventDuplicates: false,duration: Duration(milliseconds: 100));
+            Get.to(()=>SignInView(),preventDuplicates: false,duration: Duration(milliseconds: 100));
           }
         },
       );
@@ -316,7 +316,7 @@ class OrderSelectAddressController extends GetxController {
       return;
     }
 
-    Get.off(
+    Get.to(
       () => OrderPaymentView(
         paymentUrl: paymentUrl,
         fulfillmentType: fulfillmentType.value,

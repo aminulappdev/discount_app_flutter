@@ -55,6 +55,7 @@ class RiderPickupRequest {
   String? deliveryLocation;
   String? status;
   List<dynamic>? rejections;
+  String? deliveryProofImage;
   bool? isCancelled;
 
   RiderPickupRequest({
@@ -65,6 +66,7 @@ class RiderPickupRequest {
     this.deliveryLocation,
     this.status,
     this.rejections,
+    this.deliveryProofImage,
     this.isCancelled,
   });
 
@@ -79,6 +81,7 @@ class RiderPickupRequest {
     rejections = json['rejections'] != null
         ? List<dynamic>.from(json['rejections'])
         : null;
+    deliveryProofImage = json['delivery_proof_image'];
     isCancelled = json['isCancelled'];
   }
 
@@ -106,8 +109,14 @@ class RiderPickupOrder {
   RiderPickupAddress? billingAddress;
   RiderPickupAddress? shippingAddress;
   String? fulfillmentType;
+  dynamic firstResponderType;
+  num? firstResponderDiscountPercentage;
+  num? rewardPointsDiscountPercentage;
+  num? appliedDiscountPercentage;
+  String? stripeCheckoutSessionId;
   String? createdAt;
   String? updatedAt;
+  num? iV;
 
   RiderPickupOrder({
     this.sId,
@@ -124,8 +133,14 @@ class RiderPickupOrder {
     this.billingAddress,
     this.shippingAddress,
     this.fulfillmentType,
+    this.firstResponderType,
+    this.firstResponderDiscountPercentage,
+    this.rewardPointsDiscountPercentage,
+    this.appliedDiscountPercentage,
+    this.stripeCheckoutSessionId,
     this.createdAt,
     this.updatedAt,
+    this.iV,
   });
 
   RiderPickupOrder.fromJson(Map<String, dynamic> json) {
@@ -151,8 +166,16 @@ class RiderPickupOrder {
     billingAddress = _addressFromJson(json['billing_address']);
     shippingAddress = _addressFromJson(json['shipping_address']);
     fulfillmentType = json['fulfillment_type'];
+    firstResponderType = json['first_responder_type'];
+    firstResponderDiscountPercentage =
+        json['first_responder_discount_percentage'];
+    rewardPointsDiscountPercentage =
+        json['reward_points_discount_percentage'];
+    appliedDiscountPercentage = json['applied_discount_percentage'];
+    stripeCheckoutSessionId = json['stripe_checkout_session_id'];
     createdAt = json['createdAt'];
     updatedAt = json['updatedAt'];
+    iV = json['__v'];
   }
 
   RiderPickupAddress? _addressFromJson(dynamic value) {
@@ -277,6 +300,7 @@ class RiderPickupAddress {
   String? address;
   String? createdAt;
   String? updatedAt;
+  num? iV;
 
   RiderPickupAddress({
     this.locationCoordinates,
@@ -295,6 +319,7 @@ class RiderPickupAddress {
     this.address,
     this.createdAt,
     this.updatedAt,
+    this.iV,
   });
 
   RiderPickupAddress.fromJson(Map<String, dynamic> json) {
@@ -314,6 +339,7 @@ class RiderPickupAddress {
     address = json['address'];
     createdAt = json['createdAt'];
     updatedAt = json['updatedAt'];
+    iV = json['__v'];
   }
 
   RiderPickupCoordinates? _coordinatesFromJson(dynamic value) {

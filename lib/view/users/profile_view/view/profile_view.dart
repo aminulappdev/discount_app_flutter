@@ -56,7 +56,7 @@ class ProfileView extends StatelessWidget {
                   child: RefreshIndicator(
                     onRefresh: () async {
                       Get.delete<ProfileController>(force: true);
-                      Get.off(()=>UserDashboardView(index: 3,),duration: const Duration(milliseconds: 100),preventDuplicates: false);
+                      Get.to(()=>UserDashboardView(index: 3,),duration: const Duration(milliseconds: 100),preventDuplicates: false);
                     },
                     child: CustomScrollView(
                       slivers: [
@@ -210,7 +210,7 @@ class ProfileView extends StatelessWidget {
                                   icon: Image.asset(ImageUtils.userEdite, scale: 5,),
                                   navigateIcon: Icon(Icons.navigate_next, size: 24.r(context), color: Colors.black54,),
                                   onTap: () {
-                                    Get.off(()=>UserProfileEditView(),preventDuplicates: false,duration: Duration(milliseconds: 100));
+                                    Get.to(()=>UserProfileEditView(),preventDuplicates: false,duration: Duration(milliseconds: 100));
                                   },
                                 ),
 
@@ -219,7 +219,7 @@ class ProfileView extends StatelessWidget {
                                   icon: Image.asset(ImageUtils.shoppingCardIcon, scale: 5,),
                                   navigateIcon: Icon(Icons.navigate_next,size: 24.r(context), color: Colors.black54,),
                                   onTap: () {
-                                    Get.off(()=>CartView(),preventDuplicates: false,duration: Duration(milliseconds: 100));
+                                    Get.to(()=>CartView(),preventDuplicates: false,duration: Duration(milliseconds: 100));
                                   },
                                 ),
 
@@ -228,7 +228,7 @@ class ProfileView extends StatelessWidget {
                                   icon: Image.asset(ImageUtils.userOrder, scale: 5,),
                                   navigateIcon: Icon(Icons.navigate_next,size: 24.r(context), color: Colors.black54,),
                                   onTap: () {
-                                    Get.off(()=>UserProfileOrderView(),preventDuplicates: false,duration: Duration(milliseconds: 100));
+                                    Get.to(()=>UserProfileOrderView(),preventDuplicates: false,duration: Duration(milliseconds: 100));
                                   },
                                 ),
 
@@ -237,7 +237,7 @@ class ProfileView extends StatelessWidget {
                                   icon: Image.asset(ImageUtils.userOrder, scale: 5,),
                                   navigateIcon: Icon(Icons.navigate_next,size: 24.r(context), color: Colors.black54,),
                                   onTap: () {
-                                    Get.off(()=>UserProfilePickedOrderView(),preventDuplicates: false,duration: Duration(milliseconds: 100));
+                                    Get.to(()=>UserProfilePickedOrderView(),preventDuplicates: false,duration: Duration(milliseconds: 100));
                                   },
                                 ),
  
@@ -246,7 +246,7 @@ class ProfileView extends StatelessWidget {
                                   icon: Icon(Icons.confirmation_number_outlined, size: 24.r(context), color: ColorUtils.black29,),
                                   navigateIcon: Icon(Icons.navigate_next,size: 24.r(context), color: Colors.black54,),
                                   onTap: () {
-                                    Get.off(()=>GetVoucherScreen(),preventDuplicates: false,duration: Duration(milliseconds: 100));
+                                    Get.to(()=>GetVoucherScreen(),preventDuplicates: false,duration: Duration(milliseconds: 100));
                                   },
                                 ),
 
@@ -266,7 +266,7 @@ class ProfileView extends StatelessWidget {
                                   icon: Image.asset(ImageUtils.userNotification, scale: 5,),
                                   navigateIcon: Icon(Icons.navigate_next,size: 24.r(context), color: Colors.black54,),
                                   onTap: () {
-                                    Get.off(()=>UserNotificationView(),preventDuplicates: false,duration: Duration(milliseconds: 100));
+                                    Get.to(()=>UserNotificationView(),preventDuplicates: false,duration: Duration(milliseconds: 100));
                                   },
                                 ),
 
@@ -275,7 +275,7 @@ class ProfileView extends StatelessWidget {
                                   icon: Image.asset(ImageUtils.settingIcon, scale: 5,),
                                   navigateIcon: Icon(Icons.navigate_next,size: 24.r(context), color: Colors.black54,),
                                   onTap: () {
-                                    Get.off(()=>UserProfileSettingView(),preventDuplicates: false,duration: Duration(milliseconds: 100));
+                                    Get.to(()=>UserProfileSettingView(),preventDuplicates: false,duration: Duration(milliseconds: 100));
                                   },
                                 ),
 

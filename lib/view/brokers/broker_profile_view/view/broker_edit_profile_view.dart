@@ -16,7 +16,7 @@ class BrokerEditProfileView extends StatelessWidget {
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop,onPopInvoked) {
-        Get.off(()=>BrokerDashboardView(index: 3,),preventDuplicates: false);
+        Get.to(()=>BrokerDashboardView(index: 3,),preventDuplicates: false);
       },
       child: Scaffold(
         body: Obx(()=>Skeletonizer(
@@ -46,7 +46,7 @@ class BrokerEditProfileView extends StatelessWidget {
 
                           UserProfileAppbarWidget(
                             onTap: () async {
-                              Get.off(()=>BrokerDashboardView(index: 3,),preventDuplicates: false);
+                              Get.to(()=>BrokerDashboardView(index: 3,),preventDuplicates: false);
                             },
                             title: "Edit Profile",
                           ),
@@ -65,7 +65,7 @@ class BrokerEditProfileView extends StatelessWidget {
                     child: RefreshIndicator(
                       onRefresh: () async {
                         Get.delete<BrokerEditProfileController>(force: true);
-                        Get.off(()=>BrokerEditProfileView(),preventDuplicates: false);
+                        Get.to(()=>BrokerEditProfileView(),preventDuplicates: false);
                       },
                       child: CustomScrollView(
                         slivers: [

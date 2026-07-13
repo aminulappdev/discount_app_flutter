@@ -9,13 +9,9 @@ class StoreListViewScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     StoreListViewScreenWidget storeListViewScreenWidget = Get.put(StoreListViewScreenWidget(context: context));
-    return PopScope(
-      canPop: false,
-      onPopInvokedWithResult: (canPop,onOpoInvoked) {
-        Get.off(()=>UserDashboardView(index: 0,),duration: const Duration(milliseconds: 100),preventDuplicates: false);
-      },
-      child: Scaffold(
-        body: storeListViewScreenWidget.storeListViewScreenWidget(context: context),
+    return Scaffold(
+      body: storeListViewScreenWidget.storeListViewScreenWidget(
+        context: context,
       ),
     );
   }

@@ -96,7 +96,7 @@ class VendorItemDetailsViewScreenWidget extends GetxController {
                     UserProfileAppbarWidget(
                       title: "Items Details",
                       onTap: () {
-                        Get.off(()=>VendorDashboardView(index: 2,),duration: const Duration(milliseconds: 100),preventDuplicates: false);
+                        Get.to(()=>VendorDashboardView(index: 2,),duration: const Duration(milliseconds: 100),preventDuplicates: false);
                       },
                     ),
 

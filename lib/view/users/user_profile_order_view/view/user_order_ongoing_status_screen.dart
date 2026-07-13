@@ -194,25 +194,25 @@ class UserOrderOngoingStatusScreen extends StatelessWidget {
                     },
                   ),
                   10.heightBox,
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      GestureDetector(
-                        onTap: () {
-                          Get.to(UserRiderLocationScreen());
-                        },
-                        child: CustomText(
-                          title: "View Rider Location",
-                          color: ColorUtils.secondaryColor,
-                          fontSize: 18.sp(context),
-                          fontWeight: FontWeight.w500,
-                          decoration: TextDecoration.underline,
-                          decorationColor: ColorUtils.secondaryColor,
-                        ),
-                      )
-                    ],
-                  ),
+                  // Row(
+                  //   mainAxisAlignment: MainAxisAlignment.center,
+                  //   crossAxisAlignment: CrossAxisAlignment.center,
+                  //   children: [
+                  //     GestureDetector(
+                  //       onTap: () {
+                  //         Get.to(UserRiderLocationScreen());
+                  //       },
+                  //       child: CustomText(
+                  //         title: "View Rider Location",
+                  //         color: ColorUtils.secondaryColor,
+                  //         fontSize: 18.sp(context),
+                  //         fontWeight: FontWeight.w500,
+                  //         decoration: TextDecoration.underline,
+                  //         decorationColor: ColorUtils.secondaryColor,
+                  //       ),
+                  //     )
+                  //   ],
+                  // ),
 
                   50.heightBox,
                   Column(

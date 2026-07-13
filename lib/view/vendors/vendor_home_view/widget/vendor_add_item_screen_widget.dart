@@ -82,7 +82,7 @@ class VendorAddItemScreenWidget extends GetxController {
                     UserProfileAppbarWidget(
                       title: "Add Item",
                       onTap: () {
-                        Get.off(()=>VendorDashboardView(index: 0,),duration: const Duration(milliseconds: 100),preventDuplicates: false);
+                        Get.to(()=>VendorDashboardView(index: 0,),duration: const Duration(milliseconds: 100),preventDuplicates: false);
                       },
                     ),
 
@@ -298,7 +298,7 @@ class VendorAddItemScreenWidget extends GetxController {
                               price: double.parse(itemPrice.value.text),
                               quantity: double.parse(itemQuantity.value.text),
                               onSuccess: (e) async {
-                                await Get.off(()=>VendorDashboardView(index: 2),preventDuplicates: false,duration: Duration(milliseconds: 100));
+                                await Get.to(()=>VendorDashboardView(index: 2),preventDuplicates: false,duration: Duration(milliseconds: 100));
                                 isSubmit.value = false;
                               },
                               onFail: (e) {
@@ -308,7 +308,7 @@ class VendorAddItemScreenWidget extends GetxController {
                               onExceptionFail: (e) async {
                                 if(e == "jwt expired") {
                                   await AppLocalStorage.removeKey(key: "Login");
-                                  await Get.off(()=>SignInView(),preventDuplicates: false,duration: Duration(milliseconds: 100));
+                                  await Get.to(()=>SignInView(),preventDuplicates: false,duration: Duration(milliseconds: 100));
                                 }
                                 isSubmit.value = false;
                                 CustomSnackBar().errorCustomSnackBar(context: context, message: "${e}");

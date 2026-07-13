@@ -8,7 +8,7 @@ class UserProductListView extends StatelessWidget {
   const UserProductListView({
     super.key,
     required this.categoryId,
-    required this.storeId,
+    required this.storeId, 
   });
 
   final String categoryId;
@@ -90,7 +90,7 @@ class UserProductListView extends StatelessWidget {
                                 children: [
                                   InkWell(
                                     onTap: () {
-                                      Get.off(
+                                      Get.to(
                                         () => UserNotificationView(),
                                         duration: const Duration(
                                           milliseconds: 100,
@@ -124,7 +124,7 @@ class UserProductListView extends StatelessWidget {
 
                                   InkWell(
                                     onTap: () {
-                                      Get.off(
+                                      Get.to(
                                         () => CartView(),
                                         duration: const Duration(
                                           milliseconds: 100,
@@ -166,41 +166,39 @@ class UserProductListView extends StatelessWidget {
                           hintText: "Search",
                           controller:
                               userProductListController.searchController.value,
-                          keyboardType: TextInputType.emailAddress,
+                          keyboardType: TextInputType.text,
                           fillColor: ColorUtils.white253,
-                          readOnly: true,
-                          onTap: () async {
-                            userProductListController.updatedCategoryId.value =
-                                "";
-                            await userProductListController
-                                .getProductsApiService(context: context);
-                          },
-                          onChanged: (search) async {
+                          onChanged: (search) {
+                            final query = (search ?? '').trim().toLowerCase();
+                            final allProducts = userProductListController
+                                    .productsResponseModel.value.data?.data ??
+                                [];
+
                             userProductListController.products.value =
-                                userProductListController
-                                    .productsResponseModel
-                                    .value
-                                    .data!
-                                    .data!
-                                    .where(
-                                      (e) =>
-                                          e.name.toString().contains(search!),
-                                    )
-                                    .toList();
+                                query.isEmpty
+                                    ? List.of(allProducts)
+                                    : allProducts.where((product) {
+                                        final name = (product.name ?? '')
+                                            .toString()
+                                            .toLowerCase();
+                                        final description =
+                                            (product.description ?? '')
+                                                .toString()
+                                                .toLowerCase();
+                                        return name.contains(query) ||
+                                            description.contains(query);
+                                      }).toList();
                           },
                           borderColor: ColorUtils.white202,
                           enableBorderColor: ColorUtils.white202,
                           focusedBorderColor: ColorUtils.secondaryColor,
                           prefixIcon: Padding(
                             padding: EdgeInsets.all(20.r(context)),
-                            child: InkWell(
-                              onTap: () async {},
-                              child: ImageHelperWidget.assetImageWidget(
-                                context: context,
-                                height: 24.h(context),
-                                width: 24.w(context),
-                                imageString: ImageUtils.searchNormalImage,
-                              ),
+                            child: ImageHelperWidget.assetImageWidget(
+                              context: context,
+                              height: 24.h(context),
+                              width: 24.w(context),
+                              imageString: ImageUtils.searchNormalImage,
                             ),
                           ),
                         ),

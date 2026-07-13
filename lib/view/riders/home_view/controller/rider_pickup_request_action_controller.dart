@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:discount_me_app/view/view.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:dio/dio.dart' as dio;
 import '../../../../utils/utils.dart';
 
 class RiderPickupRequestActionController extends GetxController {
@@ -61,6 +62,7 @@ class RiderPickupRequestActionController extends GetxController {
     required BuildContext context,
     required String pickupRequestId,
     required String status,
+    String? imagePath,
     required VoidCallback onSuccess,
   }) async {
     if (pickupRequestId.isEmpty) {
@@ -72,12 +74,20 @@ class RiderPickupRequestActionController extends GetxController {
     }
 
     isStatusUpdateLoading.value = true;
+    final formData = imagePath == null
+        ? null
+        : dio.FormData.fromMap({
+            "status": status,
+            "delivery_proof_image": await dio.MultipartFile.fromFile(
+              imagePath,
+              filename: imagePath.split(RegExp(r'[/\\]')).last,
+            ),
+          });
     await _patchPickupRequestStatus(
       context: context,
       url: ApiUtils.pickupRequestDetails(pickupRequestId),
-      data: {
-        "status": status,
-      },
+      data: formData == null ? {"status": status} : null,
+      formData: formData,
       onSuccess: onSuccess,
       onComplete: () {
         isStatusUpdateLoading.value = false;
@@ -91,6 +101,7 @@ class RiderPickupRequestActionController extends GetxController {
     required VoidCallback onSuccess,
     required VoidCallback onComplete,
     Map<String, dynamic>? data,
+    dio.FormData? formData,
   }) async {
     final loginResponseModel = LoginResponseModel.fromJson(
       jsonDecode(LocalStorageUtils.getString(AppConstantUtils.loginResponse)!),
@@ -99,6 +110,7 @@ class RiderPickupRequestActionController extends GetxController {
     await BaseApiUtils.patch(
       url: url,
       data: data,
+      formData: formData,
       authorization: loginResponseModel.data?.accessToken ?? "",
       onSuccess: (message, data) async {
         MessageSnackBarWidget.successSnackBarWidget(

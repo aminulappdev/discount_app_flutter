@@ -17,7 +17,7 @@ class RiderSettingScreen extends StatelessWidget {
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (canPop,onPopInvoked) {
-        Get.off(()=>RiderDashboardView(index: 3,),duration: const Duration(milliseconds: 100),preventDuplicates: false);
+        Get.to(()=>RiderDashboardView(index: 3,),duration: const Duration(milliseconds: 100),preventDuplicates: false);
       },
       child: Scaffold(
         body: Obx(()=>Skeletonizer(
@@ -50,7 +50,7 @@ class RiderSettingScreen extends StatelessWidget {
                         UserProfileAppbarWidget(
                           title: "Setting",
                           onTap: () {
-                            Get.off(()=>RiderDashboardView(index: 3,),duration: const Duration(milliseconds: 100),preventDuplicates: false);
+                            Get.to(()=>RiderDashboardView(index: 3,),duration: const Duration(milliseconds: 100),preventDuplicates: false);
                           },
                         ),
 
@@ -71,7 +71,7 @@ class RiderSettingScreen extends StatelessWidget {
                           ),
                           child: TextButton(
                             onPressed: () async {
-                              Get.off(()=>RiderChangePasswordScreen(),preventDuplicates: false,duration: Duration(milliseconds: 100));
+                              Get.to(()=>RiderChangePasswordScreen(),preventDuplicates: false,duration: Duration(milliseconds: 100));
                             },
                             style: TextButton.styleFrom(padding: EdgeInsets.zero),
                             child: Row(

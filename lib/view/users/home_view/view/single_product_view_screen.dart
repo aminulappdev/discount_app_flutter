@@ -24,13 +24,13 @@ class SingleProductViewScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     void goBack() {
       if (isHomeScreen == true) {
-        Get.off(
+        Get.to(
           () => UserDashboardView(index: 0),
           duration: const Duration(milliseconds: 100),
           preventDuplicates: false,
         );
       } else if (isSingleStoreScreen == true) {
-        Get.off(
+        Get.to(
           () => SingleStoreViewScreen(
             storeId: storeId,
             isStoreListPage: isStoreScreen,
@@ -40,13 +40,9 @@ class SingleProductViewScreen extends StatelessWidget {
           preventDuplicates: false,
         );
       } else if (isProductListPage == true) {
-        Get.off(
-          () => UserProductListView(categoryId: "", storeId: ""),
-          duration: const Duration(milliseconds: 100),
-          preventDuplicates: false,
-        );
+        Get.back();
       } else if (isExplorePage == true) {
-        Get.off(
+        Get.to(
           () => UserDashboardView(index: 2),
           duration: const Duration(milliseconds: 100),
           preventDuplicates: false,
@@ -54,7 +50,7 @@ class SingleProductViewScreen extends StatelessWidget {
       } else if (Get.key.currentState?.canPop() == true) {
         Get.back();
       } else {
-        Get.off(
+        Get.to(
           () => UserDashboardView(index: 0),
           duration: const Duration(milliseconds: 100),
           preventDuplicates: false,
@@ -68,6 +64,7 @@ class SingleProductViewScreen extends StatelessWidget {
         productId: productId,
         onBack: goBack,
       ),
+      tag: productId,
     );
     return PopScope(
       canPop: false,

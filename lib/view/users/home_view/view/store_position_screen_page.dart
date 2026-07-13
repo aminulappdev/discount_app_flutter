@@ -17,9 +17,9 @@ class StorePositionScreenPage extends StatelessWidget {
       canPop: false,
       onPopInvokedWithResult: (canPop,onOpoInvoked) {
         if(isVendorHomePage == true) {
-          Get.off(()=>VendorDashboardView(index: 0),preventDuplicates: false,duration: Duration(milliseconds: 100));
+          Get.to(()=>VendorDashboardView(index: 0),preventDuplicates: false,duration: Duration(milliseconds: 100));
         } else {
-          Get.off(()=>SingleStoreViewScreen(storeId: storeId,isStoreListPage: isStoreListPage,isHomePage: isHomePage,),preventDuplicates: false,duration: Duration(milliseconds: 100));
+          Get.to(()=>SingleStoreViewScreen(storeId: storeId,isStoreListPage: isStoreListPage,isHomePage: isHomePage,),preventDuplicates: false,duration: Duration(milliseconds: 100));
         }
       },
       child: Scaffold(

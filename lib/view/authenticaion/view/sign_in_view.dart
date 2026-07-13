@@ -17,7 +17,7 @@ class SignInView extends StatelessWidget {
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, result) async {
-        Get.off(()=> WelcomeView(),duration: const Duration(milliseconds: 100),preventDuplicates: false);
+        Get.to(()=> WelcomeView(),duration: const Duration(milliseconds: 100),preventDuplicates: false);
       },
       child: Scaffold(
         body: Obx(()=>Container(
@@ -69,7 +69,7 @@ class SignInView extends StatelessWidget {
                           context: context,
                           title: "Login Account",
                           onPress: () async {
-                            Get.off(()=> WelcomeView(),duration: const Duration(milliseconds: 100),preventDuplicates: false);
+                            Get.to(()=> WelcomeView(),duration: const Duration(milliseconds: 100),preventDuplicates: false);
                           }
                       ),
                   
@@ -211,7 +211,7 @@ class SignInView extends StatelessWidget {
                               ButtonHelperWidget.customButtonWidget(
                                 context: context,
                                 onPressed: () async {
-                                  Get.off(()=> ForgotPasswordScreen(),duration: const Duration(milliseconds: 100),preventDuplicates: false);
+                                  Get.to(()=> ForgotPasswordScreen(),duration: const Duration(milliseconds: 100),preventDuplicates: false);
                                 },
                                 text: "Forgot the password?",
                                 padding: EdgeInsets.symmetric(vertical: 14.5.vpm(context)),
@@ -250,33 +250,33 @@ class SignInView extends StatelessWidget {
                                       onSuccess: (decodedToken) async {
                                         print(decodedToken['role']);
                                         if(decodedToken['role'] == "user") {
-                                          Get.off(()=>UserDashboardView(index: 0,),duration: const Duration(milliseconds: 100),preventDuplicates: false);
+                                          Get.to(()=>UserDashboardView(index: 0,),duration: const Duration(milliseconds: 100),preventDuplicates: false);
                                           signInController.isSubmit.value = false;
                                         } else if (decodedToken['role'] == "rider") {
                                           if(signInController.loginResponseModel.value.data?.hasFreeTrial == false && signInController.loginResponseModel.value.data?.subscription?.hasActiveSubscription == false) {
-                                            Get.off(()=>RiderSubscriptionFreeTrailView(),duration: const Duration(milliseconds: 100),preventDuplicates: false);
+                                            Get.to(()=>RiderSubscriptionFreeTrailView(),duration: const Duration(milliseconds: 100),preventDuplicates: false);
                                           } else if (signInController.loginResponseModel.value.data?.isPayoutReady == false) {
-                                            Get.off(()=>StripeConnectRequiredView(role: "rider"),duration: const Duration(milliseconds: 100),preventDuplicates: false);
+                                            Get.to(()=>StripeConnectRequiredView(role: "rider"),duration: const Duration(milliseconds: 100),preventDuplicates: false);
                                           } else {
-                                            Get.off(()=>RiderDashboardView(index: 0,),duration: const Duration(milliseconds: 100),preventDuplicates: false);
+                                            Get.to(()=>RiderDashboardView(index: 0,),duration: const Duration(milliseconds: 100),preventDuplicates: false);
                                           }
                                           signInController.isSubmit.value = false;
                                         } else if (decodedToken['role'] == "vendor") {
                                           if(signInController.loginResponseModel.value.data?.hasFreeTrial == false && signInController.loginResponseModel.value.data?.subscription?.hasActiveSubscription == false) {
-                                            Get.off(()=>VendorSubscriptionFreeTrailView(),duration: const Duration(milliseconds: 100),preventDuplicates: false);
+                                            Get.to(()=>VendorSubscriptionFreeTrailView(),duration: const Duration(milliseconds: 100),preventDuplicates: false);
                                           } else if (signInController.loginResponseModel.value.data?.isPayoutReady == false) {
-                                            Get.off(()=>StripeConnectRequiredView(role: "vendor"),duration: const Duration(milliseconds: 100),preventDuplicates: false);
+                                            Get.to(()=>StripeConnectRequiredView(role: "vendor"),duration: const Duration(milliseconds: 100),preventDuplicates: false);
                                           } else {
-                                            Get.off(()=>VendorDashboardView(index: 0,),duration: const Duration(milliseconds: 100),preventDuplicates: false);
+                                            Get.to(()=>VendorDashboardView(index: 0,),duration: const Duration(milliseconds: 100),preventDuplicates: false);
                                           }
                                           signInController.isSubmit.value = false;
                                         } else if (decodedToken['role'] == "broker") {
                                           if(signInController.loginResponseModel.value.data?.hasFreeTrial == false && signInController.loginResponseModel.value.data?.subscription?.hasActiveSubscription == false) {
-                                            Get.off(()=>BrokerSubscriptionFreeTrailView(),duration: const Duration(milliseconds: 100),preventDuplicates: false);
+                                            Get.to(()=>BrokerSubscriptionFreeTrailView(),duration: const Duration(milliseconds: 100),preventDuplicates: false);
                                           } else if (signInController.loginResponseModel.value.data?.isPayoutReady == false) {
-                                            Get.off(()=>StripeConnectRequiredView(role: "broker"),duration: const Duration(milliseconds: 100),preventDuplicates: false);
+                                            Get.to(()=>StripeConnectRequiredView(role: "broker"),duration: const Duration(milliseconds: 100),preventDuplicates: false);
                                           } else {
-                                            Get.off(()=>BrokerDashboardView(index: 0),duration: const Duration(milliseconds: 100),preventDuplicates: false);
+                                            Get.to(()=>BrokerDashboardView(index: 0),duration: const Duration(milliseconds: 100),preventDuplicates: false);
                                           }
                                           signInController.isSubmit.value = false;
                                         }
@@ -311,7 +311,7 @@ class SignInView extends StatelessWidget {
                                     fontWeight: FontWeight.w700,
                                     color: ColorUtils.orange125,
                                     recognizer: TapGestureRecognizer()..onTap = () {
-                                      Get.off(()=>SignUpView(), duration: const Duration(milliseconds: 100),preventDuplicates: false);
+                                      Get.to(()=>SignUpView(), duration: const Duration(milliseconds: 100),preventDuplicates: false);
                                     },
                                   ).toTextSpan(),
                                 ],

@@ -8,7 +8,7 @@ import 'package:skeletonizer/skeletonizer.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import '../../../../res/res.dart';
 import '../../../view.dart';
-
+ 
 class VendorItemDetailsView extends StatelessWidget {
   const VendorItemDetailsView({super.key,required this.productId});
   final String productId;
@@ -18,7 +18,7 @@ class VendorItemDetailsView extends StatelessWidget {
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (canPop,onPopInvoked) {
-        Get.off(()=>VendorDashboardView(index: 2,),duration: const Duration(milliseconds: 100),preventDuplicates: false);
+        Get.to(()=>VendorDashboardView(index: 2,),duration: const Duration(milliseconds: 100),preventDuplicates: false);
       },
       child: Scaffold(
         body: Container(
@@ -45,7 +45,7 @@ class VendorItemDetailsView extends StatelessWidget {
                         UserProfileAppbarWidget(
                           title: "Items Details",
                           onTap: () {
-                            Get.off(()=>VendorDashboardView(index: 2,),duration: const Duration(milliseconds: 100),preventDuplicates: false);
+                            Get.to(()=>VendorDashboardView(index: 2,),duration: const Duration(milliseconds: 100),preventDuplicates: false);
                           },
                         ),
 
@@ -302,7 +302,7 @@ class VendorItemDetailsView extends StatelessWidget {
                           ),
                           child: TextButton(
                             onPressed: () async {
-                              Get.off(()=>VendorProductEditView(
+                              Get.to(()=>VendorProductEditView(
                                   productId: vendorProductDetailsController.singleProductResponseModel.value.data?.sId ?? ""),
                                   duration: Duration(milliseconds: 100),
                                   preventDuplicates: false,

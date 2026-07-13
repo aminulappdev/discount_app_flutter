@@ -20,7 +20,7 @@ class RiderProfileEditScreen extends StatelessWidget {
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (canPop,onPopInvoked) {
-        Get.off(()=>RiderDashboardView(index: 3,),duration: const Duration(milliseconds: 100),preventDuplicates: false);
+        Get.to(()=>RiderDashboardView(index: 3,),duration: const Duration(milliseconds: 100),preventDuplicates: false);
       },
       child: Scaffold(
         body: Obx(()=>Container(
@@ -46,7 +46,7 @@ class RiderProfileEditScreen extends StatelessWidget {
                         UserProfileAppbarWidget(
                           title: "Edit Profile",
                           onTap: () {
-                            Get.off(()=>RiderDashboardView(index: 3,),duration: const Duration(milliseconds: 100),preventDuplicates: false);
+                            Get.to(()=>RiderDashboardView(index: 3,),duration: const Duration(milliseconds: 100),preventDuplicates: false);
                           },
                         ),
 

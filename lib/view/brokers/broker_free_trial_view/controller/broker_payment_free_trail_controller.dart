@@ -25,20 +25,20 @@ class BrokerPaymentFreeTrailController extends GetxController {
         } else {
           isHandlingPayment.value = false;
           MessageSnackBarWidget.errorSnackBarWidget(context: context, message: _messageFromData(data, "Payment failed"));
-          await Get.off(()=>BrokerSubscriptionFreeTrailView(),duration: const Duration(milliseconds: 100),preventDuplicates: false);
+          await Get.to(()=>BrokerSubscriptionFreeTrailView(),duration: const Duration(milliseconds: 100),preventDuplicates: false);
         }
       },
       onFail: (e,data) async {
         _printPaymentResponse("BROKER FREE TRIAL PAYMENT FAILED RESPONSE", data);
         isHandlingPayment.value = false;
         MessageSnackBarWidget.errorSnackBarWidget(context: context, message: e);
-        await Get.off(()=>BrokerSubscriptionFreeTrailView(),duration: const Duration(milliseconds: 100),preventDuplicates: false);
+        await Get.to(()=>BrokerSubscriptionFreeTrailView(),duration: const Duration(milliseconds: 100),preventDuplicates: false);
       },
       onExceptionFail: (e,data) async {
         _printPaymentResponse("BROKER FREE TRIAL PAYMENT EXCEPTION RESPONSE", data);
         isHandlingPayment.value = false;
         MessageSnackBarWidget.errorSnackBarWidget(context: context, message: e);
-        await Get.off(()=>BrokerSubscriptionFreeTrailView(),duration: const Duration(milliseconds: 100),preventDuplicates: false);
+        await Get.to(()=>BrokerSubscriptionFreeTrailView(),duration: const Duration(milliseconds: 100),preventDuplicates: false);
       },
     );
 

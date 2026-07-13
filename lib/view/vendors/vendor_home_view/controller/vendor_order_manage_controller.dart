@@ -40,7 +40,12 @@ class VendorOrderManageController extends GetxController {
       authorization: loginResponseModel.value.data?.accessToken,
       onSuccess: (e, data) async {
         vendorOrdersResponseModel.value = VendorOrdersResponseModel.fromJson(data);
-        final apiOrders = vendorOrdersResponseModel.value.data?.data ?? [];
+        final apiOrders = (vendorOrdersResponseModel.value.data?.data ?? [])
+            .where(
+              (order) =>
+                  (order.paymentStatus ?? '').trim().toLowerCase() != 'unpaid',
+            )
+            .toList();
 
         final mappedOrders = await Future.wait(
           apiOrders.map((order) => _mapOrder(order)),

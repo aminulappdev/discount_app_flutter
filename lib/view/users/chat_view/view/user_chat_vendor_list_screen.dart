@@ -60,7 +60,7 @@ class _UserChatVendorListScreenState extends State<UserChatVendorListScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                CustomAppBar(
+                CustomAppBar( 
                   appBarName: "Message",
                   leadingColor: Colors.black,
                   titleColor: Colors.black,

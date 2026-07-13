@@ -17,7 +17,7 @@ class CreateNewPasswordScreen extends StatelessWidget {
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, result) async {
-        Get.off(()=> OtpVerifyScreen(email: email,isSignUp: false,),duration: const Duration(milliseconds: 100),preventDuplicates: false,);
+        Get.to(()=> OtpVerifyScreen(email: email,isSignUp: false,),duration: const Duration(milliseconds: 100),preventDuplicates: false,);
       },
       child: Scaffold(
         body: Obx(()=>Container(
@@ -69,7 +69,7 @@ class CreateNewPasswordScreen extends StatelessWidget {
                         context: context,
                         title: "Create New Password",
                         onPress: () async {
-                          Get.off(()=> OtpVerifyScreen(email: email,isSignUp: false,),duration: const Duration(milliseconds: 100),preventDuplicates: false);
+                          Get.to(()=> OtpVerifyScreen(email: email,isSignUp: false,),duration: const Duration(milliseconds: 100),preventDuplicates: false);
                         },
                       ),
                   

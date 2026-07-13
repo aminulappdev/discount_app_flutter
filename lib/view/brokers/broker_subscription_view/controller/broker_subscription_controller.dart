@@ -55,7 +55,7 @@ class BrokerSubscriptionController extends GetxController {
       onSuccess: (e,data) async {
         MessageSnackBarWidget.successSnackBarWidget(context: context, message: e);
         isSubmit.value = false;
-        Get.off(()=>BrokerPaymentView(paymentUrl: data["data"]["url"]),duration: const Duration(milliseconds: 100),preventDuplicates: false);
+        Get.to(()=>BrokerPaymentView(paymentUrl: data["data"]["url"]),duration: const Duration(milliseconds: 100),preventDuplicates: false);
       },
       onFail: (e,data) {
         MessageSnackBarWidget.errorSnackBarWidget(context: context, message: e);

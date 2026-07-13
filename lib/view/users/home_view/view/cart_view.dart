@@ -10,12 +10,7 @@ class CartView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final CartController cartController = Get.put(CartController(context: context));
-    return PopScope(
-      canPop: false,
-      onPopInvokedWithResult: (canPop,onOpoInvoked) {
-        Get.off(()=>UserDashboardView(index: 0,),duration: const Duration(milliseconds: 100),preventDuplicates: false);
-      },
-      child: Scaffold(
+    return Scaffold(
         body: Container(
           decoration: BoxDecoration(
             color: Colors.white,
@@ -41,7 +36,7 @@ class CartView extends StatelessWidget {
 
                           SpaceHelperWidget.v(20.h(context)),
 
-                          Container(
+                          Container( 
                             width: 428.w(context),
                             decoration: BoxDecoration(
                               color: Colors.transparent,
@@ -49,6 +44,17 @@ class CartView extends StatelessWidget {
                             padding: EdgeInsets.symmetric(horizontal: 16.hpm(context)),
                             child: Row(
                               children: [
+                                GestureDetector(
+                                  onTap: () => Navigator.pop(context),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Icon(
+                                      Icons.arrow_back_ios,
+                                      color: ColorUtils.black29,
+                                      size: 24.r(context),
+                                    ),
+                                  ),
+                                ),
                                 Expanded(
                                   child: Row(
                                     children: [
@@ -89,7 +95,7 @@ class CartView extends StatelessWidget {
 
                                 InkWell(
                                   onTap: () {
-                                    Get.off(()=>UserNotificationView(),preventDuplicates: false,duration: const Duration(milliseconds: 100));
+                                    Get.to(()=>UserNotificationView(),preventDuplicates: false,duration: const Duration(milliseconds: 100));
                                   },
                                   child: Container(
                                     width: 45.w(context),
@@ -139,7 +145,7 @@ class CartView extends StatelessWidget {
                                   height: 45,
                                   padding: EdgeInsets.symmetric(vertical: 5.vpm(context),horizontal: 10.hpm(context)),
                                   onPressed: () {
-                                    Get.off(()=>UserDashboardView(index: 2,),duration: const Duration(milliseconds: 100),preventDuplicates: false);
+                                    Get.to(()=>UserDashboardView(index: 2,),duration: const Duration(milliseconds: 100),preventDuplicates: false);
                                   },
                                   isIconLeft: true,
                                   iconData: Icons.add, 
@@ -629,7 +635,7 @@ class CartView extends StatelessWidget {
                                     if(cartController.getAllProductCartResponse.value.data?.carts?.isEmpty == true) {
                                       MessageSnackBarWidget.errorSnackBarWidget(context: context, message: "Please Add At least 1 Product to Cart");
                                     } else {
-                                      Get.off(()=>OrderSelectAddressView(
+                                      Get.to(()=>OrderSelectAddressView(
                                         pickAddress: "",
                                         pointsToRedeem: cartController.isDiscountApplied.value == true ?
                                         cartController.getRewardTier(double.parse(cartController.userProfileResponseModel.value.data?.totalRewardPoints.toString() ?? "0")) : 0.0,
@@ -659,7 +665,6 @@ class CartView extends StatelessWidget {
               )
           )),
         ),
-      ),
     );
   }
 }

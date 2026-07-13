@@ -26,7 +26,7 @@ class VendorItemView extends StatelessWidget {
           enabled: vendorItemsController.isLoading.value,
           child: RefreshIndicator(
             onRefresh: () async {
-              Get.off(()=>VendorDashboardView(index: 2),duration: const Duration(milliseconds: 100),preventDuplicates: false);
+              Get.to(()=>VendorDashboardView(index: 2),duration: const Duration(milliseconds: 100),preventDuplicates: false);
             },
             child: CustomScrollView(
               slivers: [
@@ -40,11 +40,11 @@ class VendorItemView extends StatelessWidget {
                       children: [
 
                         CustomSpaceWidget.spacerWidget(spaceHeight: 40.h(context)),
-
+ 
                         UserProfileAppbarWidget(
                           title: "Items",
                           onTap: () {
-                            Get.off(()=>VendorDashboardView(index: 0,),duration: const Duration(milliseconds: 100),preventDuplicates: false);
+                            Get.to(()=>VendorDashboardView(index: 0,),duration: const Duration(milliseconds: 100),preventDuplicates: false);
                           },
                         ),
 
@@ -180,7 +180,7 @@ class VendorItemView extends StatelessWidget {
                             return TextButton(
                               style: TextButton.styleFrom(padding: EdgeInsets.zero),
                               onPressed: () async {
-                                Get.off(()=>VendorItemDetailsView(productId: vendorItemsController.products[index].sId,),duration: Duration(milliseconds: 100),preventDuplicates: false);
+                                Get.to(()=>VendorItemDetailsView(productId: vendorItemsController.products[index].sId,),duration: Duration(milliseconds: 100),preventDuplicates: false);
                               },
                               child: Container(
                                 margin: EdgeInsets.only(bottom: 10.bpm(context)),
@@ -272,7 +272,7 @@ class VendorItemView extends StatelessWidget {
                                                         padding:EdgeInsets.zero,
                                                         color: Colors.orange,
                                                         onPressed: () {
-                                                          Get.off(()=>VendorProductEditView(productId: vendorItemsController.products[index].sId),duration: Duration(milliseconds: 100),preventDuplicates: false);
+                                                          Get.to(()=>VendorProductEditView(productId: vendorItemsController.products[index].sId),duration: Duration(milliseconds: 100),preventDuplicates: false);
                                                         },
                                                         icon: Icon(Icons.edit,size: 20.r(context),
                                                         ),

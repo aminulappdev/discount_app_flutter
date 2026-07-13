@@ -170,7 +170,7 @@ class BrokerWithdrawSuccessScreen extends StatelessWidget {
                               title: "Close",
                               buttonColor: ColorUtils.primaryColor,
                               onTap: () {
-                                Get.off(()=>BrokerDashboardView(index: 0),preventDuplicates: false);
+                                Get.to(()=>BrokerDashboardView(index: 0),preventDuplicates: false);
                               },
                             ),
                           ],

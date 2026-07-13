@@ -124,7 +124,7 @@ class VendorHomeScreenWidget extends GetxController {
         onExceptionFail: (e) async {
           if(e == "jwt expired") {
             await AppLocalStorage.removeKey(key: "Login");
-            await Get.off(()=>SignInView(),preventDuplicates: false,duration: Duration(milliseconds: 100));
+            await Get.to(()=>SignInView(),preventDuplicates: false,duration: Duration(milliseconds: 100));
           }
           isLoading.value = false;
           CustomSnackBar().errorCustomSnackBar(context: context, message: "${e}");
@@ -147,7 +147,7 @@ class VendorHomeScreenWidget extends GetxController {
         enabled: isLoading.value,
         child: RefreshIndicator(
           onRefresh: () async {
-            Get.off(()=>VendorDashboardView(index: 0,),duration: const Duration(milliseconds: 100),preventDuplicates: false);
+            Get.to(()=>VendorDashboardView(index: 0,),duration: const Duration(milliseconds: 100),preventDuplicates: false);
           },
           child: CustomScrollView(
             slivers: [
@@ -325,7 +325,7 @@ class VendorHomeScreenWidget extends GetxController {
                                 child: TextButton(
                                   style: TextButton.styleFrom(padding: EdgeInsets.zero),
                                   onPressed: () async {
-                                    Get.off(()=>StorePositionScreenPage(
+                                    Get.to(()=>StorePositionScreenPage(
                                       long: singleStoreResponseModel.value.data!.location!.coordinates!.first,
                                       lat: singleStoreResponseModel.value.data!.location!.coordinates!.last,
                                       storeId: "",
@@ -369,7 +369,7 @@ class VendorHomeScreenWidget extends GetxController {
                             title: "Items Add",
                             context: context,
                             onTap: () {
-                              Get.off(()=>VendorAddItemScreen(),duration: const Duration(milliseconds: 100),preventDuplicates: false);
+                              Get.to(()=>VendorAddItemScreen(),duration: const Duration(milliseconds: 100),preventDuplicates: false);
                             },),
 
                           _itemWidget(

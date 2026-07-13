@@ -212,7 +212,7 @@ class SingleStoreViewScreenWidget extends GetxController {
           onExceptionFail: (e) async {
             if(e == "jwt expired") {
               await AppLocalStorage.removeKey(key: "Login");
-              Get.off(()=>SignInView(),preventDuplicates: false,duration: Duration(milliseconds: 100));
+              Get.to(()=>SignInView(),preventDuplicates: false,duration: Duration(milliseconds: 100));
             }
             isLoading.value = false;
             CustomSnackBar().errorCustomSnackBar(context: context, message: "${e}");
@@ -316,7 +316,7 @@ class SingleStoreViewScreenWidget extends GetxController {
                                 child: TextButton(
                                   style: TextButton.styleFrom(padding: EdgeInsets.zero),
                                   onPressed: () {
-                                    Get.off(()=>UserNotificationView(),preventDuplicates: false,duration: const Duration(milliseconds: 100));
+                                    Get.to(()=>UserNotificationView(),preventDuplicates: false,duration: const Duration(milliseconds: 100));
                                   },
                                   child: Icon(
                                     Icons.notifications,
@@ -343,7 +343,7 @@ class SingleStoreViewScreenWidget extends GetxController {
                                 child: TextButton(
                                   style: TextButton.styleFrom(padding: EdgeInsets.zero),
                                   onPressed: () {
-                                    Get.off(()=>CartView(),preventDuplicates: false,duration: const Duration(milliseconds: 100));
+                                    Get.to(()=>CartView(),preventDuplicates: false,duration: const Duration(milliseconds: 100));
                                   },
                                   child: Icon(
                                     Icons.shopping_cart,
@@ -506,7 +506,7 @@ class SingleStoreViewScreenWidget extends GetxController {
                               child: TextButton(
                                 style: TextButton.styleFrom(padding: EdgeInsets.zero),
                                 onPressed: () async {
-                                  Get.off(()=>StorePositionScreenPage(
+                                  Get.to(()=>StorePositionScreenPage(
                                     long: singleStoreResponseModel.value.data!.location!.coordinates!.first,
                                     lat: singleStoreResponseModel.value.data!.location!.coordinates!.last,
                                     storeId: storeId,
@@ -584,7 +584,7 @@ class SingleStoreViewScreenWidget extends GetxController {
                           child: TextButton(
                             style: TextButton.styleFrom(padding: EdgeInsets.zero),
                             onPressed: () {
-                              Get.off(()=>UserProductListView(categoryId: "",storeId: storeId,),preventDuplicates: false,duration: Duration(milliseconds: 100));
+                              Get.to(()=>UserProductListView(categoryId: "",storeId: storeId,),preventDuplicates: false,duration: Duration(milliseconds: 100));
                             },
                             child: CustomTextContainer.plainTextContainerWidgetWithoutHeightWidth(
                               plainTextString: "See all",
@@ -617,7 +617,7 @@ class SingleStoreViewScreenWidget extends GetxController {
                         return TextButton(
                           style: TextButton.styleFrom(padding: EdgeInsets.zero),
                           onPressed: () async {
-                            Get.off(SingleProductViewScreen(
+                            Get.to(SingleProductViewScreen(
                               productId: productsResponseModel.value.data!.data![index].sId,
                               isHomeScreen: false,
                               isSingleStoreScreen: true,

@@ -8,7 +8,7 @@ class OrderCompleteController extends GetxController {
     // TODO: implement onInit
     super.onInit();
     Future.delayed(Duration(seconds: 3),() async {
-      Get.off(()=>UserProfileOrderView(),duration: const Duration(milliseconds: 100),preventDuplicates: false);
+      Get.to(()=>UserProfileOrderView(),duration: const Duration(milliseconds: 100),preventDuplicates: false);
     });
   }
 

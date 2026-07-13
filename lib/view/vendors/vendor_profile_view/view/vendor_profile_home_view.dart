@@ -241,7 +241,7 @@ class VendorProfileHomeView extends StatelessWidget {
                             color: Colors.black54,
                           ),
                           onTap: () {
-                            Get.off(
+                            Get.to(
                               () => VendorProfileEditView(),
                               preventDuplicates: false,
                               duration: Duration(milliseconds: 100),
@@ -280,7 +280,7 @@ class VendorProfileHomeView extends StatelessWidget {
                         //     color: Colors.black54,
                         //   ),
                         //   onTap: () {
-                        //     Get.off(()=>VendorCreatedCouponScreen(),preventDuplicates: false,duration: Duration(milliseconds: 100));
+                        //     Get.to(()=>VendorCreatedCouponScreen(),preventDuplicates: false,duration: Duration(milliseconds: 100));
                         //   }, 
                         // ),
                         ProfileItemWidget(
@@ -296,7 +296,7 @@ class VendorProfileHomeView extends StatelessWidget {
                             color: Colors.black54,
                           ),
                           onTap: () {
-                            Get.off(
+                            Get.to(
                               () => ScanCouponScreen(),
                               preventDuplicates: false,
                               duration: Duration(milliseconds: 100),
@@ -314,7 +314,7 @@ class VendorProfileHomeView extends StatelessWidget {
                             color: Colors.black54,
                           ),
                           onTap: () {
-                            Get.off(
+                            Get.to(
                               () => VendorChatUserListScreen(),
                               preventDuplicates: false,
                               duration: Duration(milliseconds: 100),
@@ -332,7 +332,7 @@ class VendorProfileHomeView extends StatelessWidget {
                             color: Colors.black54,
                           ),
                           onTap: () {
-                            Get.off(
+                            Get.to(
                               () => VendorSettingView(),
                               preventDuplicates: false,
                               duration: Duration(milliseconds: 100),

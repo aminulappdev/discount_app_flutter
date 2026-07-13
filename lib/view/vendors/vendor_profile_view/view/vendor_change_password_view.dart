@@ -17,7 +17,7 @@ class VendorChangePasswordView extends StatelessWidget {
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (canPop,onPopInvoked) {
-        Get.off(()=>VendorSettingView(),duration: const Duration(milliseconds: 100),preventDuplicates: false);
+        Get.to(()=>VendorSettingView(),duration: const Duration(milliseconds: 100),preventDuplicates: false);
       },
       child: Scaffold(
         body: Obx(()=>Skeletonizer(
@@ -47,7 +47,7 @@ class VendorChangePasswordView extends StatelessWidget {
                         UserProfileAppbarWidget(
                           title: "Change Password",
                           onTap: () {
-                            Get.off(()=>VendorSettingView(),duration: const Duration(milliseconds: 100),preventDuplicates: false);
+                            Get.to(()=>VendorSettingView(),duration: const Duration(milliseconds: 100),preventDuplicates: false);
                           },
                         ),
 
@@ -165,7 +165,7 @@ class VendorChangePasswordView extends StatelessWidget {
                             plainButtonRadius: 8.r(context),
                             plainButtonOnPress:  () async {
                               await AppLocalStorage.removeKey(key: "Login");
-                              Get.off(()=>ForgotPasswordScreen(),duration: const Duration(milliseconds: 100),preventDuplicates: false);
+                              Get.to(()=>ForgotPasswordScreen(),duration: const Duration(milliseconds: 100),preventDuplicates: false);
                             },
                             plainButtonHint: "Forgot the password?",
                             plainButtonHintAlign: Alignment.centerLeft,

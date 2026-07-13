@@ -48,7 +48,7 @@ class BrokerProfileHomeView extends StatelessWidget {
                   child: RefreshIndicator(
                     onRefresh: () async {
                       Get.delete<BrokerProfileHomeController>(force: true);
-                      Get.off(()=>BrokerDashboardView(index: 3),preventDuplicates: false);
+                      Get.to(()=>BrokerDashboardView(index: 3),preventDuplicates: false);
                     },
                     child: CustomScrollView(
                       slivers: [
@@ -205,7 +205,7 @@ class BrokerProfileHomeView extends StatelessWidget {
                                     icon: Image.asset(ImageUtils.userEdite, scale: 5,),
                                     navigateIcon: Icon(Icons.navigate_next, size: 24.r(context), color: Colors.black54,),
                                     onTap: () {
-                                      Get.off(()=>BrokerEditProfileView(),preventDuplicates: false);
+                                      Get.to(()=>BrokerEditProfileView(),preventDuplicates: false);
                                     },
                                   ),
 
@@ -215,7 +215,7 @@ class BrokerProfileHomeView extends StatelessWidget {
                                     icon: Image.asset(ImageUtils.settingIcon, scale: 5,),
                                     navigateIcon: Icon(Icons.navigate_next, size: 24.r(context), color: Colors.black54,),
                                     onTap: () {
-                                      Get.off(()=>BrokerSettingView(),preventDuplicates: false);
+                                      Get.to(()=>BrokerSettingView(),preventDuplicates: false);
                                     },
                                   ),
 

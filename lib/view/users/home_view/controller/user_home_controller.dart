@@ -259,7 +259,7 @@ class UserHomeController extends GetxController {
       authorization: loginResponseModel.value.data?.accessToken,
       onSuccess: (e,data) async {
         isAdd.value = false;
-        Get.off(()=>CartView(),preventDuplicates: false,duration: Duration(milliseconds: 100));
+        Get.to(()=>CartView(),preventDuplicates: false,duration: Duration(milliseconds: 100));
       },
       onFail: (e,data) {
         MessageSnackBarWidget.errorSnackBarWidget(context: context, message: e);

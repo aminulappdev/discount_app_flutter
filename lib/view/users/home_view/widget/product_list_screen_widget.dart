@@ -104,7 +104,7 @@ class ProductListScreenWidget extends GetxController {
           onExceptionFail: (e) async {
             if(e == "jwt expired") {
               await AppLocalStorage.removeKey(key: "Login");
-              Get.off(()=>SignInView(),preventDuplicates: false,duration: Duration(milliseconds: 100));
+              Get.to(()=>SignInView(),preventDuplicates: false,duration: Duration(milliseconds: 100));
             }
             isLoading.value = false;
             CustomSnackBar().errorCustomSnackBar(context: context, message: "${e}");
@@ -209,7 +209,7 @@ class ProductListScreenWidget extends GetxController {
                                 child: TextButton(
                                   style: TextButton.styleFrom(padding: EdgeInsets.zero),
                                   onPressed: () {
-                                    Get.off(()=>UserNotificationView(),preventDuplicates: false,duration: const Duration(milliseconds: 100));
+                                    Get.to(()=>UserNotificationView(),preventDuplicates: false,duration: const Duration(milliseconds: 100));
                                   },
                                   child: Icon(
                                     Icons.notifications,
@@ -236,7 +236,7 @@ class ProductListScreenWidget extends GetxController {
                                 child: TextButton(
                                   style: TextButton.styleFrom(padding: EdgeInsets.zero),
                                   onPressed: () {
-                                    Get.off(()=>CartView(),preventDuplicates: false,duration: const Duration(milliseconds: 100));
+                                    Get.to(()=>CartView(),preventDuplicates: false,duration: const Duration(milliseconds: 100));
                                   },
                                   child: Icon(
                                     Icons.shopping_cart,
@@ -405,7 +405,7 @@ class ProductListScreenWidget extends GetxController {
                         return TextButton(
                           style: TextButton.styleFrom(padding: EdgeInsets.zero),
                           onPressed: () async {
-                            Get.off(SingleProductViewScreen(
+                            Get.to(SingleProductViewScreen(
                               productId: products[index].sId,
                               isSingleStoreScreen: false,isHomeScreen: false,storeId: '',isProductListPage: true,isExplorePage: false,isStoreScreen: false,
                             ),duration: Duration(milliseconds: 100),preventDuplicates: false);

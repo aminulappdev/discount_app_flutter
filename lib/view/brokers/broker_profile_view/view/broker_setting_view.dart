@@ -15,7 +15,7 @@ class BrokerSettingView extends StatelessWidget {
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop,onPopInvoked) {
-        Get.off(()=>BrokerDashboardView(index: 3,),preventDuplicates: false);
+        Get.to(()=>BrokerDashboardView(index: 3,),preventDuplicates: false);
       },
       child: Scaffold(
         backgroundColor: Colors.transparent,
@@ -49,7 +49,7 @@ class BrokerSettingView extends StatelessWidget {
                           UserProfileAppbarWidget(
                             title: "Setting",
                             onTap: () async {
-                              Get.off(()=>BrokerDashboardView(index: 3,),preventDuplicates: false);
+                              Get.to(()=>BrokerDashboardView(index: 3,),preventDuplicates: false);
                             },
                           ),
 
@@ -79,7 +79,7 @@ class BrokerSettingView extends StatelessWidget {
                                     rightIcon: ImageUtils.lockImage,
                                     title: "Change Password",
                                     onPressed: () async {
-                                      Get.off(()=>BrokerChangePasswordView(),preventDuplicates: false);
+                                      Get.to(()=>BrokerChangePasswordView(),preventDuplicates: false);
                                     },
                                     trailing: true,
                                     context: context,

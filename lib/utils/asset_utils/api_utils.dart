@@ -1,8 +1,8 @@
-class ApiUtils {
+class ApiUtils { 
  
   //static const baseUrl = "http://206.162.244.133:5020/api/v1";
-  static const baseUrl = "http://10.10.28.34:5001/api/v1";
-  static const socketUrl = "http://10.10.28.34:5001";
+  static const baseUrl = "https://8e27-103-159-73-203.ngrok-free.app/api/v1";
+  static const socketUrl = "https://8e27-103-159-73-203.ngrok-free.app/";
   //static const baseUrl = "http://10.10.10.16:5020/api/v1";
  
  

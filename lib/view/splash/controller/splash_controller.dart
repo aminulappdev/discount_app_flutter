@@ -82,32 +82,32 @@ class SplashController extends GetxController{
       if(loginResponseModel.value.data != null) {
         Map<String, dynamic> decodedToken = parseJwt(loginResponseModel.value.data!.accessToken);
         if(decodedToken['role'] == "user") {
-          Get.off(()=>UserDashboardView(index: 0,),duration: const Duration(milliseconds: 100),preventDuplicates: false);
+          Get.to(()=>UserDashboardView(index: 0,),duration: const Duration(milliseconds: 100),preventDuplicates: false);
           isSubmit.value = false;
         } else if (decodedToken['role'] == "rider") {
           if(loginResponseModel.value.data?.hasFreeTrial == false && loginResponseModel.value.data?.subscription?.hasActiveSubscription == false) {
-            Get.off(()=>RiderSubscriptionFreeTrailView(),duration: const Duration(milliseconds: 100),preventDuplicates: false);
+            Get.to(()=>RiderSubscriptionFreeTrailView(),duration: const Duration(milliseconds: 100),preventDuplicates: false);
           } else {
-            Get.off(()=>RiderDashboardView(index: 0,),duration: const Duration(milliseconds: 100),preventDuplicates: false);
+            Get.to(()=>RiderDashboardView(index: 0,),duration: const Duration(milliseconds: 100),preventDuplicates: false);
           }
           isSubmit.value = false;
         } else if (decodedToken['role'] == "vendor") {
           if(loginResponseModel.value.data?.hasFreeTrial == false && loginResponseModel.value.data?.subscription?.hasActiveSubscription == false) {
-            Get.off(()=>VendorSubscriptionFreeTrailView(),duration: const Duration(milliseconds: 100),preventDuplicates: false);
+            Get.to(()=>VendorSubscriptionFreeTrailView(),duration: const Duration(milliseconds: 100),preventDuplicates: false);
           } else {
-            Get.off(()=>VendorDashboardView(index: 0,),duration: const Duration(milliseconds: 100),preventDuplicates: false);
+            Get.to(()=>VendorDashboardView(index: 0,),duration: const Duration(milliseconds: 100),preventDuplicates: false);
           }
           isSubmit.value = false;
         } else if (decodedToken['role'] == "broker") {
           if(loginResponseModel.value.data?.hasFreeTrial == false && loginResponseModel.value.data?.subscription?.hasActiveSubscription == false) {
-            Get.off(()=>BrokerSubscriptionFreeTrailView(),duration: const Duration(milliseconds: 100),preventDuplicates: false);
+            Get.to(()=>BrokerSubscriptionFreeTrailView(),duration: const Duration(milliseconds: 100),preventDuplicates: false);
           } else {
-            Get.off(()=>BrokerDashboardView(index: 0),duration: const Duration(milliseconds: 100),preventDuplicates: false);
+            Get.to(()=>BrokerDashboardView(index: 0),duration: const Duration(milliseconds: 100),preventDuplicates: false);
           }
           isSubmit.value = false;
         }
       } else {
-        Get.off(()=> WelcomeView(),duration: const Duration(milliseconds: 100),preventDuplicates: false);
+        Get.to(()=> WelcomeView(),duration: const Duration(milliseconds: 100),preventDuplicates: false);
         isSubmit.value = false;
       }
     }

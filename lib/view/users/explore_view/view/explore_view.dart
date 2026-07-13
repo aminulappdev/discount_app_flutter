@@ -28,7 +28,7 @@ class ExploreView extends StatelessWidget {
           enabled: exploreController.isLoading.value,
           child: RefreshIndicator(
             onRefresh: () async {
-              Get.off(()=>UserDashboardView(index: 2,),duration: const Duration(milliseconds: 100),preventDuplicates: false);
+              Get.to(()=>UserDashboardView(index: 2,),duration: const Duration(milliseconds: 100),preventDuplicates: false);
             },
             child: CustomScrollView(
               slivers: [
@@ -92,7 +92,7 @@ class ExploreView extends StatelessWidget {
 
                                   InkWell(
                                     onTap: () {
-                                      Get.off(()=>UserNotificationView(),preventDuplicates: false,duration: const Duration(milliseconds: 100));
+                                      Get.to(()=>UserNotificationView(),preventDuplicates: false,duration: const Duration(milliseconds: 100));
                                     },
                                     child: Container(
                                       width: 45.w(context),
@@ -117,7 +117,7 @@ class ExploreView extends StatelessWidget {
 
                                   InkWell(
                                     onTap: () {
-                                      Get.off(()=> CartView(),preventDuplicates: false,duration: const Duration(milliseconds: 100));
+                                      Get.to(()=> CartView(),preventDuplicates: false,duration: const Duration(milliseconds: 100));
                                     },
                                     child: Container(
                                       width: 45.w(context),
@@ -321,7 +321,7 @@ class ExploreView extends StatelessWidget {
                             return TextButton(
                               style: TextButton.styleFrom(padding: EdgeInsets.zero),
                               onPressed: () async {
-                                Get.off(()=> SingleProductViewScreen(
+                                Get.to(()=> SingleProductViewScreen(
                                   productId: exploreController.products[index].sId,
                                   isSingleStoreScreen: false,isHomeScreen: false,storeId: '',isProductListPage: false,isExplorePage: true, isStoreScreen: false,
                                 ), duration: Duration(milliseconds: 100),preventDuplicates: false,);

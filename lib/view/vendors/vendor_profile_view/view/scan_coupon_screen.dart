@@ -16,7 +16,7 @@ class ScanCouponScreen extends StatelessWidget {
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (canPop, onOpoInvoked) {
-        Get.off(()=>VendorDashboardView(index: 3),duration: const Duration(milliseconds: 100),preventDuplicates: false);
+        Get.to(()=>VendorDashboardView(index: 3),duration: const Duration(milliseconds: 100),preventDuplicates: false);
       },
       child: Scaffold(
         body: Obx(()=>Skeletonizer(
@@ -41,7 +41,7 @@ class ScanCouponScreen extends StatelessWidget {
                           UserProfileAppbarWidget(
                             title: "Scan Coupon",
                             onTap: () {
-                              Get.off(()=>VendorDashboardView(index: 3),duration: const Duration(milliseconds: 100),preventDuplicates: false);
+                              Get.to(()=>VendorDashboardView(index: 3),duration: const Duration(milliseconds: 100),preventDuplicates: false);
                             },
                           ),
                           CustomSpaceWidget.spacerWidget(spaceHeight: 30.h(context)),

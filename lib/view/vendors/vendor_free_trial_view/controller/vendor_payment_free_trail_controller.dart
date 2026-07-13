@@ -25,20 +25,20 @@ class VendorPaymentFreeTrailController extends GetxController {
         } else {
           isHandlingPayment.value = false;
           MessageSnackBarWidget.errorSnackBarWidget(context: context, message: _messageFromData(data, "Payment failed"));
-          await Get.off(()=>VendorSubscriptionFreeTrailView(),duration: const Duration(milliseconds: 100),preventDuplicates: false);
+          await Get.to(()=>VendorSubscriptionFreeTrailView(),duration: const Duration(milliseconds: 100),preventDuplicates: false);
         }
       },
       onFail: (e,data) async {
         _printPaymentResponse("VENDOR FREE TRIAL PAYMENT FAILED RESPONSE", data);
         isHandlingPayment.value = false;
         MessageSnackBarWidget.errorSnackBarWidget(context: context, message: e);
-        await Get.off(()=>VendorSubscriptionFreeTrailView(),duration: const Duration(milliseconds: 100),preventDuplicates: false);
+        await Get.to(()=>VendorSubscriptionFreeTrailView(),duration: const Duration(milliseconds: 100),preventDuplicates: false);
       },
       onExceptionFail: (e,data) async {
         _printPaymentResponse("VENDOR FREE TRIAL PAYMENT EXCEPTION RESPONSE", data);
         isHandlingPayment.value = false;
         MessageSnackBarWidget.errorSnackBarWidget(context: context, message: e);
-        await Get.off(()=>VendorSubscriptionFreeTrailView(),duration: const Duration(milliseconds: 100),preventDuplicates: false);
+        await Get.to(()=>VendorSubscriptionFreeTrailView(),duration: const Duration(milliseconds: 100),preventDuplicates: false);
       },
     );
 

@@ -92,7 +92,7 @@ class PointsHomeView extends StatelessWidget {
             
                                   InkWell(
                                     onTap: () {
-                                      Get.off(()=>UserNotificationView(),preventDuplicates: false,duration: const Duration(milliseconds: 100));
+                                      Get.to(()=>UserNotificationView(),preventDuplicates: false,duration: const Duration(milliseconds: 100));
                                     },
                                     child: Container(
                                       width: 45.w(context),
@@ -117,7 +117,7 @@ class PointsHomeView extends StatelessWidget {
             
                                   InkWell(
                                     onTap: () {
-                                      Get.off(()=> CartView(),preventDuplicates: false,duration: const Duration(milliseconds: 100));
+                                      Get.to(()=> CartView(),preventDuplicates: false,duration: const Duration(milliseconds: 100));
                                     },
                                     child: Container(
                                       width: 45.w(context),
@@ -230,7 +230,7 @@ class PointsHomeView extends StatelessWidget {
                           ButtonHelperWidget.customButtonWidget(
                             context: context,
                             onPressed: () async {
-                              Get.off(()=> CartView(),preventDuplicates: false,duration: const Duration(milliseconds: 100));
+                              Get.to(()=> CartView(),preventDuplicates: false,duration: const Duration(milliseconds: 100));
                             },
                             text: 'Redeem my points',
                             borderRadius: 8,

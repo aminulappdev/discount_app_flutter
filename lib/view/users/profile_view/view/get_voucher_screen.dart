@@ -20,7 +20,7 @@ class GetVoucherScreen extends StatelessWidget {
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (canPop, onOpoInvoked) {
-        Get.off(
+        Get.to(
           () => UserDashboardView(index: 3),
           duration: const Duration(milliseconds: 100),
           preventDuplicates: false,
@@ -62,7 +62,7 @@ class GetVoucherScreen extends StatelessWidget {
                               UserProfileAppbarWidget(
                                 title: "Voucher",
                                 onTap: () {
-                                  Get.off(
+                                  Get.to(
                                     () => UserDashboardView(index: 3),
                                     duration: const Duration(milliseconds: 100),
                                     preventDuplicates: false,

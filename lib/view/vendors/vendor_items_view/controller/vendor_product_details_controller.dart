@@ -96,7 +96,7 @@ class VendorProductDetailsController extends GetxController {
         Get.back();
         MessageSnackBarWidget.errorSnackBarWidget(context: context, message: e);
         isDelete.value = false;
-        Get.off(()=>VendorDashboardView(index: 2,),duration: const Duration(milliseconds: 100),preventDuplicates: false);
+        Get.to(()=>VendorDashboardView(index: 2,),duration: const Duration(milliseconds: 100),preventDuplicates: false);
       },
       onFail: (e,data) {
         MessageSnackBarWidget.errorSnackBarWidget(context: context, message: e);

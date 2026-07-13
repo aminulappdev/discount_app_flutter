@@ -12,7 +12,7 @@ class UserProfileSettingView extends StatelessWidget {
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop,onPopInvoked) {
-        Get.off(()=>UserDashboardView(index: 3,),duration: const Duration(milliseconds: 100),preventDuplicates: false);
+        Get.to(()=>UserDashboardView(index: 3,),duration: const Duration(milliseconds: 100),preventDuplicates: false);
       },
       child: Scaffold(
         backgroundColor: Colors.transparent,
@@ -46,7 +46,7 @@ class UserProfileSettingView extends StatelessWidget {
                           UserProfileAppbarWidget(
                             title: "Setting",
                             onTap: () async {
-                              Get.off(()=>UserDashboardView(index: 3,),duration: const Duration(milliseconds: 100),preventDuplicates: false);
+                              Get.to(()=>UserDashboardView(index: 3,),duration: const Duration(milliseconds: 100),preventDuplicates: false);
                             },
                           ),
 
@@ -76,7 +76,7 @@ class UserProfileSettingView extends StatelessWidget {
                                     rightIcon: ImageUtils.lockImage,
                                     title: "Change Password",
                                     onPressed: () async {
-                                      Get.off(()=>UserChangePasswordView(),preventDuplicates: false,duration: Duration(milliseconds: 100));
+                                      Get.to(()=>UserChangePasswordView(),preventDuplicates: false,duration: Duration(milliseconds: 100));
                                     },
                                     trailing: true,
                                     context: context,

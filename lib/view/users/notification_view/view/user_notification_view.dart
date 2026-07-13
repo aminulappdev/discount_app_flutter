@@ -35,7 +35,7 @@ class UserNotificationView extends StatelessWidget {
                       UserProfileAppbarWidget(
                         title: "Notification",
                         onTap: () {
-                          Get.off(()=>UserDashboardView(index: 0,),duration: const Duration(milliseconds: 100),preventDuplicates: false);
+                          Get.to(()=>UserDashboardView(index: 0,),duration: const Duration(milliseconds: 100),preventDuplicates: false);
                         },
                       ),
 

@@ -67,7 +67,7 @@ class VendorSettingController extends GetxController {
       onSuccess: (e,data) async {
         isSubmit.value = false;
         await AppLocalStorage.removeKey(key: "Login");
-        await Get.off(()=>SignInView(),preventDuplicates: false,duration: Duration(milliseconds: 100));
+        await Get.to(()=>SignInView(),preventDuplicates: false,duration: Duration(milliseconds: 100));
       },
       onFail: (e,data) {
         MessageSnackBarWidget.errorSnackBarWidget(context: context, message: e);

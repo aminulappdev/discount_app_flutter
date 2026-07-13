@@ -48,7 +48,7 @@ class OtpVerifyController extends GetxController {
       onSuccess: (e,data) async {
         CustomSnackBar().successCustomSnackBar(context: context, message: "${e}");
         isReset.value = false;
-        Get.off(()=>OtpVerifyScreen(email: email,isSignUp: isSignUp,),duration: const Duration(milliseconds: 100),preventDuplicates: false);
+        Get.to(()=>OtpVerifyScreen(email: email,isSignUp: isSignUp,),duration: const Duration(milliseconds: 100),preventDuplicates: false);
       },
       onFail: (e,data) {
         MessageSnackBarWidget.errorSnackBarWidget(context: context, message: e);
@@ -73,7 +73,7 @@ class OtpVerifyController extends GetxController {
       onSuccess: (e,data) async {
         MessageSnackBarWidget.successSnackBarWidget(context: context, message: e);
         isSubmit.value = false;
-        Get.off(()=>CreateNewPasswordScreen(email: email,),duration: const Duration(milliseconds: 100),preventDuplicates: false);
+        Get.to(()=>CreateNewPasswordScreen(email: email,),duration: const Duration(milliseconds: 100),preventDuplicates: false);
       },
       onFail: (e,data) {
         MessageSnackBarWidget.errorSnackBarWidget(context: context, message: e);
@@ -99,7 +99,7 @@ class OtpVerifyController extends GetxController {
       onSuccess: (e,data) async {
         CustomSnackBar().successCustomSnackBar(context: context, message: "${e}");
         isSubmit.value = false;
-        Get.off(()=>SignUpPreviewScreen(),duration: const Duration(milliseconds: 100),preventDuplicates: false);
+        Get.to(()=>SignUpPreviewScreen(),duration: const Duration(milliseconds: 100),preventDuplicates: false);
       },
       onFail: (e,data) {
         MessageSnackBarWidget.errorSnackBarWidget(context: context, message: e);

@@ -24,9 +24,10 @@ class VendorOrderOngoingStatusScreen extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         image: DecorationImage(
-            image: AssetImage(ImageUtils.homeBg),
-            alignment: Alignment.topRight,
-            opacity: 0.5),
+          image: AssetImage(ImageUtils.homeBg),
+          alignment: Alignment.topRight,
+          opacity: 0.5,
+        ),
       ),
       child: Scaffold(
         backgroundColor: Colors.transparent,
@@ -37,349 +38,396 @@ class VendorOrderOngoingStatusScreen extends StatelessWidget {
               child: vendorOrderDetailsController.isLoading.value
                   ? const Center(child: CircularProgressIndicator())
                   : SingleChildScrollView(
-              child: Column(
-                children: [
-                  10.heightBox,
-                  Row(
-                    children: [
-                      SizedBox(
-                        height: 40.h(context),
-                        width: 40.w(context),
-                        child: IconButton(
-                          padding: EdgeInsets.zero,
-                          icon: Icon(
-                            Icons.arrow_back_ios,
-                            color: ColorUtils.blackColor,
-                            size: 20.r(context),
+                      child: Column(
+                        children: [
+                          10.heightBox,
+                          Row(
+                            children: [
+                              SizedBox(
+                                height: 40.h(context),
+                                width: 40.w(context),
+                                child: IconButton(
+                                  padding: EdgeInsets.zero,
+                                  icon: Icon(
+                                    Icons.arrow_back_ios,
+                                    color: ColorUtils.blackColor,
+                                    size: 20.r(context),
+                                  ),
+                                  onPressed: () => Get.back(),
+                                ),
+                              ),
+                              Expanded(
+                                child: Align(
+                                  alignment: Alignment.center,
+                                  child: Image.asset(
+                                    ImageUtils.discountMeLogo,
+                                    scale: 10,
+                                  ),
+                                ),
+                              ),
+                              SizedBox(width: 40.w(context)),
+                            ],
                           ),
-                          onPressed: () => Get.back(),
-                        ),
-                      ),
-                      Expanded(
-                        child: Align(
-                          alignment: Alignment.center,
-                          child: Image.asset(
-                            ImageUtils.discountMeLogo,
-                            scale: 10,
-                          ),
-                        ),
-                      ),
-                      SizedBox(width: 40.w(context)),
-                    ],
-                  ),
 
-                  // add order.......
-                  20.heightBox,
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      CustomText(
-                        title: "Order details",
-                        fontWeight: FontWeight.w700,
-                        fontSize: 20,
-                        color: ColorUtils.blackColor,
-                      ),
-                      Container(
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                        decoration: BoxDecoration(
-                          color: vendorOrderDetailsController
-                              .getStatusBackgroundColor(
-                            vendorOrderDetailsController
-                                .orderDetails.value.data?.status,
+                          // add order.......
+                          20.heightBox,
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              CustomText(
+                                title: "Order details",
+                                fontWeight: FontWeight.w700,
+                                fontSize: 20,
+                                color: ColorUtils.blackColor,
+                              ),
+                              Container(
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 5,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: vendorOrderDetailsController
+                                      .getStatusBackgroundColor(
+                                        vendorOrderDetailsController
+                                            .orderDetails
+                                            .value
+                                            .data
+                                            ?.status,
+                                      ),
+                                  borderRadius: BorderRadius.circular(
+                                    5.r(context),
+                                  ),
+                                ),
+                                child: CustomText(
+                                  title: vendorOrderDetailsController
+                                      .statusLabel(
+                                        vendorOrderDetailsController
+                                            .orderDetails
+                                            .value
+                                            .data
+                                            ?.status,
+                                      ),
+                                  color: vendorOrderDetailsController
+                                      .getStatusTextColor(
+                                        vendorOrderDetailsController
+                                            .orderDetails
+                                            .value
+                                            .data
+                                            ?.status,
+                                      ),
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
                           ),
-                          borderRadius: BorderRadius.circular(5.r(context)),
-                        ),
-                        child: CustomText(
-                          title: vendorOrderDetailsController.statusLabel(
-                            vendorOrderDetailsController
-                                .orderDetails.value.data?.status,
-                          ),
-                          color: vendorOrderDetailsController.getStatusTextColor(
-                            vendorOrderDetailsController
-                                .orderDetails.value.data?.status,
-                          ),
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ],
-                  ),
 
-                  20.heightBox,
-                  ListView.builder(
-                    itemCount: vendorOrderDetailsController
-                            .orderDetails.value.data?.items?.length ??
-                        0,
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemBuilder: (context, index) {
-                      final item = vendorOrderDetailsController
-                          .orderDetails.value.data!.items![index];
-                      final image = item.product?.images?.isNotEmpty == true
-                          ? item.product!.images!.first
-                          : "";
-                      return Container(
-                        padding: EdgeInsets.all(8.w(context)),
-                        margin: EdgeInsets.only(bottom: 10),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(8.r(context)),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.07),
-                              blurRadius: 10,
-                              spreadRadius: 0,
-                              offset: Offset(0, 2),
-                            ),
-                          ],
-                        ),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            // Product Image
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(8.r(context)),
-                              child: image.isEmpty
-                                  ? Image.asset(
-                                      ImageUtils.burgerCard,
-                                      scale: 4,
-                                      fit: BoxFit.cover,
-                                    )
-                                  : Image.network(
-                                      image,
-                                      height: 80.h(context),
-                                      width: 80.w(context),
-                                      fit: BoxFit.cover,
+                          20.heightBox,
+                          ListView.builder(
+                            itemCount:
+                                vendorOrderDetailsController
+                                    .orderDetails
+                                    .value
+                                    .data
+                                    ?.items
+                                    ?.length ??
+                                0,
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemBuilder: (context, index) {
+                              final item = vendorOrderDetailsController
+                                  .orderDetails
+                                  .value
+                                  .data!
+                                  .items![index];
+                              final image =
+                                  item.product?.images?.isNotEmpty == true
+                                  ? item.product!.images!.first
+                                  : "";
+                              return Container(
+                                padding: EdgeInsets.all(8.w(context)),
+                                margin: EdgeInsets.only(bottom: 10),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(
+                                    8.r(context),
+                                  ),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.07),
+                                      blurRadius: 10,
+                                      spreadRadius: 0,
+                                      offset: Offset(0, 2),
                                     ),
-                            ),
-                            SizedBox(width: 12.w(context)),
+                                  ],
+                                ),
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    // Product Image
+                                    ClipRRect(
+                                      borderRadius: BorderRadius.circular(
+                                        8.r(context),
+                                      ),
+                                      child: image.isEmpty
+                                          ? Image.asset(
+                                              ImageUtils.burgerCard,
+                                              scale: 4,
+                                              fit: BoxFit.cover,
+                                            )
+                                          : Image.network(
+                                              image,
+                                              height: 80.h(context),
+                                              width: 80.w(context),
+                                              fit: BoxFit.cover,
+                                            ),
+                                    ),
+                                    SizedBox(width: 12.w(context)),
 
-                            // Product details
-                            Expanded(
-                              child: Column(
+                                    // Product details
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            item.product?.name ?? "N/A",
+                                            style: GoogleFonts.urbanist(
+                                              fontSize: 17.sp(context),
+                                              fontWeight: FontWeight.w600,
+                                              color: ColorUtils.blackColor,
+                                            ),
+                                          ),
+                                          SizedBox(height: 4.h(context)),
+                                          Text(
+                                            item.product?.description ??
+                                                vendorOrderDetailsController
+                                                    .orderDetails
+                                                    .value
+                                                    .data
+                                                    ?.orderId ??
+                                                "",
+                                            style: GoogleFonts.urbanist(
+                                              fontSize: 14.sp(context),
+                                              fontWeight: FontWeight.w400,
+                                              color: ColorUtils.blackColor,
+                                            ),
+                                          ),
+                                          SizedBox(height: 4.h(context)),
+                                          Text(
+                                            '\$${item.product?.price ?? 0}',
+                                            style: GoogleFonts.urbanist(
+                                              fontSize: 21.sp(context),
+                                              fontWeight: FontWeight.w700,
+                                              color: ColorUtils.primaryColor,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+
+                                    // Quantity Selector
+                                    Row(
+                                      children: [
+                                        // Minus Button
+                                        Container(
+                                          height: 32.h(context),
+                                          width: 32.w(context),
+                                          decoration: BoxDecoration(
+                                            borderRadius: BorderRadius.circular(
+                                              8.r(context),
+                                            ),
+                                            color: ColorUtils.greenLightHover,
+                                          ),
+                                          child: IconButton(
+                                            padding: EdgeInsets.zero,
+                                            icon: Icon(
+                                              Icons.remove,
+                                              color: ColorUtils.primaryColor,
+                                            ),
+                                            onPressed: () {
+                                              // Reduce item quantity logic here
+                                            },
+                                          ),
+                                        ),
+                                        SizedBox(width: 8.w(context)),
+                                        // Quantity
+                                        Text(
+                                          '${item.quantity ?? 0}',
+                                          style: GoogleFonts.urbanist(
+                                            fontSize: 16.sp(context),
+                                            fontWeight: FontWeight.w600,
+                                            color: Colors.black,
+                                          ),
+                                        ),
+                                        SizedBox(width: 8.w(context)),
+
+                                        // Plus Button
+                                        Container(
+                                          height: 32.h(context),
+                                          width: 32.w(context),
+                                          decoration: BoxDecoration(
+                                            borderRadius: BorderRadius.circular(
+                                              8.r(context),
+                                            ),
+                                            color: ColorUtils.primaryColor,
+                                          ),
+                                          child: IconButton(
+                                            padding: EdgeInsets.zero,
+                                            icon: Icon(
+                                              Icons.add,
+                                              color: Colors.white,
+                                            ),
+                                            onPressed: () {
+                                              // Increase item quantity logic here
+                                            },
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                          ),
+                          10.heightBox,
+
+                          // Row(
+                          //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          //   children: [
+                          //     CustomText(
+                          //       title: "Request to Rider",
+                          //       color: ColorUtils.secondaryColor,
+                          //       fontSize: 18.sp(context),
+                          //       fontWeight: FontWeight.w500,
+                          //       decoration: TextDecoration.underline,
+                          //       decorationColor: ColorUtils.secondaryColor ,
+                          //     ),
+                          //     GestureDetector(
+                          //       onTap: () {
+                          //         Get.to(VendorViewRiderLocation());
+                          //       },
+                          //       child: CustomText(
+                          //         title: "View Rider Location",
+                          //         color: ColorUtils.secondaryColor,
+                          //         fontSize: 18.sp(context),
+                          //         fontWeight: FontWeight.w500,
+                          //         decoration: TextDecoration.underline,
+                          //         decorationColor: ColorUtils.secondaryColor,
+                          //       ),
+                          //     )
+                          //   ],
+                          // ),
+                          30.heightBox,
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              // Sub-Total, Delivery Charge, Discount, Total
+                              Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(
-                                    item.product?.name ?? "N/A",
-                                    style: GoogleFonts.urbanist(
-                                      fontSize: 17.sp(context),
-                                      fontWeight: FontWeight.w600,
-                                      color: ColorUtils.blackColor,
-                                    ),
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        'Sub-Total',
+                                        style: GoogleFonts.manrope(
+                                          fontSize: 16.sp(context),
+                                          fontWeight: FontWeight.w500,
+                                          color: ColorUtils
+                                              .blackColor, // Set text color to #fefeff
+                                        ),
+                                      ),
+                                      Text(
+                                        '\$${vendorOrderDetailsController.subTotal.toStringAsFixed(2)}',
+                                        style: GoogleFonts.manrope(
+                                          fontSize: 16.sp(context),
+                                          fontWeight: FontWeight.w500,
+                                          color: ColorUtils
+                                              .blackColor, // Set text color to #fefeff
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                  SizedBox(height: 4.h(context)),
-                                  Text(
-                                    item.product?.description ??
-                                        vendorOrderDetailsController.orderDetails
-                                            .value.data?.orderId ??
-                                        "",
-                                    style: GoogleFonts.urbanist(
-                                      fontSize: 14.sp(context),
-                                      fontWeight: FontWeight.w400,
-                                      color: ColorUtils.blackColor,
-                                    ),
+                                  SizedBox(height: 5.h(context)),
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        'Delivery Charge',
+                                        style: GoogleFonts.manrope(
+                                          fontSize: 16.sp(context),
+                                          fontWeight: FontWeight.w500,
+                                          color: ColorUtils
+                                              .blackColor, // Set text color to #fefeff
+                                        ),
+                                      ),
+                                      Text(
+                                        '\$0.00',
+                                        style: GoogleFonts.manrope(
+                                          fontSize: 16.sp(context),
+                                          fontWeight: FontWeight.w500,
+                                          color: ColorUtils.blackColor,
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                  SizedBox(height: 4.h(context)),
-                                  Text(
-                                    '\$${item.product?.price ?? 0}',
-                                    style: GoogleFonts.urbanist(
-                                      fontSize: 21.sp(context),
-                                      fontWeight: FontWeight.w700,
-                                      color: ColorUtils.primaryColor,
-                                    ),
+                                  SizedBox(height: 5.h(context)),
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        'Discount',
+                                        style: GoogleFonts.manrope(
+                                          fontSize: 16.sp(context),
+                                          fontWeight: FontWeight.w500,
+                                          color: ColorUtils.blackColor,
+                                        ),
+                                      ),
+                                      Text(
+                                        '\$${vendorOrderDetailsController.discount.value.toStringAsFixed(2)}',
+                                        style: GoogleFonts.manrope(
+                                          fontSize: 16.sp(context),
+                                          fontWeight: FontWeight.w500,
+                                          color: ColorUtils.blackColor,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(height: 20.h(context)),
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        'Total',
+                                        style: GoogleFonts.manrope(
+                                          fontSize: 20.sp(context),
+                                          fontWeight: FontWeight.w800,
+                                          color: ColorUtils.blackColor,
+                                        ),
+                                      ),
+                                      Text(
+                                        '\$${double.tryParse((vendorOrderDetailsController.orderDetails.value.data?.total ?? 0).toString())?.toStringAsFixed(2) ?? "0.00"}',
+                                        style: GoogleFonts.manrope(
+                                          fontSize: 18.sp(context),
+                                          fontWeight: FontWeight.bold,
+                                          color: ColorUtils.blackColor,
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ],
-                              ),
-                            ),
-
-                            // Quantity Selector
-                            Row(
-                              children: [
-                                // Minus Button
-                                Container(
-                                  height: 32.h(context),
-                                  width: 32.w(context),
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(8.r(context)),
-                                    color: ColorUtils.greenLightHover,
-                                  ),
-                                  child: IconButton(
-                                    padding: EdgeInsets.zero,
-                                    icon: Icon(Icons.remove, color: ColorUtils.primaryColor),
-                                    onPressed: () {
-                                      // Reduce item quantity logic here
-                                    },
-                                  ),
-                                ),
-                                SizedBox(width: 8.w(context)),
-                                // Quantity
-                                Text(
-                                  '${item.quantity ?? 0}',
-                                  style: GoogleFonts.urbanist(
-                                    fontSize: 16.sp(context),
-                                    fontWeight: FontWeight.w600,
-                                    color: Colors.black,
-                                  ),
-                                ),
-                                SizedBox(width: 8.w(context)),
-
-                                // Plus Button
-                                Container(
-                                  height: 32.h(context),
-                                  width: 32.w(context),
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(8.r(context)),
-                                    color: ColorUtils.primaryColor,
-                                  ),
-                                  child: IconButton(
-                                    padding: EdgeInsets.zero,
-                                    icon: Icon(Icons.add, color: Colors.white),
-                                    onPressed: () {
-                                      // Increase item quantity logic here
-                                    },
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      );
-                    },
-                  ),
-                  10.heightBox,
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      CustomText(
-                        title: "Request to Rider",
-                        color: ColorUtils.secondaryColor,
-                        fontSize: 18.sp(context),
-                        fontWeight: FontWeight.w500,
-                        decoration: TextDecoration.underline,
-                        decorationColor: ColorUtils.secondaryColor,
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          Get.to(VendorViewRiderLocation());
-                        },
-                        child: CustomText(
-                          title: "View Rider Location",
-                          color: ColorUtils.secondaryColor,
-                          fontSize: 18.sp(context),
-                          fontWeight: FontWeight.w500,
-                          decoration: TextDecoration.underline,
-                          decorationColor: ColorUtils.secondaryColor,
-                        ),
-                      )
-                    ],
-                  ),
-
-                  50.heightBox,
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      // Sub-Total, Delivery Charge, Discount, Total
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                'Sub-Total',
-                                style: GoogleFonts.manrope(
-                                  fontSize: 16.sp(context),
-                                  fontWeight: FontWeight.w500,
-                                  color: ColorUtils.blackColor, // Set text color to #fefeff
-                                ),
-                              ),
-                              Text(
-                                '\$${vendorOrderDetailsController.subTotal.toStringAsFixed(2)}',
-                                style: GoogleFonts.manrope(
-                                  fontSize: 16.sp(context),
-                                  fontWeight: FontWeight.w500,
-                                  color: ColorUtils.blackColor, // Set text color to #fefeff
-                                ),
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 5.h(context)),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                'Delivery Charge',
-                                style: GoogleFonts.manrope(
-                                  fontSize: 16.sp(context),
-                                  fontWeight: FontWeight.w500,
-                                  color: ColorUtils.blackColor, // Set text color to #fefeff
-                                ),
-                              ),
-                              Text(
-                                '\$0.00',
-                                style: GoogleFonts.manrope(
-                                  fontSize: 16.sp(context),
-                                  fontWeight: FontWeight.w500,
-                                  color: ColorUtils.blackColor,
-                                ),
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 5.h(context)),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                'Discount',
-                                style: GoogleFonts.manrope(
-                                  fontSize: 16.sp(context),
-                                  fontWeight: FontWeight.w500,
-                                  color: ColorUtils.blackColor
-                                ),
-                              ),
-                              Text(
-                                '\$${vendorOrderDetailsController.discount.value.toStringAsFixed(2)}',
-                                style: GoogleFonts.manrope(
-                                  fontSize: 16.sp(context),
-                                  fontWeight: FontWeight.w500,
-                                  color: ColorUtils.blackColor
-                                ),
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 20.h(context)),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                'Total',
-                                style: GoogleFonts.manrope(
-                                  fontSize: 20.sp(context),
-                                  fontWeight: FontWeight.w800,
-                                  color: ColorUtils.blackColor
-                                ),
-                              ),
-                              Text(
-                                '\$${double.tryParse((vendorOrderDetailsController.orderDetails.value.data?.total ?? 0).toString())?.toStringAsFixed(2) ?? "0.00"}',
-                                style: GoogleFonts.manrope(
-                                  fontSize: 18.sp(context),
-                                  fontWeight: FontWeight.bold,
-                                  color: ColorUtils.blackColor
-                                ),
                               ),
                             ],
                           ),
                         ],
                       ),
-                    ],
-                  )
-
-
-                ],
-              ),
-            ),
+                    ),
             ),
           ),
         ),

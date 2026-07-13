@@ -14,7 +14,7 @@ class UserProfileEditView extends StatelessWidget {
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop,onPopInvoked) {
-        Get.off(()=>UserDashboardView(index: 3,),duration: const Duration(milliseconds: 100),preventDuplicates: false);
+        Get.to(()=>UserDashboardView(index: 3,),duration: const Duration(milliseconds: 100),preventDuplicates: false);
       },
       child: Scaffold(
         body: Obx(()=>Skeletonizer(
@@ -44,7 +44,7 @@ class UserProfileEditView extends StatelessWidget {
 
                           UserProfileAppbarWidget(
                             onTap: () async {
-                              Get.off(()=>UserDashboardView(index: 3,),duration: const Duration(milliseconds: 100),preventDuplicates: false);
+                              Get.to(()=>UserDashboardView(index: 3,),duration: const Duration(milliseconds: 100),preventDuplicates: false);
                             },
                             title: "Edit Profile",
                           ),
@@ -63,7 +63,7 @@ class UserProfileEditView extends StatelessWidget {
                     child: RefreshIndicator(
                       onRefresh: () async {
                         Get.delete<BrokerEditProfileController>(force: true);
-                        Get.off(()=>BrokerEditProfileView(),preventDuplicates: false);
+                        Get.to(()=>BrokerEditProfileView(),preventDuplicates: false);
                       },
                       child: CustomScrollView(
                         slivers: [

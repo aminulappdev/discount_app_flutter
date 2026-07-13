@@ -13,6 +13,15 @@ class UserHomeView extends StatelessWidget {
     final UserHomeController userHomeController = Get.put(
       UserHomeController(context: context),
     );
+
+    void openSearch() {
+      Get.to(
+        () => UserProductListView(categoryId: "", storeId: ""),
+        preventDuplicates: false,
+        duration: const Duration(milliseconds: 100),
+      );
+    }
+
     return Scaffold(
       body: Container(
         height: 926.h(context),
@@ -31,7 +40,7 @@ class UserHomeView extends StatelessWidget {
             enabled: userHomeController.isLoading.value,
             child: RefreshIndicator(
               onRefresh: () async {
-                Get.off(
+                Get.to(
                   () => UserDashboardView(index: 0),
                   duration: const Duration(milliseconds: 100),
                   preventDuplicates: false,
@@ -120,7 +129,7 @@ class UserHomeView extends StatelessWidget {
                                   children: [
                                     InkWell(
                                       onTap: () {
-                                        Get.off(
+                                        Get.to(
                                           () => UserNotificationView(),
                                           duration: const Duration(
                                             milliseconds: 100,
@@ -154,7 +163,7 @@ class UserHomeView extends StatelessWidget {
 
                                     InkWell(
                                       onTap: () {
-                                        Get.off(
+                                        Get.to(
                                           () => CartView(),
                                           duration: const Duration(
                                             milliseconds: 100,
@@ -200,29 +209,17 @@ class UserHomeView extends StatelessWidget {
                             keyboardType: TextInputType.emailAddress,
                             fillColor: ColorUtils.white253,
                             readOnly: true,
-                            onTap: () async {
-                              Get.to(
-                                () => UserProductListView(
-                                  categoryId: "",
-                                  storeId: "",
-                                ),
-                                preventDuplicates: false,
-                                duration: Duration(milliseconds: 100),
-                              );
-                            },
+                            onTap: openSearch,
                             borderColor: ColorUtils.white202,
                             enableBorderColor: ColorUtils.white202,
                             focusedBorderColor: ColorUtils.secondaryColor,
                             prefixIcon: Padding(
                               padding: EdgeInsets.all(20.r(context)),
-                              child: InkWell(
-                                onTap: () async {},
-                                child: ImageHelperWidget.assetImageWidget(
-                                  context: context,
-                                  height: 24.h(context),
-                                  width: 24.w(context),
-                                  imageString: ImageUtils.searchNormalImage,
-                                ),
+                              child: ImageHelperWidget.assetImageWidget(
+                                context: context,
+                                height: 24.h(context),
+                                width: 24.w(context),
+                                imageString: ImageUtils.searchNormalImage,
                               ),
                             ),
                           ),
@@ -449,7 +446,7 @@ class UserHomeView extends StatelessWidget {
                               ButtonHelperWidget.customButtonWidget(
                                 context: context,
                                 onPressed: () async {
-                                  Get.off(
+                                  Get.to(
                                     () => UserProductListView(
                                       categoryId: "",
                                       storeId: "",
@@ -464,7 +461,7 @@ class UserHomeView extends StatelessWidget {
                                 ),
                                 alignment: Alignment.centerRight,
                                 fontSize: 18,
-                                textColor: ColorUtils.primaryColor,
+                                textColor: ColorUtils.primaryColor, 
                                 fontWeight: FontWeight.w500,
                                 backgroundColor: Colors.transparent,
                               ),
@@ -508,7 +505,7 @@ class UserHomeView extends StatelessWidget {
                                           children: [
                                             TextButton(
                                               onPressed: () async {
-                                                Get.off(
+                                                Get.to(
                                                   SingleProductViewScreen(
                                                     productId: userHomeController
                                                         .productsResponseModel

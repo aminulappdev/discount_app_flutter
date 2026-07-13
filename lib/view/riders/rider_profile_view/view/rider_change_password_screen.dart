@@ -16,7 +16,7 @@ class RiderChangePasswordScreen extends StatelessWidget {
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (canPop,onPopInvoked) {
-        Get.off(()=>RiderSettingScreen(),duration: const Duration(milliseconds: 100),preventDuplicates: false);
+        Get.to(()=>RiderSettingScreen(),duration: const Duration(milliseconds: 100),preventDuplicates: false);
       },
       child: Scaffold(
         body: Obx(()=>Skeletonizer(
@@ -46,7 +46,7 @@ class RiderChangePasswordScreen extends StatelessWidget {
                         UserProfileAppbarWidget(
                           title: "Change Password",
                           onTap: () {
-                            Get.off(()=>RiderSettingScreen(),duration: const Duration(milliseconds: 100),preventDuplicates: false);
+                            Get.to(()=>RiderSettingScreen(),duration: const Duration(milliseconds: 100),preventDuplicates: false);
                           },
                         ),
 
@@ -164,7 +164,7 @@ class RiderChangePasswordScreen extends StatelessWidget {
                             plainButtonRadius: 8.r(context),
                             plainButtonOnPress:  () async {
                               await AppLocalStorage.removeKey(key: "Login");
-                              Get.off(()=>ForgotPasswordScreen(),duration: const Duration(milliseconds: 100),preventDuplicates: false);
+                              Get.to(()=>ForgotPasswordScreen(),duration: const Duration(milliseconds: 100),preventDuplicates: false);
                             },
                             plainButtonHint: "Forgot the password?",
                             plainButtonHintAlign: Alignment.centerLeft,

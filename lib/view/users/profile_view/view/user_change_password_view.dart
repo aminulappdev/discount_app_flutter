@@ -12,7 +12,7 @@ class UserChangePasswordView extends StatelessWidget {
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop,onPopInvoked) {
-        Get.off(()=>UserProfileSettingView(),duration: const Duration(milliseconds: 100),preventDuplicates: false);
+        Get.to(()=>UserProfileSettingView(),duration: const Duration(milliseconds: 100),preventDuplicates: false);
       },
       child: Scaffold(
         backgroundColor: Colors.transparent,
@@ -45,7 +45,7 @@ class UserChangePasswordView extends StatelessWidget {
                           UserProfileAppbarWidget(
                             title: "Change Password",
                             onTap: () async {
-                              Get.off(()=>UserProfileSettingView(),duration: const Duration(milliseconds: 100),preventDuplicates: false);
+                              Get.to(()=>UserProfileSettingView(),duration: const Duration(milliseconds: 100),preventDuplicates: false);
                             },
                           ),
 
@@ -246,7 +246,7 @@ class UserChangePasswordView extends StatelessWidget {
                                     height: 44,
                                     onPressed: () async {
                                       await LocalStorageUtils.remove(AppConstantUtils.loginResponse);
-                                      Get.off(()=> ForgotPasswordScreen(),duration: const Duration(milliseconds: 100),preventDuplicates: false);
+                                      Get.to(()=> ForgotPasswordScreen(),duration: const Duration(milliseconds: 100),preventDuplicates: false);
                                     },
                                     text: "Forgot the password?",
                                     padding: EdgeInsets.symmetric(vertical: 14.5.vpm(context)),

@@ -63,7 +63,7 @@ class VendorItemScreenWidget extends GetxController {
         onExceptionFail: (e) async {
           if(e == "jwt expired") {
             await AppLocalStorage.removeKey(key: "Login");
-            await Get.off(()=>SignInView(),preventDuplicates: false,duration: Duration(milliseconds: 100));
+            await Get.to(()=>SignInView(),preventDuplicates: false,duration: Duration(milliseconds: 100));
           }
           isLoading.value = false;
           CustomSnackBar().errorCustomSnackBar(context: context, message: "${e}");
@@ -84,7 +84,7 @@ class VendorItemScreenWidget extends GetxController {
         enabled: isLoading.value,
         child: RefreshIndicator(
           onRefresh: () async {
-            Get.off(()=>VendorDashboardView(index: 2),duration: const Duration(milliseconds: 100),preventDuplicates: false);
+            Get.to(()=>VendorDashboardView(index: 2),duration: const Duration(milliseconds: 100),preventDuplicates: false);
           },
           child: CustomScrollView(
             slivers: [
@@ -100,9 +100,9 @@ class VendorItemScreenWidget extends GetxController {
                       CustomSpaceWidget.spacerWidget(spaceHeight: 40.h(context)),
 
                       UserProfileAppbarWidget(
-                        title: "Items",
+                        title: "Items", 
                         onTap: () {
-                          Get.off(()=>VendorDashboardView(index: 0,),duration: const Duration(milliseconds: 100),preventDuplicates: false);
+                          Get.to(()=>VendorDashboardView(index: 0,),duration: const Duration(milliseconds: 100),preventDuplicates: false);
                         },
                       ),
 
@@ -145,7 +145,7 @@ class VendorItemScreenWidget extends GetxController {
                               onExceptionFail: (e) async {
                                 if(e == "jwt expired") {
                                   await AppLocalStorage.removeKey(key: "Login");
-                                  await Get.off(()=>SignInView(),preventDuplicates: false,duration: Duration(milliseconds: 100));
+                                  await Get.to(()=>SignInView(),preventDuplicates: false,duration: Duration(milliseconds: 100));
                                 }
                                 isLoading.value = false;
                                 CustomSnackBar().errorCustomSnackBar(context: context, message: "${e}");
@@ -242,7 +242,7 @@ class VendorItemScreenWidget extends GetxController {
                                     onExceptionFail: (e) async {
                                       if(e == "jwt expired") {
                                         await AppLocalStorage.removeKey(key: "Login");
-                                        await Get.off(()=>SignInView(),preventDuplicates: false,duration: Duration(milliseconds: 100));
+                                        await Get.to(()=>SignInView(),preventDuplicates: false,duration: Duration(milliseconds: 100));
                                       }
                                       isLoading.value = false;
                                       CustomSnackBar().errorCustomSnackBar(context: context, message: "${e}");
@@ -300,7 +300,7 @@ class VendorItemScreenWidget extends GetxController {
                           return TextButton(
                             style: TextButton.styleFrom(padding: EdgeInsets.zero),
                             onPressed: () async {
-                              Get.off(()=>VendorItemDetailsView(productId: products[index].sId,),duration: Duration(milliseconds: 100),preventDuplicates: false);
+                              Get.to(()=>VendorItemDetailsView(productId: products[index].sId,),duration: Duration(milliseconds: 100),preventDuplicates: false);
                             },
                             child: Container(
                               margin: EdgeInsets.only(bottom: 10.bpm(context)),

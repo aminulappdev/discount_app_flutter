@@ -19,7 +19,7 @@ class VendorProfileEditView extends StatelessWidget {
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (canPop,onPopInvoked) {
-        Get.off(()=>VendorDashboardView(index: 3,),duration: const Duration(milliseconds: 100),preventDuplicates: false);
+        Get.to(()=>VendorDashboardView(index: 3,),duration: const Duration(milliseconds: 100),preventDuplicates: false);
       },
       child: Scaffold(
         body: Obx(()=>Container(
@@ -47,7 +47,7 @@ class VendorProfileEditView extends StatelessWidget {
                         UserProfileAppbarWidget(
                           title: "Edit Profile",
                           onTap: () {
-                            Get.off(()=>VendorDashboardView(index: 3,),duration: const Duration(milliseconds: 100),preventDuplicates: false);
+                            Get.to(()=>VendorDashboardView(index: 3,),duration: const Duration(milliseconds: 100),preventDuplicates: false);
                           },
                         ),
 

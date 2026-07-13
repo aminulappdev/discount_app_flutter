@@ -40,10 +40,22 @@ class VendorOrderDetailsController extends GetxController {
       authorization: loginResponseModel.value.data?.accessToken,
       onSuccess: (e, data) async {
         orderDetails.value = GetOrderDetailsRetrievedResponseModel.fromJson(data);
-        orderDetails.value.data?.items?.forEach((value) {
-          discount.value +=
-              double.tryParse((value.discount ?? 0).toString()) ?? 0.0;
-        });
+        final payableTotal = double.tryParse(
+              (orderDetails.value.data?.total ?? 0).toString(),
+            ) ??
+            0.0;
+        final orderDiscount = subTotal - payableTotal;
+
+        if (orderDiscount > 0) {
+          // The order total is the authoritative discounted amount. Some order
+          // responses do not include a value in each item's `discount` field.
+          discount.value = orderDiscount;
+        } else {
+          orderDetails.value.data?.items?.forEach((item) {
+            discount.value +=
+                double.tryParse((item.discount ?? 0).toString()) ?? 0.0;
+          });
+        }
         isLoading.value = false;
       },
       onFail: (e, data) {

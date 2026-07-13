@@ -16,7 +16,7 @@ class ForgotPasswordScreen extends StatelessWidget {
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, result) async {
-        Get.off(()=>SignInView(),duration: const Duration(milliseconds: 100),preventDuplicates: false);
+        Get.to(()=>SignInView(),duration: const Duration(milliseconds: 100),preventDuplicates: false);
       },
       child: Scaffold(
         body: Obx(()=>Container(
@@ -68,7 +68,7 @@ class ForgotPasswordScreen extends StatelessWidget {
                         context: context,
                         title: "Forgot Password",
                         onPress: () async {
-                          Get.off(()=>SignInView(),duration: const Duration(milliseconds: 100),preventDuplicates: false);
+                          Get.to(()=>SignInView(),duration: const Duration(milliseconds: 100),preventDuplicates: false);
                         },
                       ),
 

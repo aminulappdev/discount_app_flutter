@@ -19,9 +19,9 @@ class OtpVerifyScreen extends StatelessWidget {
       canPop: false,
       onPopInvokedWithResult: (didPop, result) async {
         if(isSignUp == true) {
-          Get.off(()=> SignUpView(),duration: const Duration(milliseconds: 100),preventDuplicates: false);
+          Get.to(()=> SignUpView(),duration: const Duration(milliseconds: 100),preventDuplicates: false);
         } else {
-          Get.off(()=> ForgotPasswordScreen(),duration: const Duration(milliseconds: 100),preventDuplicates: false);
+          Get.to(()=> ForgotPasswordScreen(),duration: const Duration(milliseconds: 100),preventDuplicates: false);
         }
       },
       child: Scaffold(
@@ -82,9 +82,9 @@ class OtpVerifyScreen extends StatelessWidget {
                         title: isSignUp == true ? "Sign Up Otp Verify" : "Otp Verify",
                         onPress: () async {
                           if(isSignUp == true) {
-                            Get.off(()=> SignUpView(),duration: const Duration(milliseconds: 100),preventDuplicates: false);
+                            Get.to(()=> SignUpView(),duration: const Duration(milliseconds: 100),preventDuplicates: false);
                           } else {
-                            Get.off(()=> ForgotPasswordScreen(),duration: const Duration(milliseconds: 100),preventDuplicates: false);
+                            Get.to(()=> ForgotPasswordScreen(),duration: const Duration(milliseconds: 100),preventDuplicates: false);
                           }
                         },
                       ),

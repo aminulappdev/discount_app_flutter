@@ -24,6 +24,9 @@ class SingleProductViewScreenWidget extends GetxController {
   var currentPage = 0.obs;
   Timer? _timer;
 
+  bool get isProductAvailable =>
+      (singleProductResponseModel.value.data?.quantity ?? 0) > 0;
+
   void onPageChanged(int page) {
     currentPage.value = page;
   }
@@ -94,7 +97,7 @@ class SingleProductViewScreenWidget extends GetxController {
         onExceptionFail: (e) async {
           if (e == "jwt expired") {
             await AppLocalStorage.removeKey(key: "Login");
-            Get.off(
+            Get.to(
               () => SignInView(),
               preventDuplicates: false,
               duration: Duration(milliseconds: 100),
@@ -108,6 +111,13 @@ class SingleProductViewScreenWidget extends GetxController {
         },
       );
     });
+  }
+
+  @override
+  void onClose() {
+    _timer?.cancel();
+    pageController.value.dispose();
+    super.onClose();
   }
 
   Widget singleProductViewScreenWidget({required BuildContext context}) {
@@ -231,7 +241,7 @@ class SingleProductViewScreenWidget extends GetxController {
                                       padding: EdgeInsets.zero,
                                     ),
                                     onPressed: () {
-                                      Get.off(
+                                      Get.to(
                                         () => CartView(),
                                         preventDuplicates: false,
                                         duration: const Duration(
@@ -648,26 +658,24 @@ class SingleProductViewScreenWidget extends GetxController {
                         spaceHeight: 30.h(context),
                       ),
 
-                      singleProductResponseModel.value.data?.quantity != null ||
-                              singleProductResponseModel.value.data?.quantity !=
-                                  0
-                          ? Container(
-                              height: 55.h(context),
-                              width: 428.w(context),
-                              decoration: BoxDecoration(
-                                color: ColorUtils.green176,
-                                borderRadius: BorderRadius.circular(
-                                  12.r(context),
+                      Container(
+                        height: 55.h(context),
+                        width: 428.w(context),
+                        decoration: BoxDecoration(
+                          color: isProductAvailable
+                              ? ColorUtils.green176
+                              : Colors.grey,
+                          borderRadius: BorderRadius.circular(12.r(context)),
+                        ),
+                        child: isAdd.value == true
+                            ? Center(
+                                child: CircularProgressIndicator(
+                                  color: ColorUtils.white253,
                                 ),
-                              ),
-                              child: isAdd.value == true
-                                  ? Center(
-                                      child: CircularProgressIndicator(
-                                        color: ColorUtils.white253,
-                                      ),
-                                    )
-                                  : TextButton(
-                                      onPressed: () async {
+                              )
+                            : TextButton(
+                                onPressed: isProductAvailable
+                                    ? () async {
                                         isAdd.value = true;
                                         Map<String, dynamic> data = {
                                           "product": productId,
@@ -678,7 +686,7 @@ class SingleProductViewScreenWidget extends GetxController {
                                           data: data,
                                           onSuccess: (e) async {
                                             isAdd.value = false;
-                                            Get.off(
+                                            Get.to(
                                               () => CartView(),
                                               preventDuplicates: false,
                                               duration: Duration(
@@ -703,30 +711,24 @@ class SingleProductViewScreenWidget extends GetxController {
                                             isAdd.value = false;
                                             CustomSnackBar()
                                                 .errorCustomSnackBar(
-                                                  context: context,
+                                                  context: context, 
                                                   message: "${e}",
                                                 );
                                           },
                                         );
-                                      },
-                                      child:
-                                          CustomTextContainer.plainTextContainerWidgetWithoutHeightWidth(
-                                            plainTextString: "+ Add To Cart",
-                                            plainTextStringFontSize: 18.sp(
-                                              context,
-                                            ),
-                                            plainTextStringFontWeight:
-                                                FontWeight.w700,
-                                            plainTextContainerAlignment:
-                                                Alignment.center,
-                                            plainTextStringColor:
-                                                ColorUtils.white246,
-                                            plainTextStringTextAlign:
-                                                TextAlign.center,
-                                          ),
-                                    ),
-                            )
-                          : CustomSpaceWidget.spacerWidget(),
+                                      }
+                                    : null,
+                                child: CustomTextContainer.plainTextContainerWidgetWithoutHeightWidth(
+                                  plainTextString: "+ Add To Cart",
+                                  plainTextStringFontSize: 18.sp(context),
+                                  plainTextStringFontWeight: FontWeight.w700,
+                                  plainTextContainerAlignment:
+                                      Alignment.center,
+                                  plainTextStringColor: ColorUtils.white246,
+                                  plainTextStringTextAlign: TextAlign.center,
+                                ),
+                              ),
+                      ),
                     ],
                   ),
                 ),

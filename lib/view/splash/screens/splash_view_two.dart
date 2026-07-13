@@ -58,7 +58,7 @@ class SplashViewTwo extends StatelessWidget {
                     context: context,
                     onPressed: () async {
                       await LocalStorageUtils.setBool(AppConstantUtils.getStart, true);
-                      Get.off(()=> WelcomeView(),duration: const Duration(milliseconds: 100),preventDuplicates: false);
+                      Get.to(()=> WelcomeView(),duration: const Duration(milliseconds: 100),preventDuplicates: false);
                     },
                     text: "Let's Go",
                     borderRadius: 8,

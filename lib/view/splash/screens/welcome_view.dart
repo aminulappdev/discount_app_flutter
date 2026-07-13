@@ -79,7 +79,7 @@ class WelcomeView extends StatelessWidget {
                     ButtonHelperWidget.customButtonWidget(
                       context: context,
                       onPressed: () async {
-                        Get.off(()=>SignInView(),duration: const Duration(milliseconds: 100),preventDuplicates: false);
+                        Get.to(()=>SignInView(),duration: const Duration(milliseconds: 100),preventDuplicates: false);
                       },
                       text: "Log in",
                       borderRadius: 8,
@@ -95,7 +95,7 @@ class WelcomeView extends StatelessWidget {
                       context: context,
                       onPressed: () async {
                         await LocalStorageUtils.setBool(AppConstantUtils.getStart, true);
-                        Get.off(()=>SignUpView(),duration: const Duration(milliseconds: 100),preventDuplicates: false);
+                        Get.to(()=>SignUpView(),duration: const Duration(milliseconds: 100),preventDuplicates: false);
                       },
                       text: "Sign Up",
                       borderRadius: 8,

@@ -183,19 +183,20 @@ class VendorItemsController extends GetxController {
 
     isDelete.value = true;
 
-    String accessToken = "";
-    await AppLocalStorage.getString(key: "Login").then((value) {
-      accessToken = jsonDecode(value!)["data"]["accessToken"];
-    });
-    print(accessToken);
+    final loginResponseModel = LoginResponseModel.fromJson(
+      jsonDecode(
+        LocalStorageUtils.getString(AppConstantUtils.loginResponse)!,
+      ),
+    );
 
     BaseApiUtils.delete(
       url: ApiUtils.productDelete(productId),
-      authorization: accessToken,
+      authorization: loginResponseModel.data?.accessToken,
       onSuccess: (e,data) async {
         Get.back();
         MessageSnackBarWidget.errorSnackBarWidget(context: context, message: e);
         isDelete.value = false;
+        products.removeWhere((product) => product.sId == productId);
         isLoading.value = true;
         await getVendorProfileController(context: context);
       },

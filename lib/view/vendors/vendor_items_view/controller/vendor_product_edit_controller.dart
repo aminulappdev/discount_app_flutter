@@ -194,7 +194,7 @@ class VendorProductEditController extends GetxController {
       authorization: loginResponseModel.data?.accessToken,
       onSuccess: (e,data) async {
         isSubmit.value = false;
-        Get.off(()=>VendorDashboardView(index: 2,),duration: const Duration(milliseconds: 100),preventDuplicates: false);
+        Get.to(()=>VendorDashboardView(index: 2,),duration: const Duration(milliseconds: 100),preventDuplicates: false);
       },
       onFail: (e,data) {
         MessageSnackBarWidget.errorSnackBarWidget(context: context, message: e);

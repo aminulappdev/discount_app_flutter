@@ -19,7 +19,7 @@ class OrderSelectAddressView extends StatelessWidget {
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (canPop,onOpoInvoked) {
-        Get.off(()=>CartView(),duration: const Duration(milliseconds: 100),preventDuplicates: false);
+        Get.to(()=>CartView(),duration: const Duration(milliseconds: 100),preventDuplicates: false);
       },
       child: Scaffold(
         body: Container(
@@ -49,7 +49,7 @@ class OrderSelectAddressView extends StatelessWidget {
                         UserProfileAppbarWidget(
                           title: "Order Billing Address",
                           onTap: () {
-                            Get.off(()=>CartView(),duration: const Duration(milliseconds: 100),preventDuplicates: false);
+                            Get.to(()=>CartView(),duration: const Duration(milliseconds: 100),preventDuplicates: false);
                           },
                         ),
 

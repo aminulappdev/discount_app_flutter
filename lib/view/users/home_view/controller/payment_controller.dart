@@ -66,31 +66,31 @@ class PaymentController extends GetxController {
                 orderId: orderId,
               );
             } else {
-              Get.off(()=>OrderCompleteView(),duration: const Duration(milliseconds: 100),preventDuplicates: false);
+              Get.to(()=>OrderCompleteView(),duration: const Duration(milliseconds: 100),preventDuplicates: false);
               MessageSnackBarWidget.successSnackBarWidget(context: context, message: data["message"]?.toString() ?? "Payment successful");
             }
           } else {
             isHandlingPayment.value = false;
-            Get.off(()=>CartView(),duration: const Duration(milliseconds: 100),preventDuplicates: false);
+            Get.to(()=>CartView(),duration: const Duration(milliseconds: 100),preventDuplicates: false);
             MessageSnackBarWidget.errorSnackBarWidget(context: context, message: data is Map ? data["message"]?.toString() ?? "Payment failed" : "Payment failed");
           }
         },
         onFail: (message, data) {
           _printPaymentResponse("PAYMENT SUCCESS FAILED RESPONSE", data);
           isHandlingPayment.value = false;
-          Get.off(()=>CartView(),duration: const Duration(milliseconds: 100),preventDuplicates: false);
+          Get.to(()=>CartView(),duration: const Duration(milliseconds: 100),preventDuplicates: false);
           MessageSnackBarWidget.errorSnackBarWidget(context: context, message: message);
         },
         onExceptionFail: (message, data) {
           _printPaymentResponse("PAYMENT SUCCESS EXCEPTION RESPONSE", data);
           isHandlingPayment.value = false;
-          Get.off(()=>CartView(),duration: const Duration(milliseconds: 100),preventDuplicates: false);
+          Get.to(()=>CartView(),duration: const Duration(milliseconds: 100),preventDuplicates: false);
           MessageSnackBarWidget.errorSnackBarWidget(context: context, message: message);
         },
       );
     } else {
       debugPrint("PAYMENT CANCEL/FAILURE URL => $paymentUrl");
-      Get.off(()=>CartView(),duration: const Duration(milliseconds: 100),preventDuplicates: false);
+      Get.to(()=>CartView(),duration: const Duration(milliseconds: 100),preventDuplicates: false);
       MessageSnackBarWidget.errorSnackBarWidget(context: context, message: "Payment failed");
     }
   }
@@ -118,13 +118,9 @@ class PaymentController extends GetxController {
         "order": orderId,
       },
       authorization: loginResponseModel.data?.accessToken ?? "",
-      onSuccess: (message, data) async {
+      onSuccess: (message, data) {
         debugPrint("Pickup request created for orderId: $orderId");
-        await _showPickupRequestSuccessDialog(
-          context: context,
-          message: message,
-        );
-        Get.off(()=>OrderCompleteView(),duration: const Duration(milliseconds: 100),preventDuplicates: false);
+        Get.to(()=>OrderCompleteView(),duration: const Duration(milliseconds: 100),preventDuplicates: false);
       },
       onFail: (message, data) {
         isHandlingPayment.value = false;
@@ -136,38 +132,6 @@ class PaymentController extends GetxController {
       },
     );
 
-  }
-
-  Future<void> _showPickupRequestSuccessDialog({
-    required BuildContext context,
-    required String message,
-  }) async {
-    await showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (dialogContext) {
-        return AlertDialog(
-          backgroundColor: Colors.white,
-          title: const Text(
-            "Success",
-            textAlign: TextAlign.center,
-          ),
-          content: Text(
-            message.isEmpty ? "Pickup request created successfully" : message,
-            textAlign: TextAlign.center,
-          ),
-          actionsAlignment: MainAxisAlignment.center,
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(dialogContext).pop();
-              },
-              child: const Text("OK"),
-            ),
-          ],
-        );
-      },
-    );
   }
 
   String _extractOrderId(dynamic data) {

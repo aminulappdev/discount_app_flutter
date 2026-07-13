@@ -4,14 +4,13 @@ import 'package:discount_me_app/utils/utils.dart';
 import 'package:discount_me_app/view/view.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class UserOrderDeliveredStatusView extends StatelessWidget {
   const UserOrderDeliveredStatusView({
     super.key,
     required this.orderId,
-    this.sourceFulfillmentType = "delivery",
+    this.sourceFulfillmentType = "delivery", 
   });
 
   final String orderId;
@@ -23,7 +22,7 @@ class UserOrderDeliveredStatusView extends StatelessWidget {
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (canPop,onOpoInvoked) {
-        Get.off(()=>_sourceOrderView(),duration: const Duration(milliseconds: 100),preventDuplicates: false);
+        Get.to(()=>_sourceOrderView(),duration: const Duration(milliseconds: 100),preventDuplicates: false);
       },
       child: Scaffold(
         body: Obx(()=>Skeletonizer(
@@ -104,7 +103,7 @@ class UserOrderDeliveredStatusView extends StatelessWidget {
 
                                     InkWell(
                                       onTap: () {
-                                        Get.off(()=>UserNotificationView(),preventDuplicates: false,duration: const Duration(milliseconds: 100));
+                                        Get.to(()=>UserNotificationView(),preventDuplicates: false,duration: const Duration(milliseconds: 100));
                                       },
                                       child: Container(
                                         width: 45.w(context),
@@ -129,7 +128,7 @@ class UserOrderDeliveredStatusView extends StatelessWidget {
 
                                     InkWell(
                                       onTap: () {
-                                        Get.off(()=>CartView(),preventDuplicates: false,duration: const Duration(milliseconds: 100));
+                                        Get.to(()=>CartView(),preventDuplicates: false,duration: const Duration(milliseconds: 100));
                                       },
                                       child: Container(
                                         width: 45.w(context),
@@ -340,7 +339,7 @@ class UserOrderDeliveredStatusView extends StatelessWidget {
 
                               Get.to(
                                 () => UserShareReviewScreen(
-                                  productId: productId,
+                                  productId: productId, 
                                 ),
                               );
                             },

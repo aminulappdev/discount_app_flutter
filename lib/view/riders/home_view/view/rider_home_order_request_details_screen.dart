@@ -1,5 +1,7 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
+import 'dart:io';
+
 import 'package:discount_me_app/res/app_const/import_list.dart';
 import 'package:discount_me_app/view/riders/home_view/controller/rider_home_controller.dart';
 import 'package:discount_me_app/view/riders/home_view/controller/rider_pickup_request_details_controller.dart';
@@ -10,6 +12,7 @@ import 'package:discount_me_app/view/riders/home_view/view/view_home_map_route_s
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class RiderHomeOrderRequestDetailsScreen extends StatelessWidget {
@@ -325,6 +328,41 @@ class RiderHomeOrderRequestDetailsScreen extends StatelessWidget {
                       )
                     ],
                   ),
+                  if (request?.deliveryProofImage?.trim().isNotEmpty == true) ...[
+                    20.heightBox,
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        CustomText(
+                          title: "Delivery proof image",
+                          color: ColorUtils.whiteDarkHover,
+                          fontWeight: FontWeight.w400,
+                          fontSize: 16.sp(context),
+                        ),
+                        10.heightBox,
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(10.r(context)),
+                          child: Image.network(
+                            request!.deliveryProofImage!,
+                            height: 220.h(context),
+                            width: double.infinity,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Container(
+                                height: 120.h(context),
+                                width: double.infinity,
+                                alignment: Alignment.center,
+                                color: Colors.grey.shade200,
+                                child: const Text(
+                                  "Delivery proof image unavailable",
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ],
               ),
               20.heightBox,
@@ -334,7 +372,7 @@ class RiderHomeOrderRequestDetailsScreen extends StatelessWidget {
                     Get.to(ViewHomeMapRouteScreen());
                   },
                   child: Text(
-                   "View Map Route",
+                   "View Map Route", 
                     style: GoogleFonts.urbanist(
                       color: ColorUtils.secondaryColor,
                       fontWeight: FontWeight.w500,
@@ -378,7 +416,7 @@ class RiderHomeOrderRequestDetailsScreen extends StatelessWidget {
     required BuildContext context,
     required String requestStatus,
     required String pickupRequestId,
-    required RiderPickupRequestDetailsController detailsController,
+    required RiderPickupRequestDetailsController detailsController, 
     required RiderPickupRequestActionController actionController,
   }) {
     if (requestStatus == "ongoing") {
@@ -386,19 +424,16 @@ class RiderHomeOrderRequestDetailsScreen extends StatelessWidget {
         () => Roundbutton(
           borderRadius: 10.r(context), 
           buttonColor: ColorUtils.secondaryColor,
-          title: "Success Delivery",
+          title: "Success to Delivery",
           isLoading: actionController.isStatusUpdateLoading.value,
           onTap: actionController.isStatusUpdateLoading.value
               ? null
-              : () {
-                  actionController.updatePickupRequestStatus(
+              : () async {
+                  await _selectAndConfirmDeliveryImage(
                     context: context,
                     pickupRequestId: pickupRequestId,
-                    status: "delivered",
-                    onSuccess: () async {
-                      detailsController.updatePickupRequestStatus("delivered");
-                      await _refreshPickupRequestLists(context);
-                    },
+                    detailsController: detailsController,
+                    actionController: actionController,
                   );
                 },
         ),
@@ -463,6 +498,94 @@ class RiderHomeOrderRequestDetailsScreen extends StatelessWidget {
     }
 
     return const SizedBox.shrink();
+  }
+
+  Future<void> _selectAndConfirmDeliveryImage({
+    required BuildContext context,
+    required String pickupRequestId,
+    required RiderPickupRequestDetailsController detailsController,
+    required RiderPickupRequestActionController actionController,
+  }) async {
+    final source = await showModalBottomSheet<ImageSource>(
+      context: context,
+      builder: (sheetContext) => SafeArea(
+        child: Wrap(
+          children: [
+            ListTile(
+              leading: const Icon(Icons.photo_library),
+              title: const Text('Gallery'),
+              onTap: () => Navigator.pop(sheetContext, ImageSource.gallery),
+            ),
+            ListTile(
+              leading: const Icon(Icons.camera_alt),
+              title: const Text('Camera'),
+              onTap: () => Navigator.pop(sheetContext, ImageSource.camera),
+            ),
+          ],
+        ),
+      ),
+    );
+
+    if (source == null) return;
+
+    final pickedImage = await ImagePicker().pickImage(
+      source: source,
+      imageQuality: 85,
+    );
+    if (pickedImage == null || !context.mounted) return;
+
+    await showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Delivery image preview'),
+        content: ClipRRect(
+          borderRadius: BorderRadius.circular(10),
+          child: Image.file(
+            File(pickedImage.path),
+            height: 260,
+            width: double.maxFinite,
+            fit: BoxFit.cover,
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text('Cancel'),
+          ),
+          Obx(
+            () => ElevatedButton(
+              onPressed: actionController.isStatusUpdateLoading.value
+                  ? null
+                  : () {
+                      actionController.updatePickupRequestStatus(
+                        context: context,
+                        pickupRequestId: pickupRequestId,
+                        status: "delivered",
+                        imagePath: pickedImage.path,
+                        onSuccess: () async {
+                          if (dialogContext.mounted) {
+                            Navigator.pop(dialogContext);
+                          }
+                          detailsController.updatePickupRequestStatus(
+                            "delivered",
+                          );
+                          await _refreshPickupRequestLists(context);
+                        },
+                      );
+                    },
+              child: actionController.isStatusUpdateLoading.value
+                  ? const SizedBox(
+                      height: 20,
+                      width: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : const Text('Confirm'),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   Future<void> _refreshPickupRequestLists(BuildContext context) async {

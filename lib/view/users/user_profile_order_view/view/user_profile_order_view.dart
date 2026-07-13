@@ -32,7 +32,7 @@ class UserProfileOrderView extends StatelessWidget {
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (canPop,onOpoInvoked) {
-        Get.off(()=>UserDashboardView(index: 3,),duration: const Duration(milliseconds: 100),preventDuplicates: false);
+        Get.to(()=>UserDashboardView(index: 3,),duration: const Duration(milliseconds: 100),preventDuplicates: false);
       },
       child: Scaffold(
         body: Obx(()=>Skeletonizer(
@@ -41,7 +41,7 @@ class UserProfileOrderView extends StatelessWidget {
           child: RefreshIndicator(
             onRefresh: () async {
               Get.delete<OrderStatusController>(tag: fulfillmentType, force: true);
-              Get.off(
+              Get.to(
                 ()=>UserProfileOrderView(
                   title: title,
                   emptyMessage: emptyMessage,
@@ -81,7 +81,7 @@ class UserProfileOrderView extends StatelessWidget {
                               UserProfileAppbarWidget(
                                 title: title,
                                 onTap: () {
-                                  Get.off(()=>UserDashboardView(index: 3,),duration: const Duration(milliseconds: 100),preventDuplicates: false);
+                                  Get.to(()=>UserDashboardView(index: 3,),duration: const Duration(milliseconds: 100),preventDuplicates: false);
                                 },
                               ),
 
