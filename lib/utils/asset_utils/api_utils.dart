@@ -1,8 +1,8 @@
 class ApiUtils {
 
   //static const baseUrl = "http://206.162.244.133:5020/api/v1";
-  static const baseUrl = "http://72.244.153.29:5001/api/v1";
-  static const socketUrl = "http://72.244.153.29:5001/";
+  static const baseUrl = "http://10.10.10.25:5001/api/v1";
+  static const socketUrl = "http://10.10.10.25:5001/";
   //static const baseUrl = "http://10.10.10.16:5020/api/v1";
 
 

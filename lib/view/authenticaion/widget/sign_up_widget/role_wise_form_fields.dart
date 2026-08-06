@@ -273,7 +273,7 @@ class RoleWiseFormField {
                   );
                 },
                 cameraFunction: () async {
-                  await controller.pickProfileImage(
+                  await controller.pickCoverImage(
                     source: ImageSource.camera,
                     context: context,
                   );

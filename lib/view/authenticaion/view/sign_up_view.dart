@@ -1,16 +1,12 @@
-import 'dart:io';
 import 'dart:ui';
 import 'package:discount_me_app/res/res.dart';
 import 'package:discount_me_app/utils/utils.dart';
 import 'package:discount_me_app/view/authenticaion/widget/sign_up_widget/role_wise_form_fields.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/gestures.dart';
 import 'package:get/get.dart';
 import 'package:discount_me_app/view/view.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:intl_phone_number_input/intl_phone_number_input.dart';
+
 
 class SignUpView extends StatelessWidget {
   SignUpView({super.key});
@@ -18,7 +14,7 @@ class SignUpView extends StatelessWidget {
   final SignUpController signUpController = Get.put(SignUpController());
   
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) { 
     return Scaffold(
       body: PopScope(
         canPop: false,
@@ -259,6 +255,7 @@ class SignUpView extends StatelessWidget {
     // Role-specific validations
     switch (role) {
       case "User":
+        if (c.imageFile.value.path.isEmpty) return "Please Pick A Profile Image";
         if (c.firstNameController.value.text.isEmpty) return "Please Enter Your First Name";
         if (c.lastNameController.value.text.isEmpty) return "Please Enter Your Last Name";
         if (c.documentFile.value.path.isEmpty) {
@@ -296,8 +293,8 @@ class SignUpView extends StatelessWidget {
     return {
       "name": "${c.firstNameController.value.text},${c.lastNameController.value.text}",
       "password": c.passwordController.value.text,
-      "email": c.emailController.value.text,
-      "location": c.locationController.value.text,
+      "email": c.emailController.value.text, 
+      "location": c.locationController.value.text, 
       "contact": c.phoneNumber.value,
       "broker_referral": c.referralCodeController.value.text,
     };

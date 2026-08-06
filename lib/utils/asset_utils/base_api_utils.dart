@@ -24,7 +24,7 @@ class BaseApiUtils {
     String authorization = "",
   }) {
     return {
-      "Content-Type": "multipart/form-data",
+      "Accept": "application/json",
       if (authorization != "") "Authorization": "Bearer ${authorization}",
     };
   }
@@ -59,21 +59,27 @@ class BaseApiUtils {
         onFail(response.data?["message"], response.data);
       }
     } on dio.DioException catch (e) {
-      if(e.response?.data?["message"] == "jwt expired" || e.response?.data?["message"] == "invalid token") {
-        onExceptionFail(
-          e.response?.data?["message"] ?? "Something went wrong",
-          e.response?.data,
-        );
+      final responseMessage = e.response?.data?["message"];
+      final fallbackMessage = responseMessage ?? e.message ?? "Something went wrong";
+
+      print('API REQUEST FAILED');
+      print('URL: $url');
+      print('METHOD: $method');
+      print('STATUS CODE: ${e.response?.statusCode}');
+      print('ERROR MESSAGE: $fallbackMessage');
+      print('RESPONSE DATA: ${e.response?.data}');
+      print('DIO ERROR: ${e.toString()}');
+
+      if (responseMessage == "jwt expired" || responseMessage == "invalid token") {
+        onExceptionFail(fallbackMessage, e.response?.data);
         await LocalStorageUtils.remove(AppConstantUtils.loginResponse);
         await LocalStorageUtils.remove(AppConstantUtils.loginCredentialResponse);
         await Get.offAll(()=>SignInView(),duration: Duration(milliseconds: 100));
       } else {
-        onExceptionFail(
-          e.response?.data?["message"] ?? "Something went wrong",
-          e.response?.data,
-        );
+        onExceptionFail(fallbackMessage, e.response?.data);
       }
     } catch (e) {
+      print('UNEXPECTED API ERROR: $e');
       onExceptionFail("Unexpected error occurred", null);
     }
   }

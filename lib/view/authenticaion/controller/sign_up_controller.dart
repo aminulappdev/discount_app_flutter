@@ -5,11 +5,10 @@ import 'package:discount_me_app/view/authenticaion/view/otp_verify_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_intl_phone_field/countries.dart';
 import 'package:geocoding/geocoding.dart';
-import 'package:geolocator/geolocator.dart';
+import 'package:geolocator/geolocator.dart'; 
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:discount_me_app/utils/utils.dart';
-import '../../../res/res.dart';
 
 class SignUpController extends GetxController {
 
@@ -238,15 +237,21 @@ class SignUpController extends GetxController {
       url: ApiUtils.userSignUp,
       formData: formData,
       onSuccess: (e,data) async {
+        print('USER SIGNUP SUCCESS RESPONSE: $e');
+        print('USER SIGNUP SUCCESS DATA: $data');
         MessageSnackBarWidget.successSnackBarWidget(context: context, message: e);
         Get.off(()=>OtpVerifyScreen(email: emailController.value.text, isSignUp: true),duration: const Duration(milliseconds: 100),preventDuplicates: false);
         isSubmit.value = false;
       },
       onFail: (e,data) {
+        print('USER SIGNUP FAIL RESPONSE: $e');
+        print('USER SIGNUP FAIL DATA: $data');
         MessageSnackBarWidget.errorSnackBarWidget(context: context, message: e);
         isSubmit.value = false;
       },
       onExceptionFail: (e,data) {
+        print('USER SIGNUP EXCEPTION RESPONSE: $e');
+        print('USER SIGNUP EXCEPTION DATA: $data');
         MessageSnackBarWidget.errorSnackBarWidget(context: context, message: e);
         isSubmit.value = false;
       },
@@ -287,15 +292,21 @@ class SignUpController extends GetxController {
       url: ApiUtils.riderSignUp,
       formData: formData,
       onSuccess: (e,data) async {
+        print('RIDER SIGNUP SUCCESS RESPONSE: $e');
+        print('RIDER SIGNUP SUCCESS DATA: $data');
         MessageSnackBarWidget.successSnackBarWidget(context: context, message: e);
         isSubmit.value = false;
         Get.off(()=>OtpVerifyScreen(email: emailController.value.text, isSignUp: true),duration: const Duration(milliseconds: 100),preventDuplicates: false);
       },
       onFail: (e,data) {
+        print('RIDER SIGNUP FAIL RESPONSE: $e');
+        print('RIDER SIGNUP FAIL DATA: $data');
         MessageSnackBarWidget.errorSnackBarWidget(context: context, message: e);
         isSubmit.value = false;
       },
       onExceptionFail: (e,data) {
+        print('RIDER SIGNUP EXCEPTION RESPONSE: $e');
+        print('RIDER SIGNUP EXCEPTION DATA: $data');
         MessageSnackBarWidget.errorSnackBarWidget(context: context, message: e);
         isSubmit.value = false;
       },
@@ -337,15 +348,21 @@ class SignUpController extends GetxController {
       url: ApiUtils.vendorSignUp,
       formData: formData,
       onSuccess: (e,data) async {
+        print('VENDOR SIGNUP SUCCESS RESPONSE: $e');
+        print('VENDOR SIGNUP SUCCESS DATA: $data');
         MessageSnackBarWidget.successSnackBarWidget(context: context, message: e);
         isSubmit.value = false;
         Get.off(()=>OtpVerifyScreen(email: emailController.value.text, isSignUp: true),duration: const Duration(milliseconds: 100),preventDuplicates: false);
       },
       onFail: (e,data) {
+        print('VENDOR SIGNUP FAIL RESPONSE: $e');
+        print('VENDOR SIGNUP FAIL DATA: $data');
         MessageSnackBarWidget.errorSnackBarWidget(context: context, message: e);
         isSubmit.value = false;
       },
       onExceptionFail: (e,data) {
+        print('VENDOR SIGNUP EXCEPTION RESPONSE: $e');
+        print('VENDOR SIGNUP EXCEPTION DATA: $data');
         MessageSnackBarWidget.errorSnackBarWidget(context: context, message: e);
         isSubmit.value = false;
       },
@@ -376,15 +393,21 @@ class SignUpController extends GetxController {
       url: ApiUtils.brokerSignUp,
       formData: formData,
       onSuccess: (e,data) async {
+        print('BROKER SIGNUP SUCCESS RESPONSE: $e');
+        print('BROKER SIGNUP SUCCESS DATA: $data');
         MessageSnackBarWidget.successSnackBarWidget(context: context, message: e);
         isSubmit.value = false;
         Get.off(()=>OtpVerifyScreen(email: emailController.value.text, isSignUp: true),duration: const Duration(milliseconds: 100),preventDuplicates: false);
       },
       onFail: (e,data) {
+        print('BROKER SIGNUP FAIL RESPONSE: $e');
+        print('BROKER SIGNUP FAIL DATA: $data');
         MessageSnackBarWidget.errorSnackBarWidget(context: context, message: e);
         isSubmit.value = false;
       },
       onExceptionFail: (e,data) {
+        print('BROKER SIGNUP EXCEPTION RESPONSE: $e');
+        print('BROKER SIGNUP EXCEPTION DATA: $data');
         MessageSnackBarWidget.errorSnackBarWidget(context: context, message: e);
         isSubmit.value = false;
       },
