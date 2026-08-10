@@ -232,7 +232,7 @@ class ProfileView extends StatelessWidget {
                                   },
                                 ),
 
-                                ProfileItemWidget(
+                                ProfileItemWidget( 
                                   title: "Picked Order",
                                   icon: Image.asset(ImageUtils.userOrder, scale: 5,),
                                   navigateIcon: Icon(Icons.navigate_next,size: 24.r(context), color: Colors.black54,),
@@ -256,7 +256,7 @@ class ProfileView extends StatelessWidget {
                                   icon: Image.asset(ImageUtils.chat, scale: 5,),
                                   navigateIcon: Icon(Icons.navigate_next,size: 24.r(context), color: Colors.black54,),
                                   onTap: () {
-                                    Get.to(UserChatVendorListScreen());
+                                    Get.to(ChatListScreen());
                                   },
                                 ),
 

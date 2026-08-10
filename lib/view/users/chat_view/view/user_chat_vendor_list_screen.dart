@@ -11,17 +11,17 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class UserChatVendorListScreen extends StatefulWidget {
-  const UserChatVendorListScreen({super.key, this.vendorId});
+class ChatListScreen extends StatefulWidget {
+  const ChatListScreen({super.key, this.vendorId});
 
-  final String? vendorId;
+  final String? vendorId; 
  
   @override
-  State<UserChatVendorListScreen> createState() =>
-      _UserChatVendorListScreenState();
+  State<ChatListScreen> createState() =>
+      _ChatListScreenState();
 }
 
-class _UserChatVendorListScreenState extends State<UserChatVendorListScreen> {
+class _ChatListScreenState extends State<ChatListScreen> {
   final ChatController chatController = Get.put(ChatController());
 
   @override
