@@ -14,7 +14,7 @@ class CustomText extends StatelessWidget {
   final double? decorationThickness;
   CustomText({super.key,
     required this.title,
-    this.fontSize=12,
+    this.fontSize=12, 
     this.color=Colors.black,
     this.fontWeight=FontWeight.normal,
     this.decoration=TextDecoration.none,

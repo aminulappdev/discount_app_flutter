@@ -40,6 +40,7 @@ class Data {
 class ChatItemModel {
     ChatItemModel({
         required this.id,
+        required this.partner,
         required this.customer,
         required this.vendor,
         required this.displayName,
@@ -53,6 +54,7 @@ class ChatItemModel {
     });
 
     final String? id;
+    final Partner? partner;
     final Customer? customer;
     final Vendor? vendor;
     final String? displayName;
@@ -67,6 +69,7 @@ class ChatItemModel {
     factory ChatItemModel.fromJson(Map<String, dynamic> json){ 
         return ChatItemModel(
             id: json["_id"],
+            partner: json["partner"] == null ? null : Partner.fromJson(json["partner"]),
             customer: json["customer"] == null ? null : Customer.fromJson(json["customer"]),
             vendor: json["vendor"] == null ? null : Vendor.fromJson(json["vendor"]),
             displayName: json["display_name"],
@@ -77,6 +80,36 @@ class ChatItemModel {
             unreadCount: json["unread_count"],
             createdAt: DateTime.tryParse(json["createdAt"] ?? ""),
             updatedAt: DateTime.tryParse(json["updatedAt"] ?? ""),
+        );
+    }
+
+}
+
+class Partner {
+    Partner({
+        required this.authId,
+        required this.profileId,
+        required this.name,
+        required this.image,
+        required this.email,
+        required this.role,
+    });
+
+    final String? authId;
+    final String? profileId;
+    final String? name;
+    final String? image;
+    final String? email;
+    final String? role;
+
+    factory Partner.fromJson(Map<String, dynamic> json){
+        return Partner(
+            authId: json["auth_id"],
+            profileId: json["profile_id"],
+            name: json["name"],
+            image: json["image"],
+            email: json["email"],
+            role: json["role"],
         );
     }
 

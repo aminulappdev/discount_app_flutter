@@ -285,6 +285,30 @@ class VendorProductEditView extends StatelessWidget {
 
                         CustomSpaceWidget.spacerWidget(spaceHeight: 10.h(context)),
 
+                        CustomTextContainer.plainTextContainerWidgetWithoutHeightWidth(
+                          plainTextString: "Discount",
+                          plainTextStringFontSize: 20.sp(context),
+                          plainTextStringFontWeight: FontWeight.w600,
+                          plainTextContainerAlignment: Alignment.centerLeft,
+                          plainTextStringColor: ColorUtils.black29,
+                        ),
+
+                        CustomSpaceWidget.spacerWidget(spaceHeight: 8.h(context)),
+
+                        TextFormFieldWidget.build(
+                          context: context,
+                          hintText: "Enter Discount",
+                          controller: vendorProductEditController.itemDiscountController.value,
+                          keyboardType: TextInputType.number,
+                          borderColor: Color.fromRGBO(29, 36, 45, 1),
+                          enableBorderColor: Color.fromRGBO(29, 36, 45, 1),
+                          focusedBorderColor: ColorUtils.orange125,
+                          contentPadding: EdgeInsets.symmetric(vertical: 8.vpm(context),horizontal: 16.hpm(context)),
+                        ),
+
+
+                        CustomSpaceWidget.spacerWidget(spaceHeight: 10.h(context)),
+
 
                         CustomTextContainer.plainTextContainerWidgetWithoutHeightWidth(
                           plainTextString: "Item Quantity",
@@ -338,6 +362,8 @@ class VendorProductEditView extends StatelessWidget {
                               CustomSnackBar().errorCustomSnackBar(context: context, message: "Please Enter Item Quantity");
                             } else if(vendorProductEditController.itemPriceController.value.text == "") {
                               CustomSnackBar().errorCustomSnackBar(context: context, message: "Please Enter Item Price");
+                            } else if(vendorProductEditController.itemDiscountController.value.text == "") {
+                              CustomSnackBar().errorCustomSnackBar(context: context, message: "Please Enter Discount");
                             } else {
                               print(vendorProductEditController.coverScreenSorts.length);
                               await vendorProductEditController.editProductController(
@@ -346,6 +372,7 @@ class VendorProductEditView extends StatelessWidget {
                                 name: vendorProductEditController.itemNameController.value.text,
                                 category: vendorProductEditController.singleCategory.value.sId,
                                 price: vendorProductEditController.itemPriceController.value.text,
+                                discount: vendorProductEditController.itemDiscountController.value.text,
                                 description: vendorProductEditController.itemDetailsController.value.text,
                                 quantity: vendorProductEditController.itemQuantityController.value.text,
                                 oldImgsToKeep: vendorProductEditController.coverScreenSorts.isEmpty == true ? [] :

@@ -11,7 +11,7 @@ class GetAllProductCartResponse {
     data = json['data'] != null ? new GetAllProductCart.fromJson(json['data']) : null;
   }
 
-  Map<String, dynamic> toJson() {
+   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['success'] = this.success;
     data['message'] = this.message;
@@ -98,8 +98,16 @@ class Product {
   List<String>? images;
   Store? store;
   var price;
+  var discount;
 
-  Product({this.sId, this.name, this.images, this.store, this.price});
+  Product({
+    this.sId,
+    this.name,
+    this.images,
+    this.store,
+    this.price,
+    this.discount,
+  });
 
   Product.fromJson(Map<String, dynamic> json) {
     sId = json['_id'];
@@ -107,6 +115,7 @@ class Product {
     images = json['images'].cast<String>();
     store = json['store'] != null ? new Store.fromJson(json['store']) : null;
     price = json['price'];
+    discount = json['discount'];
   }
 
   Map<String, dynamic> toJson() {
@@ -118,6 +127,7 @@ class Product {
       data['store'] = this.store!.toJson();
     }
     data['price'] = this.price;
+    data['discount'] = this.discount;
     return data;
   }
 }

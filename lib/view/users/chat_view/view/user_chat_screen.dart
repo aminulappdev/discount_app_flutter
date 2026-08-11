@@ -9,10 +9,10 @@ import 'package:google_fonts/google_fonts.dart';
 
 class UserChatScreen extends StatefulWidget {
   const UserChatScreen({super.key, this.conversation});
-
+ 
   final ChatItemModel? conversation;
 
-  @override
+  @override 
   State<UserChatScreen> createState() => _UserChatScreenState();
 }
 
@@ -95,7 +95,11 @@ class _UserChatScreenState extends State<UserChatScreen> {
                                   color: Colors.black,
                                 ),
                                 CustomText(
-                                  title: "Restaurant owner",
+                                  title: conversation == null
+                                      ? "Conversation"
+                                      : chatController.conversationSubtitle(
+                                          conversation,
+                                        ),
                                   fontSize: 16.sp(context),
                                   fontWeight: FontWeight.w400,
                                   color: ColorUtils.darkShadeBlue,

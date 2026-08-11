@@ -8,7 +8,6 @@ import 'package:skeletonizer/skeletonizer.dart';
 import 'package:discount_me_app/utils/utils.dart';
 import '../../../../res/common_widget/RoundTextField.dart';
 import '../../../../res/common_widget/custom_text.dart';
-import '../../../users/profile_view/widget/user_profile_appbar_widget.dart';
 import '../../../view.dart';
 import 'package:dio/dio.dart' as dio;
 
@@ -32,6 +31,7 @@ class VendorAddItemScreenWidget extends GetxController {
   Rx<TextEditingController> itemDetails = TextEditingController().obs;
   Rx<TextEditingController> itemPrice = TextEditingController().obs;
   Rx<TextEditingController> itemQuantity = TextEditingController().obs;
+  Rx<TextEditingController> itemDiscount = TextEditingController().obs;
 
   AddProductController addProductController = Get.put(AddProductController());
   @override
@@ -69,7 +69,7 @@ class VendorAddItemScreenWidget extends GetxController {
         effect: PulseEffect(),
         enabled: isLoading.value,
         child: CustomScrollView(
-          slivers: [
+          slivers: [ 
 
             SliverToBoxAdapter(
               child: Padding(
@@ -91,7 +91,7 @@ class VendorAddItemScreenWidget extends GetxController {
 
 
                     Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start, 
                       children: [
                         CustomText(title: "Upload Food Image",
                           color: ColorUtils.blackColor,
@@ -252,6 +252,24 @@ class VendorAddItemScreenWidget extends GetxController {
                       ],
                     ),
 
+                    CustomSpaceWidget.spacerWidget(spaceHeight: 20.h(context)),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        CustomText(title: "Discount",
+                          color: ColorUtils.blackColor,
+                          fontSize: 16.sp(context),
+                          fontWeight: FontWeight.w600,
+                        ),
+                        CustomSpaceWidget.spacerWidget(spaceHeight: 12.h(context)),
+                        RoundTextField(
+                          hint: "Enter Discount (Percentage)",
+                          controller: itemDiscount.value,
+                          keyboardType: TextInputType.number,
+                        ),
+                      ],
+                    ),
+
 
                     CustomSpaceWidget.spacerWidget(spaceHeight: 20.h(context)),
 
@@ -286,6 +304,8 @@ class VendorAddItemScreenWidget extends GetxController {
                             CustomSnackBar().errorCustomSnackBar(context: context, message: "Please the item price");
                           }else if(itemQuantity.value.text == "") {
                             CustomSnackBar().errorCustomSnackBar(context: context, message: "Please the item quantity");
+                          }else if(itemDiscount.value.text == "") {
+                            CustomSnackBar().errorCustomSnackBar(context: context, message: "Please the item discount");
                           }else if(singleCategory.value.name == null) {
                             CustomSnackBar().errorCustomSnackBar(context: context, message: "Please the select category");
                           }else {
@@ -297,6 +317,7 @@ class VendorAddItemScreenWidget extends GetxController {
                               category: singleCategory.value.sId,
                               price: double.parse(itemPrice.value.text),
                               quantity: double.parse(itemQuantity.value.text),
+                              discount: double.parse(itemDiscount.value.text),
                               onSuccess: (e) async {
                                 await Get.to(()=>VendorDashboardView(index: 2),preventDuplicates: false,duration: Duration(milliseconds: 100));
                                 isSubmit.value = false;

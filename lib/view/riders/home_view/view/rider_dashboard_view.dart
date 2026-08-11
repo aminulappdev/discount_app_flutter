@@ -68,12 +68,13 @@ class RiderDashboardView extends StatelessWidget {
                             dashboardBrokerController.changeIndex(index: index, width: width);
                           },
                           child: Column(
+                            mainAxisSize: MainAxisSize.min,
                             mainAxisAlignment: MainAxisAlignment.center,
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
 
                               isSelected ?
-                              SpaceHelperWidget.v(17.h(context)) :
+                              SpaceHelperWidget.v(12.h(context)) :
                               SizedBox.shrink(),
 
                               isSelected ?
@@ -104,7 +105,7 @@ class RiderDashboardView extends StatelessWidget {
                               ) :
                               SizedBox.shrink(),
 
-                              SpaceHelperWidget.v(8.h(context)),
+                              SpaceHelperWidget.v(4.h(context)),
 
 
                             ],

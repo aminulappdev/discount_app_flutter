@@ -29,6 +29,7 @@ class ChatController extends GetxController {
   String _accessToken = '';
   String currentEmail = '';
   String currentRole = '';
+  String currentAuthId = '';
   String? _joinedConversationId;
 
   @override
@@ -43,12 +44,21 @@ class ChatController extends GetxController {
     if (_accessToken.isEmpty) return;
 
     final payload = _parseJwt(_accessToken);
+    currentAuthId = payload['auth_id']?.toString() ??
+        payload['id']?.toString() ??
+        payload['_id']?.toString() ??
+        payload['sub']?.toString() ??
+        '';
     currentEmail = payload['email']?.toString() ?? '';
     currentRole = payload['role']?.toString() ?? '';
 
     await socketService.init(token: _accessToken);
     socketService.bindChatEvents(
-      onConnected: (_) {},
+      onConnected: (_) {
+        if (conversations.isEmpty) {
+          fetchConversations();
+        }
+      },
       onJoinedRoom: (_) {},
       onLeftRoom: (_) {},
       onNewMessage: _handleNewMessage,
@@ -91,14 +101,24 @@ class ChatController extends GetxController {
     }
   }
 
-  Future<chat_model.ChatItemModel?> createConversation(String vendorId) async {
+  Future<chat_model.ChatItemModel?> createConversation({
+    String? partnerId,
+    String? vendorId,
+  }) async {
     await _ensureSession();
-    if (_accessToken.isEmpty || vendorId.isEmpty) return null;
+    final normalizedPartnerId = partnerId?.trim() ?? '';
+    final normalizedVendorId = vendorId?.trim() ?? '';
+    if (_accessToken.isEmpty ||
+        (normalizedPartnerId.isEmpty && normalizedVendorId.isEmpty)) {
+      return null;
+    }
 
     try {
       final response = await _dio.post(
         ApiUtils.chats,
-        data: {'vendorId': vendorId},
+        data: normalizedPartnerId.isNotEmpty
+            ? {'partnerId': normalizedPartnerId}
+            : {'vendorId': normalizedVendorId},
         options: _authOptions,
       );
       final conversation = _parseSingleConversation(response.data['data']);
@@ -197,26 +217,40 @@ class ChatController extends GetxController {
     if (currentEmail.isNotEmpty && message.senderEmail == currentEmail) {
       return true;
     }
-    if (currentRole.isNotEmpty && message.senderRole == currentRole) {
-      return true;
-    }
     return false;
   }
 
   String conversationTitle(chat_model.ChatItemModel conversation) {
-    return conversation.displayName ??
+    return conversation.partner?.name ??
+        conversation.displayName ??
         conversation.vendor?.store?.name ??
         conversation.customer?.name ??
         'Chat';
   }
 
   String conversationImage(chat_model.ChatItemModel conversation) {
-    final image = conversation.displayImage;
+    final image = conversation.partner?.image ?? conversation.displayImage;
     if (image is String && image.isNotEmpty) return image;
     final coverImages = conversation.vendor?.store?.coverImages ?? [];
     final storeImage = coverImages.isEmpty ? null : coverImages.first;
     if (storeImage != null && storeImage.isNotEmpty) return storeImage;
     return conversation.customer?.image ?? '';
+  }
+
+  String conversationSubtitle(chat_model.ChatItemModel conversation) {
+    final role = conversation.partner?.role?.trim().toLowerCase() ?? '';
+    if (role.isEmpty) return 'Conversation';
+
+    switch (role) {
+      case 'user':
+        return 'User';
+      case 'vendor':
+        return 'Vendor';
+      case 'rider':
+        return 'Rider';
+      default:
+        return role[0].toUpperCase() + role.substring(1);
+    }
   }
 
   String formatTime(DateTime? dateTime) {
@@ -341,6 +375,11 @@ class ChatController extends GetxController {
       message.createdAt,
       message.senderRole,
     );
+
+    if (conversationId != null &&
+        !conversations.any((item) => item.id == conversationId)) {
+      fetchConversations();
+    }
   }
 
   void _handleConversationUpdated(Map<String, dynamic> data) {
@@ -348,7 +387,19 @@ class ChatController extends GetxController {
     final conversation = _parseSingleConversation(rawConversation);
     if (conversation != null) {
       _upsertConversation(conversation);
+      return;
     }
+
+    final conversationId = data['conversationId']?.toString();
+    if (conversationId == null || conversationId.isEmpty) return;
+
+    _updateConversationPreview(
+      conversationId,
+      data['last_message']?.toString(),
+      DateTime.tryParse(data['last_message_at']?.toString() ?? ''),
+      data['last_message_sender_role']?.toString(),
+      unreadCount: _resolveUnreadCount(data),
+    );
   }
 
   void _handleMessagesRead(Map<String, dynamic> data) {
@@ -375,6 +426,7 @@ class ChatController extends GetxController {
     final old = conversations[index];
     conversations[index] = chat_model.ChatItemModel(
       id: old.id,
+      partner: old.partner,
       customer: old.customer,
       vendor: old.vendor,
       displayName: old.displayName,
@@ -393,15 +445,20 @@ class ChatController extends GetxController {
     String? text,
     DateTime? createdAt,
     String? senderRole,
+    {int? unreadCount,}
   ) {
     if (conversationId == null) return;
     final index = conversations.indexWhere((item) => item.id == conversationId);
-    if (index == -1) return;
+    if (index == -1) {
+      fetchConversations();
+      return;
+    }
 
     final old = conversations[index];
     final isActive = selectedConversation.value?.id == conversationId;
     conversations[index] = chat_model.ChatItemModel(
       id: old.id,
+      partner: old.partner,
       customer: old.customer,
       vendor: old.vendor,
       displayName: old.displayName,
@@ -409,13 +466,40 @@ class ChatController extends GetxController {
       lastMessage: text ?? old.lastMessage,
       lastMessageAt: createdAt?.toIso8601String() ?? old.lastMessageAt,
       lastMessageSenderRole: senderRole ?? old.lastMessageSenderRole,
-      unreadCount: isActive ? 0 : (old.unreadCount ?? 0) + 1,
+      unreadCount: unreadCount ?? (isActive ? 0 : (old.unreadCount ?? 0) + 1),
       createdAt: old.createdAt,
       updatedAt: old.updatedAt,
     );
 
     final updated = conversations.removeAt(index);
     conversations.insert(0, updated);
+  }
+
+  int? _resolveUnreadCount(Map<String, dynamic> data) {
+    final role = currentRole.trim().toLowerCase();
+
+    if (role == 'user') {
+      return _toInt(data['customer_unread_count']) ??
+          _toInt(data['participant_one_unread_count']) ??
+          _toInt(data['participant_two_unread_count']);
+    }
+
+    if (role == 'vendor') {
+      return _toInt(data['vendor_unread_count']) ??
+          _toInt(data['participant_one_unread_count']) ??
+          _toInt(data['participant_two_unread_count']);
+    }
+
+    return _toInt(data['unread_count']) ??
+        _toInt(data['participant_one_unread_count']) ??
+        _toInt(data['participant_two_unread_count']) ??
+        _toInt(data['customer_unread_count']) ??
+        _toInt(data['vendor_unread_count']);
+  }
+
+  int? _toInt(dynamic value) {
+    if (value is int) return value;
+    return int.tryParse(value?.toString() ?? '');
   }
 
   @override

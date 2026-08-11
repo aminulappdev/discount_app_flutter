@@ -122,7 +122,7 @@ class StoreListViewScreenWidget extends GetxController {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
-        image: DecorationImage(
+        image: DecorationImage( 
           image: AssetImage(ImageUtils.homeBg),
           alignment: Alignment.topRight,
           opacity: 0.5,

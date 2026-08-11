@@ -7,6 +7,11 @@ import 'package:skeletonizer/skeletonizer.dart';
 class CartView extends StatelessWidget {
   const CartView({super.key});
 
+  double? _toDouble(dynamic value) => double.tryParse(value?.toString() ?? '');
+
+  String _formatPrice(double value) =>
+      value.toStringAsFixed(value % 1 == 0 ? 0 : 2);
+
   @override
   Widget build(BuildContext context) {
     final CartController cartController = Get.put(CartController(context: context));
@@ -129,7 +134,7 @@ class CartView extends StatelessWidget {
                               children: [
 
                                 Expanded(
-                                  child: TextHelperClass.headingTextWithoutWidth(
+                                  child: TextHelperClass.headingTextWithoutWidth( 
                                     context: context,
                                     alignment: Alignment.centerLeft,
                                     fontSize: 20,
@@ -154,7 +159,7 @@ class CartView extends StatelessWidget {
                                   text: "Add Item",
                                   fontWeight: FontWeight.w600,
                                   textColor: ColorUtils.white253,
-                                  textSize: 18,
+                                  textSize: 16,
                                   backgroundColor: ColorUtils.secondaryColor,
                                 ),
 
@@ -252,13 +257,83 @@ class CartView extends StatelessWidget {
 
                                             SpaceHelperWidget.v(5.h(context)),
 
-                                            TextHelperClass.headingTextWithoutWidth(
-                                              context: context,
-                                              text: "Rs ${cartController.getAllProductCartResponse.value.data?.carts?[index].subtotal.toString() ?? "N/A"}",
-                                              fontSize: 21,
-                                              fontWeight: FontWeight.w600,
-                                              textColor: ColorUtils.primaryColor,
-                                              alignment: Alignment.centerLeft,
+                                            Builder(
+                                              builder: (_) {
+                                                final cartItem = cartController
+                                                    .getAllProductCartResponse
+                                                    .value
+                                                    .data
+                                                    ?.carts?[index];
+                                                final unitPrice = _toDouble(
+                                                  cartItem?.product?.price,
+                                                );
+                                                final discount = _toDouble(
+                                                      cartItem
+                                                          ?.product
+                                                          ?.discount,
+                                                    ) ??
+                                                    0.0;
+                                                final quantity = _toDouble(
+                                                      cartItem?.quantity,
+                                                    ) ??
+                                                    0.0;
+                                                final originalLineTotal =
+                                                    unitPrice == null
+                                                    ? null
+                                                    : unitPrice * quantity;
+                                                final subtotal = _toDouble(
+                                                  cartItem?.subtotal,
+                                                );
+
+                                                return Row(
+                                                  mainAxisSize:
+                                                      MainAxisSize.min,
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.end,
+                                                  children: [
+                                                    if (originalLineTotal !=
+                                                            null &&
+                                                        subtotal != null &&
+                                                        discount > 0 &&
+                                                        originalLineTotal >
+                                                            subtotal)
+                                                      Padding(
+                                                        padding: EdgeInsets.only(
+                                                          right: 6.w(context),
+                                                          bottom: 2.h(context),
+                                                        ),
+                                                        child: Text(
+                                                          "Rs ${_formatPrice(originalLineTotal)}",
+                                                          style: TextStyle(
+                                                            fontSize: 12,
+                                                            fontWeight:
+                                                                FontWeight.w500,
+                                                            color: Colors
+                                                                .grey
+                                                                .shade600,
+                                                            decoration:
+                                                                TextDecoration
+                                                                    .lineThrough,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    TextHelperClass.headingTextWithoutWidth(
+                                                      context: context,
+                                                      text: subtotal != null
+                                                          ? "Rs ${_formatPrice(subtotal)}"
+                                                          : "N/A",
+                                                      fontSize: 21,
+                                                      fontWeight:
+                                                          FontWeight.w600, 
+                                                      textColor:
+                                                          ColorUtils
+                                                              .primaryColor,
+                                                      alignment:
+                                                          Alignment.centerLeft,
+                                                    ),
+                                                  ],
+                                                );
+                                              },
                                             ),
 
                                           ],
@@ -354,7 +429,7 @@ class CartView extends StatelessWidget {
                                             width: 32.w(context),
                                             decoration: BoxDecoration(
                                               borderRadius: BorderRadius.circular(8.r(context)),
-                                              color: ColorUtils.greenLightHover,
+                                              color: ColorUtils.red191.withValues(alpha: 0.1),
                                             ),
                                             child: cartController.getAllProductCartResponse.value.data?.carts?[index].sId == cartController.productId.value && cartController.isDelete.value == true ?
                                             Center(
@@ -364,7 +439,7 @@ class CartView extends StatelessWidget {
                                               padding: EdgeInsets.zero,
                                               icon: Icon(
                                                 Icons.delete_forever,
-                                                color: ColorUtils.primaryColor,
+                                                color: ColorUtils.red191,
                                               ),
                                               onPressed: cartController.isDelete.value == true ? null : () async {
                                                 cartController.isDelete.value = true;

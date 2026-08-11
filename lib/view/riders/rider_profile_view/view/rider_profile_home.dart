@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:discount_me_app/utils/utils.dart';
+import 'package:discount_me_app/view/users/chat_view/controller/chat_controller.dart';
 import 'package:discount_me_app/view/riders/rider_earning_view/view/rider_profile_earing_home_screen.dart';
 import 'package:discount_me_app/view/riders/rider_profile_view/view/rider_profile_edit_screen.dart';
 import 'package:discount_me_app/view/riders/rider_profile_view/widget/rider_profile_dialog_box.dart';
@@ -235,9 +236,16 @@ class RiderProfileHome extends StatelessWidget {
                               Icons.navigate_next,
                               size: 24.r(context),
                               color: Colors.black54,
-                            ),
+                            ), 
                             onTap: () {
-                              Get.to(ChatListScreen());
+                              if (Get.isRegistered<ChatController>()) {
+                                Get.delete<ChatController>(force: true);
+                              }
+                              Get.to(
+                                () => const ChatListScreen(),
+                                preventDuplicates: false,
+                                duration: const Duration(milliseconds: 100),
+                              );
                             },
                           ),
 

@@ -8,6 +8,11 @@ import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 class UserHomeView extends StatelessWidget {
   UserHomeView({super.key});
 
+  double? _toDouble(dynamic value) => double.tryParse(value?.toString() ?? '');
+
+  String _formatPrice(double value) =>
+      value.toStringAsFixed(value % 1 == 0 ? 0 : 2);
+
   @override
   Widget build(BuildContext context) {
     final UserHomeController userHomeController = Get.put(
@@ -437,7 +442,7 @@ class UserHomeView extends StatelessWidget {
                                 context: context,
                                 text: "Popular Products",
                                 fontSize: 22,
-                                fontWeight: FontWeight.w700,
+                                fontWeight: FontWeight.w700, 
                                 textColor: ColorUtils.black29,
                                 textAlign: TextAlign.start,
                                 alignment: Alignment.centerLeft,
@@ -833,31 +838,90 @@ class UserHomeView extends StatelessWidget {
                                                                 ),
                                                               ),
 
-                                                              TextHelperClass.headingTextWithoutWidth(
-                                                                context:
-                                                                    context,
-                                                                text:
-                                                                    userHomeController
-                                                                            .productsResponseModel
-                                                                            .value
-                                                                            .data
-                                                                            ?.data?[index]
-                                                                            .price !=
-                                                                        null
-                                                                    ? "${"\$"}${userHomeController.productsResponseModel.value.data!.data![index].price.toString()}"
-                                                                    : "N/A",
-                                                                fontSize: 22,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w700,
-                                                                textColor:
-                                                                    ColorUtils
-                                                                        .black29,
-                                                                textAlign:
-                                                                    TextAlign
-                                                                        .start,
-                                                                alignment: Alignment
-                                                                    .centerLeft,
+                                                              Builder(
+                                                                builder: (_) {
+                                                                  final product =
+                                                                      userHomeController
+                                                                          .productsResponseModel
+                                                                          .value
+                                                                          .data
+                                                                          ?.data?[index];
+                                                                  final price =
+                                                                      _toDouble(
+                                                                        product
+                                                                            ?.price,
+                                                                      );
+                                                                  final discount =
+                                                                      _toDouble(
+                                                                        product
+                                                                            ?.discount,
+                                                                      ) ??
+                                                                      0.0;
+                                                                  final discountedPrice =
+                                                                      price ==
+                                                                              null
+                                                                          ? null
+                                                                          : discount >
+                                                                              0
+                                                                          ? price -
+                                                                              ((price * discount) / 100)
+                                                                          : price;
+
+                                                                  return Row(
+                                                                    mainAxisSize:
+                                                                        MainAxisSize
+                                                                            .min,
+                                                                    crossAxisAlignment:
+                                                                        CrossAxisAlignment
+                                                                            .end,
+                                                                    children: [
+                                                                      if (price !=
+                                                                              null &&
+                                                                          discount >
+                                                                              0)
+                                                                        Padding(
+                                                                          padding: EdgeInsets.only(
+                                                                            right:
+                                                                                6.w(context),
+                                                                            bottom:
+                                                                                2.h(context),
+                                                                          ),
+                                                                          child: Text(
+                                                                            "\$${_formatPrice(price)}",
+                                                                            style: TextStyle(
+                                                                              fontSize:
+                                                                                  12,
+                                                                              fontWeight:
+                                                                                  FontWeight.w500,
+                                                                              color:
+                                                                                  Colors.grey.shade600,
+                                                                              decoration:
+                                                                                  TextDecoration.lineThrough,
+                                                                            ),
+                                                                          ),
+                                                                        ),
+                                                                      TextHelperClass.headingTextWithoutWidth(
+                                                                        context:
+                                                                            context,
+                                                                        text:
+                                                                            discountedPrice !=
+                                                                                null
+                                                                            ? "\$${_formatPrice(discountedPrice)}"
+                                                                            : "N/A",
+                                                                        fontSize:
+                                                                            22,
+                                                                        fontWeight:
+                                                                            FontWeight.w700,
+                                                                        textColor:
+                                                                            ColorUtils.black29,
+                                                                        textAlign:
+                                                                            TextAlign.start,
+                                                                        alignment:
+                                                                            Alignment.centerLeft,
+                                                                      ),
+                                                                    ],
+                                                                  );
+                                                                },
                                                               ),
                                                             ],
                                                           ),
@@ -968,13 +1032,13 @@ class UserHomeView extends StatelessWidget {
                                 text: "Popular Stores",
                                 fontSize: 22,
                                 fontWeight: FontWeight.w700,
-                                textColor: ColorUtils.black29,
+                                textColor: ColorUtils.black29, 
                                 textAlign: TextAlign.start,
-                                alignment: Alignment.centerLeft,
+                                alignment: Alignment.centerLeft, 
                               ),
 
                               ButtonHelperWidget.customButtonWidget(
-                                context: context,
+                                context: context, 
                                 onPressed: () async {
                                   Get.to(
                                     () => StoreListViewScreen(),
@@ -1039,7 +1103,7 @@ class UserHomeView extends StatelessWidget {
                                                 storeId: userHomeController
                                                     .storesResponseModel
                                                     .value
-                                                    .data!
+                                                    .data! 
                                                     .data![index]
                                                     .sId,
                                                 isHomePage: true,

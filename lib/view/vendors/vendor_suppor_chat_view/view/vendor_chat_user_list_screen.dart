@@ -9,8 +9,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class VendorChatUserListScreen extends StatefulWidget {
-  const VendorChatUserListScreen({super.key});
+class VendorChatUserListScreen extends StatefulWidget { 
+  const VendorChatUserListScreen({super.key}); 
 
   @override
   State<VendorChatUserListScreen> createState() =>
@@ -18,12 +18,18 @@ class VendorChatUserListScreen extends StatefulWidget {
 }
 
 class _VendorChatUserListScreenState extends State<VendorChatUserListScreen> {
-  final ChatController chatController = Get.put(ChatController());
+  late final ChatController chatController;
 
   @override
   void initState() {
     super.initState();
-    Future.microtask(() => chatController.fetchConversations());
+    chatController = Get.isRegistered<ChatController>()
+        ? Get.find<ChatController>()
+        : Get.put(ChatController());
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      chatController.fetchConversations();
+    });
   }
 
   @override
@@ -53,19 +59,19 @@ class _VendorChatUserListScreenState extends State<VendorChatUserListScreen> {
                 ),
                 20.heightBox,
                 RoundTextField(
-                  hint: "Search user",
-                  focusColor: ColorUtils.secondaryColor,
-                  borderWidth: 1,
-                  borderColor: ColorUtils.blackColor,
+                  borderColor: ColorUtils.black107,
+                  fillColor: Colors.white,
+                  hint: "Search conversation",
+                  borderRadius: 20,
+                  focusColor: Colors.transparent,
                   prefixIcon: Icon(Icons.search_outlined),
                   filled: true,
-                  fillColor: ColorUtils.greenLight,
-                  onChanged: (value) {
+                  onChanged: (value) {  
                     chatController.searchTerm.value = value;
                     chatController.fetchConversations(search: value);
                   },
                 ),
-                20.heightBox,
+                20.heightBox, 
                 Expanded(
                   child: Obx(() {
                     if (chatController.isConversationLoading.value &&
@@ -85,12 +91,17 @@ class _VendorChatUserListScreenState extends State<VendorChatUserListScreen> {
                     }
 
                     final visibleConversations = chatController.conversations
-                        .where(
-                          (conversation) =>
-                              (conversation.lastMessage?.toString().trim() ??
-                                      '')
-                                  .isNotEmpty,
-                        )
+                        .where((conversation) {
+                          final title = chatController
+                              .conversationTitle(conversation)
+                              .trim();
+                          final lastMessage =
+                              conversation.lastMessage?.toString().trim() ?? '';
+
+                          return title.isNotEmpty &&
+                              title.toLowerCase() != 'chat' &&
+                              lastMessage.isNotEmpty;
+                        })
                         .toList();
 
                     if (visibleConversations.isEmpty) {
@@ -110,7 +121,7 @@ class _VendorChatUserListScreenState extends State<VendorChatUserListScreen> {
                         itemBuilder: (context, index) {
                           final conversation = visibleConversations[index];
                           return Container(
-                            margin: EdgeInsets.only(bottom: 14),
+                            margin: EdgeInsets.only(bottom: 8),
                             child: _userWidget(
                               context: context,
                               conversation: conversation,
@@ -153,64 +164,73 @@ class _VendorChatUserListScreenState extends State<VendorChatUserListScreen> {
 
     return GestureDetector(
       onTap: onTap,
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Expanded(
-            child: Row(
-              children: [
-                _avatar(image),
-                10.widthBox,
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      CustomText(
-                        title: chatController.conversationTitle(conversation),
-                        fontSize: 18.sp(context),
-                        fontWeight: FontWeight.w700,
-                        color: Colors.black,
-                      ),
-                      Text(
-                        lastMessage.isEmpty ? "Tap to start chat" : lastMessage,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: GoogleFonts.urbanist(
-                          fontWeight: FontWeight.w400,
-                          fontSize: 16.sp(context),
-                          color: ColorUtils.blackColor,
+      child: Container(
+        padding: EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          color: Colors.grey[100],
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Expanded(
+              child: Row(
+                children: [
+                  _avatar(image),
+                  10.widthBox,
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        CustomText(
+                          title: chatController.conversationTitle(conversation),
+                          fontSize: 18.sp(context),
+                          fontWeight: FontWeight.w700,
+                          color: Colors.black,
                         ),
-                      ),
-                    ],
+                        Text(
+                          lastMessage.isEmpty
+                              ? "Tap to start chat"
+                              : lastMessage,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: GoogleFonts.urbanist(
+                            fontWeight: FontWeight.w400,
+                            fontSize: 16.sp(context),
+                            color: ColorUtils.blackColor,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
+                ],
+              ),
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                CustomText(
+                  title: time,
+                  fontWeight: FontWeight.w400,
+                  fontSize: 12,
+                  color: Colors.black,
                 ),
+                if ((conversation.unreadCount ?? 0) > 0) ...[
+                  6.heightBox,
+                  CircleAvatar(
+                    radius: 10,
+                    backgroundColor: ColorUtils.secondaryColor,
+                    child: Text(
+                      conversation.unreadCount.toString(),
+                      style: TextStyle(color: Colors.white, fontSize: 11),
+                    ),
+                  ),
+                ],
               ],
             ),
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              CustomText(
-                title: time,
-                fontWeight: FontWeight.w400,
-                fontSize: 12,
-                color: Colors.black,
-              ),
-              if ((conversation.unreadCount ?? 0) > 0) ...[
-                6.heightBox,
-                CircleAvatar(
-                  radius: 10,
-                  backgroundColor: ColorUtils.secondaryColor,
-                  child: Text(
-                    conversation.unreadCount.toString(),
-                    style: TextStyle(color: Colors.white, fontSize: 11),
-                  ),
-                ),
-              ],
-            ],
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -222,8 +242,8 @@ class _VendorChatUserListScreenState extends State<VendorChatUserListScreen> {
       child: hasNetworkImage
           ? Image.network(
               image,
-              width: 60,
-              height: 60,
+              width: 44,
+              height: 44,
               fit: BoxFit.cover,
               errorBuilder: (_, __, ___) => _assetAvatar(),
             )

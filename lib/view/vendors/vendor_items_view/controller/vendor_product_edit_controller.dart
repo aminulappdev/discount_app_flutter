@@ -19,6 +19,7 @@ class VendorProductEditController extends GetxController {
   Rx<TextEditingController> itemNameController = TextEditingController().obs;
   Rx<TextEditingController> itemDetailsController = TextEditingController().obs;
   Rx<TextEditingController> itemPriceController = TextEditingController().obs;
+  Rx<TextEditingController> itemDiscountController = TextEditingController().obs;
   Rx<TextEditingController> itemQuantityController = TextEditingController().obs;
   Rx<CategoriesResponseModel> categoriesResponseModel = CategoriesResponseModel().obs;
   RxList<File> coverImages = <File>[].obs;
@@ -93,6 +94,7 @@ class VendorProductEditController extends GetxController {
         itemNameController.value.text = singleProductResponseModel.value.data?.name ?? "";
         itemDetailsController.value.text = singleProductResponseModel.value.data?.description ?? "";
         itemPriceController.value.text = singleProductResponseModel.value.data?.price.toString() ?? "";
+        itemDiscountController.value.text = singleProductResponseModel.value.data?.discount?.toString() ?? "";
         itemQuantityController.value.text = singleProductResponseModel.value.data?.quantity.toString() ?? "";
         singleCategory.value = categoriesResponseModel.value.categories!.where((value)=>value.sId == singleProductResponseModel.value.data?.category?.sId).first;
       },
@@ -141,6 +143,7 @@ class VendorProductEditController extends GetxController {
     required String name,
     required String category,
     required String price,
+    required String discount,
     required String description,
     required String quantity,
     required List<String> oldImgsToKeep,
@@ -174,6 +177,7 @@ class VendorProductEditController extends GetxController {
       "name": name,
       "category": category,
       "price": double.parse(price),
+      "discount": double.parse(discount),
       "description": description,
       "quantity": double.parse(quantity),
       "oldImgsToKeep": oldImgsToKeep,

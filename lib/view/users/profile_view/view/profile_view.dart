@@ -1,4 +1,5 @@
 import 'package:discount_me_app/utils/utils.dart';
+import 'package:discount_me_app/view/users/chat_view/controller/chat_controller.dart';
 import 'package:discount_me_app/view/users/chat_view/view/user_chat_vendor_list_screen.dart';
 import 'package:discount_me_app/view/users/user_profile_order_view/view/user_profile_order_view.dart';
 import 'package:flutter/material.dart';
@@ -256,7 +257,14 @@ class ProfileView extends StatelessWidget {
                                   icon: Image.asset(ImageUtils.chat, scale: 5,),
                                   navigateIcon: Icon(Icons.navigate_next,size: 24.r(context), color: Colors.black54,),
                                   onTap: () {
-                                    Get.to(ChatListScreen());
+                                    if (Get.isRegistered<ChatController>()) {
+                                      Get.delete<ChatController>(force: true);
+                                    }
+                                    Get.to(
+                                      () => const ChatListScreen(),
+                                      preventDuplicates: false,
+                                      duration: const Duration(milliseconds: 100),
+                                    );
                                   },
                                 ),
 

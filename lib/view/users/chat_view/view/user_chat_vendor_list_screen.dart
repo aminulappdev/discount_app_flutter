@@ -12,33 +12,47 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class ChatListScreen extends StatefulWidget {
-  const ChatListScreen({super.key, this.vendorId});
+  const ChatListScreen({super.key, this.partnerId, this.vendorId});
 
-  final String? vendorId; 
- 
+  final String? partnerId;
+  final String? vendorId;
+
   @override
-  State<ChatListScreen> createState() =>
-      _ChatListScreenState();
+  State<ChatListScreen> createState() => _ChatListScreenState();
 }
 
 class _ChatListScreenState extends State<ChatListScreen> {
-  final ChatController chatController = Get.put(ChatController());
+  late final ChatController chatController;
 
   @override
   void initState() {
     super.initState();
-    Future.microtask(() async {
-      if ((widget.vendorId ?? '').isNotEmpty) {
-        final conversation =
-            await chatController.createConversation(widget.vendorId!);
-        if (conversation != null) {
-          await chatController.openConversation(conversation);
-          Get.to(() => UserChatScreen(conversation: conversation));
-        }
-      } else {
-        await chatController.fetchConversations();
-      }
+    chatController = Get.isRegistered<ChatController>()
+        ? Get.find<ChatController>()
+        : Get.put(ChatController());
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadChatData();
     });
+  }
+
+  Future<void> _loadChatData() async {
+    final partnerId = (widget.partnerId ?? '').trim();
+    final vendorId = (widget.vendorId ?? '').trim(); 
+
+    if (partnerId.isNotEmpty || vendorId.isNotEmpty) {
+      final conversation = await chatController.createConversation(
+        partnerId: partnerId.isNotEmpty ? partnerId : null,
+        vendorId: partnerId.isEmpty && vendorId.isNotEmpty ? vendorId : null,
+      );
+      if (conversation != null && mounted) {
+        await chatController.openConversation(conversation);
+        Get.to(() => UserChatScreen(conversation: conversation));
+      }
+      return;
+    }
+
+    await chatController.fetchConversations();
   }
 
   @override
@@ -60,7 +74,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                CustomAppBar( 
+                CustomAppBar(
                   appBarName: "Message",
                   leadingColor: Colors.black,
                   titleColor: Colors.black,
@@ -68,7 +82,10 @@ class _ChatListScreenState extends State<ChatListScreen> {
                 ),
                 20.heightBox,
                 RoundTextField(
-                  hint: "Search vendor",
+                  borderColor: ColorUtils.black107,
+                  fillColor: Colors.white,
+                  hint: "Search conversation",
+                  borderRadius: 20,
                   focusColor: Colors.transparent,
                   prefixIcon: Icon(Icons.search_outlined),
                   filled: true,
@@ -97,12 +114,17 @@ class _ChatListScreenState extends State<ChatListScreen> {
                     }
 
                     final visibleConversations = chatController.conversations
-                        .where(
-                          (conversation) =>
-                              (conversation.lastMessage?.toString().trim() ??
-                                      '')
-                                  .isNotEmpty,
-                        )
+                        .where((conversation) {
+                          final title = chatController
+                              .conversationTitle(conversation)
+                              .trim();
+                          final lastMessage =
+                              conversation.lastMessage?.toString().trim() ?? '';
+
+                          return title.isNotEmpty &&
+                              title.toLowerCase() != 'chat' &&
+                              lastMessage.isNotEmpty;
+                        })
                         .toList();
 
                     if (visibleConversations.isEmpty) {
@@ -122,13 +144,14 @@ class _ChatListScreenState extends State<ChatListScreen> {
                         itemBuilder: (context, index) {
                           final conversation = visibleConversations[index];
                           return Container(
-                            margin: EdgeInsets.only(bottom: 14),
+                            margin: EdgeInsets.only(bottom: 8),
                             child: _userWidget(
                               context: context,
                               conversation: conversation,
                               onTap: () async {
-                                await chatController
-                                    .openConversation(conversation);
+                                await chatController.openConversation(
+                                  conversation,
+                                );
                                 Get.to(
                                   () => UserChatScreen(
                                     conversation: conversation,
@@ -165,64 +188,73 @@ class _ChatListScreenState extends State<ChatListScreen> {
 
     return GestureDetector(
       onTap: onTap,
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Expanded(
-            child: Row(
-              children: [
-                _avatar(image),
-                10.widthBox,
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      CustomText(
-                        title: chatController.conversationTitle(conversation),
-                        fontSize: 18.sp(context),
-                        fontWeight: FontWeight.w700,
-                        color: Colors.black,
-                      ),
-                      Text(
-                        lastMessage.isEmpty ? "Tap to start chat" : lastMessage,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: GoogleFonts.urbanist(
-                          fontWeight: FontWeight.w400,
-                          fontSize: 16.sp(context),
-                          color: ColorUtils.blackColor,
+      child: Container(
+        padding: EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          color: Colors.grey[100],
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Expanded(
+              child: Row(
+                children: [
+                  _avatar(image),
+                  10.widthBox,
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        CustomText(
+                          title: chatController.conversationTitle(conversation),
+                          fontSize: 18.sp(context),
+                          fontWeight: FontWeight.w700,
+                          color: Colors.black,
                         ),
-                      ),
-                    ],
+                        Text(
+                          lastMessage.isEmpty
+                              ? "Tap to start chat"
+                              : lastMessage,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: GoogleFonts.urbanist(
+                            fontWeight: FontWeight.w400,
+                            fontSize: 16.sp(context),
+                            color: ColorUtils.blackColor,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
+                ],
+              ),
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                CustomText(
+                  title: time,
+                  fontWeight: FontWeight.w400,
+                  fontSize: 12,
+                  color: Colors.black,
                 ),
+                if ((conversation.unreadCount ?? 0) > 0) ...[
+                  6.heightBox,
+                  CircleAvatar(
+                    radius: 10,
+                    backgroundColor: ColorUtils.secondaryColor,
+                    child: Text(
+                      conversation.unreadCount.toString(),
+                      style: TextStyle(color: Colors.white, fontSize: 11),
+                    ),
+                  ),
+                ],
               ],
             ),
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              CustomText(
-                title: time,
-                fontWeight: FontWeight.w400,
-                fontSize: 12,
-                color: Colors.black,
-              ),
-              if ((conversation.unreadCount ?? 0) > 0) ...[
-                6.heightBox,
-                CircleAvatar(
-                  radius: 10,
-                  backgroundColor: ColorUtils.secondaryColor,
-                  child: Text(
-                    conversation.unreadCount.toString(),
-                    style: TextStyle(color: Colors.white, fontSize: 11),
-                  ),
-                ),
-              ],
-            ],
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -234,8 +266,8 @@ class _ChatListScreenState extends State<ChatListScreen> {
       child: hasNetworkImage
           ? Image.network(
               image,
-              width: 60,
-              height: 60,
+              width: 44,
+              height: 44,
               fit: BoxFit.cover,
               errorBuilder: (_, __, ___) => _assetAvatar(),
             )

@@ -7,9 +7,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class VendorChatScreen extends StatefulWidget {
+class VendorChatScreen extends StatefulWidget { 
   const VendorChatScreen({super.key, this.conversation});
-
+ 
   final ChatItemModel? conversation;
 
   @override
@@ -17,13 +17,16 @@ class VendorChatScreen extends StatefulWidget {
 }
 
 class _VendorChatScreenState extends State<VendorChatScreen> {
-  final ChatController chatController = Get.put(ChatController());
+  late final ChatController chatController;
   final TextEditingController messageController = TextEditingController();
   final ScrollController scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
+    chatController = Get.isRegistered<ChatController>()
+        ? Get.find<ChatController>()
+        : Get.put(ChatController());
     Future.microtask(() async {
       if (widget.conversation != null) {
         await chatController.openConversation(widget.conversation!);

@@ -15,6 +15,7 @@ class AddProductController extends GetxController {
     required String category,
     required double price,
     required double quantity,
+    required double discount,
     required Function onSuccess,
     required Function onFail,
     required Function onExceptionFail
@@ -30,6 +31,7 @@ class AddProductController extends GetxController {
         "price": price,
         "description": details,
         "quantity": quantity,
+        "discount": discount,
       };
 
       print(jsonEncode(data));

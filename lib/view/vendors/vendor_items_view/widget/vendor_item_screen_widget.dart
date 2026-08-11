@@ -17,6 +17,16 @@ class VendorItemScreenWidget extends GetxController {
   Rx<VendorProfileResponseModel> vendorProfileResponseModel = VendorProfileResponseModel().obs;
   RxString updatedCategoryId = "".obs;
 
+  double _toDouble(dynamic value) {
+    if (value == null) return 0;
+    if (value is num) return value.toDouble();
+    return double.tryParse(value.toString()) ?? 0;
+  }
+
+  String _formatPrice(double value) {
+    return value % 1 == 0 ? value.toStringAsFixed(0) : value.toStringAsFixed(2);
+  }
+
   @override
   void onInit() {
     // TODO: implement onInit
@@ -416,14 +426,43 @@ class VendorItemScreenWidget extends GetxController {
                                             ),
 
 
-                                            CustomTextContainer.plainTextContainerWidgetWithoutHeightWidth(
-                                              plainTextString: productsResponseModel.value.data?.data?[index].price != null ?
-                                              "${"\$"}${productsResponseModel.value.data!.data![index].price.toString()}" : "N/A",
-                                              plainTextStringFontSize: 22.sp(context),
-                                              plainTextStringFontWeight: FontWeight.w700,
-                                              plainTextContainerAlignment: Alignment.centerLeft,
-                                              plainTextStringColor: ColorUtils.black29,
-                                              plainTextStringTextAlign: TextAlign.start,
+                                            Builder(
+                                              builder: (context) {
+                                                final product = products[index];
+                                                final originalPrice = _toDouble(product.price);
+                                                final discount = _toDouble(product.discount);
+                                                final discountedPrice = discount > 0
+                                                    ? originalPrice - ((originalPrice * discount) / 100)
+                                                    : originalPrice;
+                                                final hasDiscount = discount > 0 && discountedPrice < originalPrice;
+
+                                                return Column(
+                                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                                  children: [
+                                                    if (hasDiscount)
+                                                      Text(
+                                                        "\$${_formatPrice(originalPrice)}",
+                                                        style: TextStyle(
+                                                          fontSize: 12.sp(context),
+                                                          fontWeight: FontWeight.w500,
+                                                          color: Colors.grey.shade600,
+                                                          decoration: TextDecoration.lineThrough,
+                                                          decorationColor: Colors.grey.shade600,
+                                                        ),
+                                                      ),
+                                                    CustomTextContainer.plainTextContainerWidgetWithoutHeightWidth(
+                                                      plainTextString: originalPrice > 0
+                                                          ? "\$${_formatPrice(discountedPrice)}"
+                                                          : "N/A",
+                                                      plainTextStringFontSize: 22.sp(context),
+                                                      plainTextStringFontWeight: FontWeight.w700,
+                                                      plainTextContainerAlignment: Alignment.centerLeft,
+                                                      plainTextStringColor: ColorUtils.black29,
+                                                      plainTextStringTextAlign: TextAlign.start,
+                                                    ),
+                                                  ],
+                                                );
+                                              },
                                             ),
 
 

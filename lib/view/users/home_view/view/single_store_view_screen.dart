@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:discount_me_app/res/res.dart';
@@ -12,7 +11,10 @@ class SingleStoreViewScreen extends StatelessWidget {
   final String storeId; 
   @override
   Widget build(BuildContext context) {
-    SingleStoreViewScreenWidget singleStoreViewScreenWidget = Get.put(SingleStoreViewScreenWidget(context: context, storeId: storeId));
+    final SingleStoreViewScreenWidget singleStoreViewScreenWidget = Get.put(
+      SingleStoreViewScreenWidget(context: context, storeId: storeId),
+      tag: storeId,
+    );
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (canPop,onOpoInvoked) {
@@ -22,7 +24,10 @@ class SingleStoreViewScreen extends StatelessWidget {
           Get.to(()=>StoreListViewScreen(),duration: const Duration(milliseconds: 100),preventDuplicates: false);
         } else {
           Get.to(()=>UserDashboardView(index: 0,),duration: const Duration(milliseconds: 100),preventDuplicates: false);
-        } 
+        }
+        if (Get.isRegistered<SingleStoreViewScreenWidget>(tag: storeId)) {
+          Get.delete<SingleStoreViewScreenWidget>(tag: storeId, force: true);
+        }
       },
       child: Scaffold(
         body: singleStoreViewScreenWidget.singleStoreViewScreenWidget(context: context,isHomePage: isHomePage,isStorePage: isStoreListPage),

@@ -19,7 +19,7 @@ class CartController extends GetxController {
   RxString productId = "".obs;
   RxString cardId = "".obs;
   RxDouble subTotal = 0.0.obs;
-  BuildContext context;
+  BuildContext context; 
 
   CartController({required this.context});
 

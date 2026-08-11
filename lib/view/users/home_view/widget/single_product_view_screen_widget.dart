@@ -27,6 +27,24 @@ class SingleProductViewScreenWidget extends GetxController {
   bool get isProductAvailable =>
       (singleProductResponseModel.value.data?.quantity ?? 0) > 0;
 
+  double? get _basePrice =>
+      double.tryParse(
+        singleProductResponseModel.value.data?.price?.toString() ?? '',
+      );
+
+  double get _discountValue =>
+      double.tryParse(
+        singleProductResponseModel.value.data?.discount?.toString() ?? '',
+      ) ??
+      0.0;
+
+  double? get _discountedPrice {
+    final price = _basePrice;
+    if (price == null) return null;
+    if (_discountValue <= 0) return price;
+    return price - ((price * _discountValue) / 100);
+  }
+
   void onPageChanged(int page) {
     currentPage.value = page;
   }
@@ -513,17 +531,41 @@ class SingleProductViewScreenWidget extends GetxController {
                             ),
                           ),
 
-                          CustomTextContainer.plainTextContainerWidgetWithoutHeightWidth(
-                            plainTextString:
-                                singleProductResponseModel.value.data?.price !=
-                                    null
-                                ? "${"\$"}${singleProductResponseModel.value.data?.price.toString()}"
-                                : "N/A",
-                            plainTextStringFontSize: 22.sp(context),
-                            plainTextStringFontWeight: FontWeight.w700,
-                            plainTextContainerAlignment: Alignment.centerLeft,
-                            plainTextStringColor: ColorUtils.black29,
-                            plainTextStringTextAlign: TextAlign.start,
+                          Align(
+                            alignment: Alignment.centerRight,
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                if (_basePrice != null && _discountValue > 0)
+                                  Padding(
+                                    padding: EdgeInsets.only(
+                                      right: 8.w(context),
+                                      bottom: 2.h(context),
+                                    ),
+                                    child: Text(
+                                      "\$${_basePrice!.toStringAsFixed(_basePrice! % 1 == 0 ? 0 : 2)}",
+                                      style: GoogleFonts.urbanist(
+                                        fontSize: 14.sp(context),
+                                        fontWeight: FontWeight.w500,
+                                        color: Colors.grey.shade600,
+                                        decoration: TextDecoration.lineThrough,
+                                      ),
+                                    ),
+                                  ),
+                                CustomTextContainer.plainTextContainerWidgetWithoutHeightWidth(
+                                  plainTextString: _discountedPrice != null
+                                      ? "\$${_discountedPrice!.toStringAsFixed(_discountedPrice! % 1 == 0 ? 0 : 2)}"
+                                      : "N/A",
+                                  plainTextStringFontSize: 22.sp(context),
+                                  plainTextStringFontWeight: FontWeight.w700,
+                                  plainTextContainerAlignment:
+                                      Alignment.centerLeft,
+                                  plainTextStringColor: ColorUtils.black29,
+                                  plainTextStringTextAlign: TextAlign.start,
+                                ),
+                              ],
+                            ),
                           ),
                         ],
                       ),

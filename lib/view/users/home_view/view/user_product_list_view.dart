@@ -9,10 +9,15 @@ class UserProductListView extends StatelessWidget {
     super.key,
     required this.categoryId,
     required this.storeId, 
-  });
+  }); 
 
   final String categoryId;
   final String storeId;
+
+  double? _toDouble(dynamic value) => double.tryParse(value?.toString() ?? '');
+
+  String _formatPrice(double value) =>
+      value.toStringAsFixed(value % 1 == 0 ? 0 : 2);
 
   @override
   Widget build(BuildContext context) {
@@ -622,22 +627,88 @@ class UserProductListView extends StatelessWidget {
                                                     ),
                                                   ),
 
-                                                  TextHelperClass.headingTextWithoutWidth(
-                                                    context: context,
-                                                    text:
-                                                        userProductListController
-                                                                .products[index]
-                                                                .price !=
-                                                            null
-                                                        ? "${"\$"}${userProductListController.products[index].price.toString()}"
-                                                        : "N/A",
-                                                    fontSize: 22,
-                                                    fontWeight: FontWeight.w700,
-                                                    textColor:
-                                                        ColorUtils.black29,
-                                                    textAlign: TextAlign.start,
-                                                    alignment:
-                                                        Alignment.centerLeft,
+                                                  Builder(
+                                                    builder: (_) {
+                                                      final product =
+                                                          userProductListController
+                                                              .products[index];
+                                                      final price = _toDouble(
+                                                        product.price,
+                                                      );
+                                                      final discount =
+                                                          _toDouble(
+                                                            product.discount,
+                                                          ) ??
+                                                          0.0;
+                                                      final discountedPrice =
+                                                          price == null
+                                                          ? null
+                                                          : discount > 0
+                                                          ? price -
+                                                                ((price *
+                                                                        discount) /
+                                                                    100)
+                                                          : price;
+
+                                                      return Row(
+                                                        mainAxisSize:
+                                                            MainAxisSize.min,
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .end,
+                                                        children: [
+                                                          if (price != null &&
+                                                              discount > 0)
+                                                            Padding(
+                                                              padding:
+                                                                  EdgeInsets.only(
+                                                                    right:
+                                                                        6.w(
+                                                                          context,
+                                                                        ),
+                                                                    bottom:
+                                                                        2.h(
+                                                                          context,
+                                                                        ),
+                                                                  ),
+                                                              child: Text(
+                                                                "\$${_formatPrice(price)}",
+                                                                style: TextStyle(
+                                                                  fontSize: 12,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w500,
+                                                                  color: Colors
+                                                                      .grey
+                                                                      .shade600,
+                                                                  decoration:
+                                                                      TextDecoration
+                                                                          .lineThrough,
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          TextHelperClass.headingTextWithoutWidth(
+                                                            context: context,
+                                                            text:
+                                                                discountedPrice !=
+                                                                    null
+                                                                ? "\$${_formatPrice(discountedPrice)}"
+                                                                : "N/A",
+                                                            fontSize: 22,
+                                                            fontWeight:
+                                                                FontWeight.w700,
+                                                            textColor:
+                                                                ColorUtils
+                                                                    .black29,
+                                                            textAlign:
+                                                                TextAlign.start,
+                                                            alignment:
+                                                                Alignment
+                                                                    .centerLeft,
+                                                          ),
+                                                        ],
+                                                      );
+                                                    },
                                                   ),
                                                 ],
                                               ),

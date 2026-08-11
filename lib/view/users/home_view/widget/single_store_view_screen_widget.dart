@@ -28,6 +28,11 @@ class SingleStoreViewScreenWidget extends GetxController {
   var currentPage = 0.obs;
   Timer? _timer;
 
+  double? _toDouble(dynamic value) => double.tryParse(value?.toString() ?? '');
+
+  String _formatPrice(double value) =>
+      value.toStringAsFixed(value % 1 == 0 ? 0 : 2);
+
 
 
   void onPageChanged(int page) {
@@ -110,18 +115,22 @@ class SingleStoreViewScreenWidget extends GetxController {
   }
 
   Future<void> openSupportChat() async {
+    final partnerId = _currentPartnerId();
     final vendorId = _currentVendorId();
-    if (vendorId.isEmpty) {
+    if (partnerId.isEmpty && vendorId.isEmpty) {
       MessageSnackBarWidget.errorSnackBarWidget(
         context: context,
-        message: "Vendor not found",
+        message: "Chat partner not found",
       );
       return;
     }
 
     isChatOpening.value = true;
     final chatController = Get.put(ChatController());
-    final conversation = await chatController.createConversation(vendorId);
+    final conversation = await chatController.createConversation(
+      partnerId: partnerId.isNotEmpty ? partnerId : null,
+      vendorId: partnerId.isEmpty && vendorId.isNotEmpty ? vendorId : null,
+    );
     isChatOpening.value = false;
 
     if (conversation == null) {
@@ -152,6 +161,16 @@ class SingleStoreViewScreenWidget extends GetxController {
     return _readId(firstProductStore) ?? "";
   }
 
+  String _currentPartnerId() {
+    final storePartnerId = _readPartnerId(singleStoreResponseModel.value.data);
+    if (storePartnerId.isNotEmpty) return storePartnerId;
+
+    final firstProductStore = productsResponseModel.value.data?.data?.isNotEmpty == true
+        ? productsResponseModel.value.data!.data!.first.store
+        : null;
+    return _readPartnerId(firstProductStore);
+  }
+
   String? _readId(dynamic value) {
     if (value == null) return null;
     if (value is String) return null;
@@ -164,6 +183,27 @@ class SingleStoreViewScreenWidget extends GetxController {
           _readId(value['owner']);
     }
     return null;
+  }
+
+  String _readPartnerId(dynamic value) {
+    if (value == null) return "";
+    if (value is String) return "";
+    if (value is Map) {
+      return value['partnerId']?.toString() ??
+          value['partner_id']?.toString() ??
+          value['auth_id']?.toString() ??
+          _readPartnerId(value['partner']) ??
+          _readPartnerId(value['vendor']) ??
+          _readPartnerId(value['owner']) ??
+          "";
+    }
+    try {
+      final dynamic authId = value.authId;
+      if (authId != null && authId.toString().isNotEmpty) {
+        return authId.toString();
+      }
+    } catch (_) {}
+    return "";
   }
 
   @override
@@ -597,7 +637,7 @@ class SingleStoreViewScreenWidget extends GetxController {
                           ),
                         ),
                       ],
-                    ),
+                    ), 
 
                     CustomSpaceWidget.spacerWidget(spaceHeight: 20.h(context)),
 
@@ -611,7 +651,9 @@ class SingleStoreViewScreenWidget extends GetxController {
                         crossAxisCount: MediaQuery.sizeOf(context).width < 600.w(context) ? 2 : 3, // Responsive columns
                         mainAxisSpacing: 10.h(context),
                         crossAxisSpacing: 10.w(context),
-                        childAspectRatio: (MediaQuery.sizeOf(context).width / 2) / (MediaQuery.sizeOf(context).height * 0.35), // Adjust child aspect ratio dynamically
+                        childAspectRatio: MediaQuery.sizeOf(context).width < 600.w(context)
+                            ? 0.68
+                            : 0.72, // Give cards a bit more vertical room
                       ),
                       itemBuilder: (context, index) {
                         return TextButton(
@@ -646,7 +688,7 @@ class SingleStoreViewScreenWidget extends GetxController {
                                 // Top Image with rounded corners
                                 productsResponseModel.value.data!.data![index].images?.isEmpty == true ?
                                 Container(
-                                  height: 174.h(context), // Responsive height
+                                  height: 150.h(context), // Responsive height
                                   width: double.infinity,
                                   decoration: BoxDecoration(
                                     image: DecorationImage(
@@ -661,12 +703,12 @@ class SingleStoreViewScreenWidget extends GetxController {
                                   borderRadius: BorderRadius.vertical(top: Radius.circular(15.r(context))), // Responsive border radius
                                   child: Image.network(
                                     productsResponseModel.value.data!.data![index].images!.first, // Replace with your image path
-                                    height: 174.h(context), // Responsive height
+                                    height: 150.h(context), // Responsive height
                                     width: double.infinity, // Full width
                                     fit: BoxFit.cover,
                                     errorBuilder: (BuildContext context, Object exception, StackTrace? stackTrace) {
                                       return Container(
-                                        height: 174.h(context), // Responsive height
+                                        height: 150.h(context), // Responsive height
                                         width: double.infinity,
                                         decoration: BoxDecoration(
                                           image: DecorationImage(
@@ -685,7 +727,7 @@ class SingleStoreViewScreenWidget extends GetxController {
                                 Padding(
                                   padding: EdgeInsets.symmetric(
                                     horizontal: 8.hpm(context),
-                                    vertical: 8.vpm(context),
+                                    vertical: 6.vpm(context),
                                   ), // Responsive padding
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -704,72 +746,136 @@ class SingleStoreViewScreenWidget extends GetxController {
                                         plainTextStringTextAlign: TextAlign.start,
                                       ),
 
-                                      CustomSpaceWidget.spacerWidget(spaceHeight: 5.h(context)),
+                                      CustomSpaceWidget.spacerWidget(spaceHeight: 4.h(context)),
 
                                       CustomTextContainer.plainTextContainerWidgetWithoutHeightWidth(
                                         plainTextString: productsResponseModel.value.data?.data?[index].description != null ?
                                         "${productsResponseModel.value.data!.data![index].description.toString().length > 20 ?
                                         productsResponseModel.value.data!.data![index].description.toString().substring(0,20) :
                                         productsResponseModel.value.data!.data![index].description.toString()}...." : "N/A",
-                                        plainTextStringFontSize: 14.sp(context),
+                                        plainTextStringFontSize: 13.sp(context),
                                         plainTextStringFontWeight: FontWeight.w700,
                                         plainTextContainerAlignment: Alignment.centerLeft,
                                         plainTextStringColor: Colors.grey.shade600,
                                         plainTextStringTextAlign: TextAlign.start,
                                       ),
 
-                                      CustomSpaceWidget.spacerWidget(spaceHeight: 10.h(context)),
+                                      CustomSpaceWidget.spacerWidget(spaceHeight: 6.h(context)),
 
-                                      Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
                                           // Icons with labels (Time estimate and rating)
-                                          Expanded(
-                                            child: Row(
-                                              children: [
-                                                // Time icon and label
-                                                Icon(Icons.ac_unit, size: 16.r(context), color: Colors.orange),
-                                                SizedBox(width: 4.w(context)),
-                                                CustomTextContainer.plainTextContainerWidgetWithoutHeightWidth(
-                                                  plainTextString: productsResponseModel.value.data?.data?[index].quantity != null ?
-                                                  "${productsResponseModel.value.data?.data?[index].quantity} pics" : "N/A",
-                                                  plainTextStringFontSize: 14.sp(context),
-                                                  plainTextStringFontWeight: FontWeight.w500,
-                                                  plainTextContainerAlignment: Alignment.centerLeft,
-                                                  plainTextStringColor: Colors.grey.shade700,
-                                                  plainTextStringTextAlign: TextAlign.start,
-                                                ),
-
-
-
-                                                SizedBox(width: 10.w(context)),
-
-                                                // Rating icon and label
-                                                Icon(Icons.star, size: 16.r(context), color: Colors.orange),
-                                                SizedBox(width: 4.w(context)),
-
-                                                CustomTextContainer.plainTextContainerWidgetWithoutHeightWidth(
-                                                  plainTextString: productsResponseModel.value.data?.data?[index].ratings != null ?
-                                                  "${productsResponseModel.value.data?.data?[index].ratings}" : "N/A",
-                                                  plainTextStringFontSize: 14.sp(context),
-                                                  plainTextStringFontWeight: FontWeight.w500,
-                                                  plainTextContainerAlignment: Alignment.centerLeft,
-                                                  plainTextStringColor: Colors.grey.shade700,
-                                                  plainTextStringTextAlign: TextAlign.start,
-                                                ),
-                                              ],
-                                            ),
+                                          Row(
+                                            spacing: 8.w(context),
+                                            // runSpacing: 4.h(context),
+                                            // crossAxisAlignment:
+                                            //     WrapCrossAlignment.center,
+                                            children: [
+                                              // Time icon and label
+                                              Icon(Icons.ac_unit, size: 16.r(context), color: Colors.orange),
+                                              
+                                              CustomTextContainer.plainTextContainerWidgetWithoutHeightWidth(
+                                                plainTextString: productsResponseModel.value.data?.data?[index].quantity != null ?
+                                                "${productsResponseModel.value.data?.data?[index].quantity} pics" : "N/A",
+                                                plainTextStringFontSize: 14.sp(context),
+                                                plainTextStringFontWeight: FontWeight.w500,
+                                                plainTextContainerAlignment: Alignment.centerLeft,
+                                                plainTextStringColor: Colors.grey.shade700,
+                                                plainTextStringTextAlign: TextAlign.start,
+                                              ),
+                                              Spacer(),
+                                          
+                                          
+                                          
+                                              // Rating icon and label
+                                              Icon(Icons.star, size: 16.r(context), color: Colors.orange),
+                                             
+                                          
+                                              CustomTextContainer.plainTextContainerWidgetWithoutHeightWidth(
+                                                plainTextString: productsResponseModel.value.data?.data?[index].ratings != null ?
+                                                "${productsResponseModel.value.data?.data?[index].ratings}" : "N/A",
+                                                plainTextStringFontSize: 14.sp(context),
+                                                plainTextStringFontWeight: FontWeight.w500,
+                                                plainTextContainerAlignment: Alignment.centerLeft,
+                                                plainTextStringColor: Colors.grey.shade700,
+                                                plainTextStringTextAlign: TextAlign.start,
+                                              ),
+                                            ],
                                           ),
 
+                                          CustomSpaceWidget.spacerWidget(spaceHeight: 6.h(context)),
 
-                                          CustomTextContainer.plainTextContainerWidgetWithoutHeightWidth(
-                                            plainTextString: productsResponseModel.value.data?.data?[index].price != null ?
-                                            "${"\$"}${productsResponseModel.value.data!.data![index].price.toString()}" : "N/A",
-                                            plainTextStringFontSize: 22.sp(context),
-                                            plainTextStringFontWeight: FontWeight.w700,
-                                            plainTextContainerAlignment: Alignment.centerLeft,
-                                            plainTextStringColor: ColorUtils.black29,
-                                            plainTextStringTextAlign: TextAlign.start,
+
+                                          Builder(
+                                            builder: (_) {
+                                              final product =
+                                                  productsResponseModel
+                                                      .value
+                                                      .data
+                                                      ?.data?[index];
+                                              final price = _toDouble(
+                                                product?.price,
+                                              );
+                                              final discount = _toDouble(
+                                                    product?.discount,
+                                                  ) ??
+                                                  0.0;
+                                              final discountedPrice =
+                                                  price == null
+                                                  ? null
+                                                  : discount > 0
+                                                  ? price -
+                                                        ((price * discount) /
+                                                            100)
+                                                  : price;
+
+                                              return Row(
+                                                mainAxisSize: MainAxisSize.min,
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.end,
+                                                children: [
+                                                  if (price != null &&
+                                                      discount > 0)
+                                                    Padding(
+                                                      padding: EdgeInsets.only(
+                                                        right: 6.w(context),
+                                                        bottom: 2.h(context),
+                                                      ),
+                                                      child: Text(
+                                                        "\$${_formatPrice(price)}",
+                                                        style: TextStyle(
+                                                          fontSize: 12,
+                                                          fontWeight:
+                                                              FontWeight.w500,
+                                                          color: Colors
+                                                              .grey
+                                                              .shade600,
+                                                          decoration:
+                                                              TextDecoration
+                                                                  .lineThrough,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  CustomTextContainer.plainTextContainerWidgetWithoutHeightWidth(
+                                                    plainTextString:
+                                                        discountedPrice != null
+                                                        ? "\$${_formatPrice(discountedPrice)}"
+                                                        : "N/A",
+                                                    plainTextStringFontSize:
+                                                        22.sp(context),
+                                                    plainTextStringFontWeight:
+                                                        FontWeight.w700,
+                                                    plainTextContainerAlignment:
+                                                        Alignment.centerLeft,
+                                                    plainTextStringColor:
+                                                        ColorUtils.black29,
+                                                    plainTextStringTextAlign:
+                                                        TextAlign.start,
+                                                  ),
+                                                ],
+                                              );
+                                            },
                                           ),
 
 

@@ -1,4 +1,5 @@
 import 'package:discount_me_app/res/app_const/import_list.dart';
+import 'package:discount_me_app/view/users/chat_view/controller/chat_controller.dart';
 import 'package:discount_me_app/view/users/profile_view/widget/profile_item_widget.dart';
 import 'package:discount_me_app/view/vendors/vendor_coupon_management/view/vendor_created_coupon_screen.dart';
 import 'package:discount_me_app/view/vendors/vendor_profile_view/controller/vendor_profile_controller.dart';
@@ -305,22 +306,25 @@ class VendorProfileHomeView extends StatelessWidget {
                         ),
 
                         // support chat
-                        ProfileItemWidget(
-                          title: "Support Chat",
-                          icon: Image.asset(ImageUtils.chat, scale: 5),
-                          navigateIcon: Icon(
-                            Icons.navigate_next,
-                            size: 24.r(context),
-                            color: Colors.black54,
+                          ProfileItemWidget(
+                            title: "Support Chat",
+                            icon: Image.asset(ImageUtils.chat, scale: 5),
+                            navigateIcon: Icon(
+                              Icons.navigate_next,
+                              size: 24.r(context),
+                              color: Colors.black54,
+                            ),
+                            onTap: () {
+                              if (Get.isRegistered<ChatController>()) {
+                                Get.delete<ChatController>(force: true);
+                              }
+                              Get.to(
+                                () => VendorChatUserListScreen(),
+                                preventDuplicates: false,
+                                duration: Duration(milliseconds: 100),
+                              );
+                            },
                           ),
-                          onTap: () {
-                            Get.to(
-                              () => VendorChatUserListScreen(),
-                              preventDuplicates: false,
-                              duration: Duration(milliseconds: 100),
-                            );
-                          },
-                        ),
 
                         // support chat
                         ProfileItemWidget(

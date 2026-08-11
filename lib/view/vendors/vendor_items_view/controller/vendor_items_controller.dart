@@ -148,12 +148,30 @@ class VendorItemsController extends GetxController {
     required String storeId,
     required BuildContext context,
   }) async {
+    final cachedLogin = LocalStorageUtils.getString(
+      AppConstantUtils.loginResponse,
+    );
+    if (cachedLogin == null || cachedLogin.isEmpty) {
+      isLoading.value = false;
+      MessageSnackBarWidget.errorSnackBarWidget(
+        context: context,
+        message: "Login session not found",
+      );
+      return;
+    }
 
-    String accessToken = "";
-    await AppLocalStorage.getString(key: "Login").then((value) {
-      accessToken = jsonDecode(value!)["data"]["accessToken"];
-    });
-    print(accessToken);
+    final loginResponseModel = LoginResponseModel.fromJson(
+      jsonDecode(cachedLogin),
+    );
+    final accessToken = loginResponseModel.data?.accessToken ?? "";
+    if (accessToken.isEmpty) {
+      isLoading.value = false;
+      MessageSnackBarWidget.errorSnackBarWidget(
+        context: context,
+        message: "Access token not found",
+      );
+      return;
+    }
 
     BaseApiUtils.get(
       url: ApiUtils.categoryWiseProduct(storeId, categoryId),
