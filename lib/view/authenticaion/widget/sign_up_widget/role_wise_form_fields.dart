@@ -209,6 +209,8 @@ class RoleWiseFormField {
           _label(text: "First Responder Type", context: context),
           _space8(context: context),
           _firstResponderDropdown(context: context, controller: controller),
+          _space8(context: context),
+          _firstResponderDiscountCard(context: context, controller: controller),
           _space20(context: context),
         ],
 
@@ -526,6 +528,12 @@ class RoleWiseFormField {
     required BuildContext context,
     required SignUpController controller,
   }) {
+    if (controller.isFirstResponderDiscountLoading.value) {
+      return const Center(
+        child: CircularProgressIndicator(),
+      );
+    }
+
     return DropdownButtonFormField<String>(
       value: controller.selectedFirstResponderType.value.isEmpty
           ? null
@@ -559,7 +567,7 @@ class RoleWiseFormField {
         return DropdownMenuItem<String>(
           value: type,
           child: Text(
-            type,
+            _formatRoleLabel(type),
             style: TextStyle(
               color: ColorUtils.black21,
               fontSize:  14,
@@ -572,6 +580,97 @@ class RoleWiseFormField {
         controller.selectedFirstResponderType.value = value ?? "";
       },
     );
+  }
+
+  Widget _firstResponderDiscountCard({
+    required BuildContext context,
+    required SignUpController controller,
+  }) {
+    final discountMap = controller
+            .firstResponderDiscountResponseModel.value.data?.discounts ??
+        <String, num>{};
+
+    if (controller.isFirstResponderDiscountLoading.value) {
+      return const SizedBox.shrink();
+    }
+
+    if (discountMap.isEmpty) {
+      return Container(
+        width: double.infinity,
+        padding: EdgeInsets.all(16.r(context)),
+        decoration: BoxDecoration(
+          color: ColorUtils.white255.withOpacity(0.12),
+          borderRadius: BorderRadius.circular(12.r(context)),
+          border: Border.all(color: ColorUtils.whiteNormalActive),
+        ),
+        child: TextHelperClass.headingTextWithoutWidth(
+          context: context,
+          alignment: Alignment.centerLeft,
+          textAlign: TextAlign.start,
+          fontSize: 16,
+          fontWeight: FontWeight.w500,
+          textColor: ColorUtils.white253,
+          text: "No first responder discounts available right now.",
+        ),
+      );
+    }
+
+    final entries = discountMap.entries.toList();
+
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.all(16.r(context)),
+      decoration: BoxDecoration(
+        color: ColorUtils.white255.withOpacity(0.12),
+        borderRadius: BorderRadius.circular(12.r(context)),
+        border: Border.all(color: ColorUtils.whiteNormalActive),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: List.generate(entries.length, (index) {
+          final entry = entries[index];
+          return Padding(
+            padding: EdgeInsets.only(
+              bottom: index == entries.length - 1 ? 0 : 10.vpm(context),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: TextHelperClass.headingTextWithoutWidth(
+                    context: context,
+                    alignment: Alignment.centerLeft,
+                    textAlign: TextAlign.start,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                    textColor: ColorUtils.white253,
+                    text: _formatRoleLabel(entry.key),
+                  ),
+                ),
+                TextHelperClass.headingTextWithoutWidth(
+                  context: context,
+                  alignment: Alignment.centerRight,
+                  textAlign: TextAlign.end,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  textColor: ColorUtils.orange125,
+                  text: "${entry.value}%",
+                ),
+              ],
+            ),
+          );
+        }),
+      ),
+    );
+  }
+
+  String _formatRoleLabel(String value) {
+    return value
+        .split('_')
+        .where((word) => word.isNotEmpty)
+        .map((word) =>
+            "${word[0].toUpperCase()}${word.substring(1).toLowerCase()}")
+        .join(' ');
   }
 
 

@@ -1,8 +1,8 @@
 class ApiUtils { 
  
   //static const baseUrl = "http://206.162.244.133:5020/api/v1";
-  static const baseUrl = "http://10.10.28.34:5001/api/v1";
-  static const socketUrl = "http://10.10.28.34:5001/";
+  static const baseUrl = "http://72.244.153.29:5006/api/v1";
+  static const socketUrl = "http://72.244.153.29:5006/";
   //static const baseUrl = "http://10.10.10.16:5020/api/v1";
  
  
@@ -36,6 +36,7 @@ class ApiUtils {
   static const String vendorSignUp = "$baseUrl/auth/vendor-sign-up";//done
   static const String riderSignUp = "$baseUrl/auth/rider-sign-up";//done
   static const String userSignUp = "$baseUrl/auth/user-sign-up";//done
+  static const String firstResponderDiscounts = "$baseUrl/first-responder-discounts";
   static const String verifyOtp = "$baseUrl/auth/verify-otp";//done
   static const String sendOtp = "$baseUrl/auth/send-otp";//done
   static const String forgotEmailOtp = "$baseUrl/auth/send-otp";//done
@@ -45,7 +46,7 @@ class ApiUtils {
   static String chatMessages(String conversationId) {
     return "$chats/$conversationId/messages";
   }
-
+  
   static String chatRead(String conversationId) {
     return "$chats/$conversationId/read";
   }

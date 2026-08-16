@@ -8,6 +8,7 @@ export 'authenticaion/widget/sign_up_widget/role_select_radio_button.dart';
 export 'authenticaion/view/sign_in_view.dart';
 export 'authenticaion/view/sign_up_view.dart';
 export 'authenticaion/model/user_sing_up_response.dart';
+export 'authenticaion/model/first_responder_discount_response_model.dart';
 export 'authenticaion/controller/sign_up_controller.dart';
 export 'authenticaion/controller/sign_in_controller.dart';
 export 'authenticaion/controller/stripe_connect_controller.dart';

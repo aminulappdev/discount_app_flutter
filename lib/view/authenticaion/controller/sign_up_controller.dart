@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:dio/dio.dart' as dio;
 import 'package:discount_me_app/view/authenticaion/view/otp_verify_screen.dart';
+import 'package:discount_me_app/view/authenticaion/model/first_responder_discount_response_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_intl_phone_field/countries.dart';
 import 'package:geocoding/geocoding.dart';
@@ -69,10 +70,10 @@ class SignUpController extends GetxController {
 
   @override
   void onInit() {
-    // TODO: implement onInit
     super.onInit();
     Future.delayed(const Duration(milliseconds: 100),() async {
       await resetFunction();
+      await getFirstResponderDiscounts();
     });
   }
 
@@ -95,6 +96,9 @@ class SignUpController extends GetxController {
   Rx<File> taxFile = File("").obs;
   RxString selectedRole = "User".obs;
   RxBool isSubmit = false.obs;
+  RxBool isFirstResponderDiscountLoading = false.obs;
+  Rx<FirstResponderDiscountResponseModel> firstResponderDiscountResponseModel =
+      FirstResponderDiscountResponseModel().obs;
   RxList<String> positions = [
     'Federal Government Official',
     'State Government Official',
@@ -109,15 +113,7 @@ class SignUpController extends GetxController {
     'Other'
   ].obs;
   RxString selectedPosition = "".obs;
-  RxList<String> firstResponderTypes = [
-    'police_officer',
-    'firefighter',
-    'ems_paramedic',
-    'active_military',
-    'veteran',
-    'nurse',
-    'doctor',
-  ].obs;
+  RxList<String> firstResponderTypes = <String>[].obs;
   RxString selectedFirstResponderType = "".obs;
 
   Future<void> changeRole(String value) async {
@@ -180,6 +176,27 @@ class SignUpController extends GetxController {
     locationController.value.text = address;
     lat.value = latitude.toString();
     long.value = longitude.toString();
+  }
+
+  Future<void> getFirstResponderDiscounts() async {
+    isFirstResponderDiscountLoading.value = true;
+
+    await BaseApiUtils.get(
+      url: ApiUtils.firstResponderDiscounts,
+      onSuccess: (e, data) {
+        firstResponderDiscountResponseModel.value =
+            FirstResponderDiscountResponseModel.fromJson(data);
+        firstResponderTypes.value =
+            firstResponderDiscountResponseModel.value.data?.roles ?? <String>[];
+        isFirstResponderDiscountLoading.value = false;
+      },
+      onFail: (e, data) {
+        isFirstResponderDiscountLoading.value = false;
+      },
+      onExceptionFail: (e, data) {
+        isFirstResponderDiscountLoading.value = false;
+      },
+    );
   }
 
 
