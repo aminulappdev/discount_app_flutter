@@ -323,6 +323,17 @@ class ExploreView extends StatelessWidget {
                           shrinkWrap: true,
                           physics: ScrollPhysics(),
                           itemBuilder: (context, index) {
+                            final product = exploreController.products[index];
+                            final price = _toDouble(product.price);
+                            final discount =
+                                _toDouble(product.discount) ?? 0.0;
+                            final discountedPrice =
+                                price == null
+                                    ? null
+                                    : discount > 0
+                                    ? price - ((price * discount) / 100)
+                                    : price;
+
                             return TextButton(
                               style: TextButton.styleFrom(padding: EdgeInsets.zero),
                               onPressed: () async {
@@ -348,44 +359,105 @@ class ExploreView extends StatelessWidget {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    // Top Image with rounded corners
-
-
-                                    exploreController.products[index].images?.isEmpty == true ?
-                                    Container(
-                                      height: 180.h(context),
-                                      width: 428.w(context),
-                                      decoration: BoxDecoration(
-                                        image: DecorationImage(
-                                          image: AssetImage(ImageUtils.carousel1),
-                                          fit: BoxFit.cover,
-                                        ),
-                                        borderRadius: BorderRadius.vertical(top: Radius.circular(15.r(context))),
-                                        color: Color.fromRGBO(175, 175, 175, 1),
-                                      ),
-                                    ) :
-                                    ImageHelperWidget.styledImage(
-                                      context: context,
-                                      height: 180,
-                                      width: 428,
-                                      fit: BoxFit.cover,
-                                      topLeftRadius: 15,
-                                      topRightRadius: 15,
-                                      bottomLeftRadius: 0,
-                                      bottomRightRadius: 0,
-                                      imageUrl: exploreController.products[index].images!.first,
-                                      errorWidget: Container(
-                                        height: 180.h(context),
-                                        width: 428.w(context),
-                                        decoration: BoxDecoration(
-                                          image: DecorationImage(
-                                            image: AssetImage(ImageUtils.carousel1),
-                                            fit: BoxFit.cover,
+                                    // Top image with discount badge on the top-right corner
+                                    Stack(
+                                      children: [
+                                        product.images?.isEmpty == true
+                                            ? Container(
+                                                height: 180.h(context),
+                                                width: 428.w(context),
+                                                decoration: BoxDecoration(
+                                                  image: DecorationImage(
+                                                    image: AssetImage(
+                                                      ImageUtils.carousel1,
+                                                    ),
+                                                    fit: BoxFit.cover,
+                                                  ),
+                                                  borderRadius:
+                                                      BorderRadius.vertical(
+                                                        top: Radius.circular(
+                                                          15.r(context),
+                                                        ),
+                                                      ),
+                                                  color: Color.fromRGBO(
+                                                    175,
+                                                    175,
+                                                    175,
+                                                    1,
+                                                  ),
+                                                ),
+                                              )
+                                            : ImageHelperWidget.styledImage(
+                                                context: context,
+                                                height: 180,
+                                                width: 428,
+                                                fit: BoxFit.cover,
+                                                topLeftRadius: 15,
+                                                topRightRadius: 15,
+                                                bottomLeftRadius: 0,
+                                                bottomRightRadius: 0,
+                                                imageUrl:
+                                                    product.images?.first,
+                                                errorWidget: Container(
+                                                  height: 180.h(context),
+                                                  width: 428.w(context),
+                                                  decoration: BoxDecoration(
+                                                    image: DecorationImage(
+                                                      image: AssetImage(
+                                                        ImageUtils.carousel1,
+                                                      ),
+                                                      fit: BoxFit.cover,
+                                                    ),
+                                                    borderRadius:
+                                                        BorderRadius.vertical(
+                                                          top: Radius.circular(
+                                                            15.r(context),
+                                                          ),
+                                                        ),
+                                                    color: Color.fromRGBO(
+                                                      175,
+                                                      175,
+                                                      175,
+                                                      1,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                        if (price != null && discount > 0)
+                                          Positioned(
+                                            top: 12.h(context),
+                                            right: 12.w(context),
+                                            child: Container(
+                                              padding: EdgeInsets.symmetric(
+                                                horizontal: 14.w(context),
+                                                vertical: 8.h(context),
+                                              ),
+                                              decoration: BoxDecoration(
+                                                color:
+                                                    ColorUtils.primaryColor,
+                                                borderRadius:
+                                                    BorderRadius.circular(
+                                                      12.r(context),
+                                                    ),
+                                                boxShadow: const [
+                                                  BoxShadow(
+                                                    color: Colors.black26,
+                                                    blurRadius: 6,
+                                                    offset: Offset(0, 2),
+                                                  ),
+                                                ],
+                                              ),
+                                              child: Text(
+                                                "${_formatPrice(discount)}% OFF",
+                                                style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 14.sp(context),
+                                                  fontWeight: FontWeight.w700,
+                                                ),
+                                              ),
+                                            ),
                                           ),
-                                          borderRadius: BorderRadius.vertical(top: Radius.circular(15.r(context))),
-                                          color: Color.fromRGBO(175, 175, 175, 1),
-                                        ),
-                                      ),
+                                      ],
                                     ),
 
 
@@ -484,83 +556,45 @@ class ExploreView extends StatelessWidget {
                                               ),
 
 
-                                              Builder(
-                                                builder: (_) {
-                                                  final product =
-                                                      exploreController
-                                                          .products[index];
-                                                  final price = _toDouble(
-                                                    product.price,
-                                                  );
-                                                  final discount = _toDouble(
-                                                        product.discount,
-                                                      ) ??
-                                                      0.0;
-                                                  final discountedPrice =
-                                                      price == null
-                                                      ? null
-                                                      : discount > 0
-                                                      ? price -
-                                                            ((price *
-                                                                    discount) /
-                                                                100)
-                                                      : price;
-
-                                                  return Row(
-                                                    mainAxisSize:
-                                                        MainAxisSize.min,
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment.end,
-                                                    children: [
-                                                      if (price != null &&
-                                                          discount > 0)
-                                                        Padding(
-                                                          padding:
-                                                              EdgeInsets.only(
-                                                                right: 6.w(
-                                                                  context,
-                                                                ),
-                                                                bottom: 2.h(
-                                                                  context,
-                                                                ),
-                                                              ),
-                                                          child: Text(
-                                                            "\$${_formatPrice(price)}",
-                                                            style: TextStyle(
-                                                              fontSize: 12,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w500,
-                                                              color: Colors
-                                                                  .grey
-                                                                  .shade600,
-                                                              decoration:
-                                                                  TextDecoration
-                                                                      .lineThrough,
-                                                            ),
-                                                          ),
-                                                        ),
-                                                      TextHelperClass.headingTextWithoutWidth(
-                                                        context: context,
-                                                        text:
-                                                            discountedPrice !=
-                                                                null
-                                                            ? "\$${_formatPrice(discountedPrice)}"
-                                                            : "N/A",
-                                                        fontSize: 22,
+                                              Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.end,
+                                                children: [
+                                                  if (price != null &&
+                                                      discount > 0)
+                                                    Text(
+                                                      "\$${_formatPrice(price)}",
+                                                      style: TextStyle(
+                                                        fontSize: 12,
                                                         fontWeight:
-                                                            FontWeight.w700,
-                                                        textColor:
-                                                            ColorUtils.black29,
-                                                        textAlign:
-                                                            TextAlign.start,
-                                                        alignment:
-                                                            Alignment
-                                                                .centerLeft,
+                                                            FontWeight.w500,
+                                                        color: Colors
+                                                            .grey
+                                                            .shade600,
+                                                        decoration:
+                                                            TextDecoration
+                                                                .lineThrough,
                                                       ),
-                                                    ],
-                                                  );
-                                                },
+                                                    ),
+                                                  SpaceHelperWidget.v(
+                                                    2.h(context),
+                                                  ),
+                                                  TextHelperClass.headingTextWithoutWidth(
+                                                    context: context,
+                                                    text:
+                                                        discountedPrice != null
+                                                        ? "\$${_formatPrice(discountedPrice)}"
+                                                        : "N/A",
+                                                    fontSize: 22,
+                                                    fontWeight:
+                                                        FontWeight.w700,
+                                                    textColor:
+                                                        ColorUtils.black29,
+                                                    textAlign: TextAlign.end,
+                                                    alignment:
+                                                        Alignment.centerRight,
+                                                  ),
+                                                ],
                                               ),
 
 
